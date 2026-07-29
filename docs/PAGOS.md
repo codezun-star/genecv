@@ -103,7 +103,23 @@ vanguardia    bruma
 ```
 
 Pegar cada `pri_...` en `SANDBOX_PRICE_IDS` dentro de
-`src/lib/payments/catalog.ts`. Los `price_id` no son secretos —viajan al
+`src/lib/payments/catalog.ts`.
+
+**Atajo.** Crear 17 productos y 17 precios a mano son 34 formularios y 17 ids
+que copiar sin equivocarse. El script los crea por API y escupe el bloque listo
+para pegar:
+
+```bash
+PADDLE_API_KEY=pdl_sdbx_... npm run paddle:seed -- --amount=499 --currency=USD
+```
+
+Es idempotente: marca cada producto con `custom_data.template_id`, así que
+volver a ejecutarlo reutiliza lo que ya exista y solo crea lo que falte. Para
+comprobar el estado sin tocar nada:
+
+```bash
+PADDLE_API_KEY=pdl_sdbx_... npm run paddle:check
+``` Los `price_id` no son secretos —viajan al
 navegador para abrir el checkout— por eso viven en el repositorio y no en
 variables de entorno.
 
