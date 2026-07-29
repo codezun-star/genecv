@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { TemplateThumb } from "@/components/landing/sections";
+import { TemplateThumb } from "@/components/cv/template-thumb";
 import { Container } from "@/components/layout/container";
 import { Badge } from "@/components/ui/badge";
 import { buttonStyles } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { buildMetadata } from "@/lib/site";
 export const metadata = buildMetadata({
   title: "Plantillas premium — próximamente, pago en USDT",
   description:
-    "Diseños premium de CV en preparación. El pago se realizará en USDT (criptomoneda estable). Las plantillas gratuitas seguirán siendo gratuitas.",
+    "Diez diseños premium de CV en preparación: barras laterales, líneas de tiempo y retículas editoriales. El pago se realizará en USDT. Las plantillas gratuitas seguirán siendo gratuitas.",
   path: "/premium",
 });
 
@@ -40,15 +40,15 @@ export default function PremiumPage() {
           Plantillas premium
         </h1>
         <p className="text-ink-soft mt-4 text-lg leading-relaxed">
-          Estamos preparando una colección de diseños con maquetación más
-          trabajada para perfiles que necesitan destacar. El pago se hará{" "}
+          Estamos preparando diez diseños con maquetación más trabajada para
+          perfiles que necesitan destacar. El pago se hará{" "}
           <strong className="text-ink font-semibold">en USDT</strong>, con un
           cobro único por plantilla.
         </p>
         <p className="text-ink-soft mt-3 leading-relaxed">
           Todavía no hay pasarela de pago conectada: esta página existe para que
-          sepas qué viene. Las cuatro plantillas actuales seguirán siendo
-          gratuitas y sin marca de agua.
+          sepas qué viene. Las tres plantillas actuales seguirán siendo gratuitas
+          y sin marca de agua.
         </p>
       </Reveal>
 
@@ -102,10 +102,7 @@ export default function PremiumPage() {
             <Card className="h-full">
               <div className="bg-surface border-line mb-4 aspect-[3/4] overflow-hidden rounded-lg border">
                 <div className="blur-[1.5px]">
-                  <TemplateThumb
-                    accent={template.accent}
-                    twoColumn={template.layout === "two-column"}
-                  />
+                  <TemplateThumb template={template} />
                 </div>
               </div>
               <CardTitle className="text-base">{template.name}</CardTitle>

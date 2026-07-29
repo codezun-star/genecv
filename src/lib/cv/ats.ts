@@ -1,4 +1,4 @@
-import type { TemplateMeta } from "@/lib/cv/templates";
+import { atsSignals, type TemplateMeta } from "@/lib/cv/templates";
 import type { CvData } from "@/lib/cv/types";
 
 export type CheckSeverity = "error" | "warning" | "info";
@@ -35,6 +35,7 @@ const PENALTY: Record<CheckSeverity, number> = {
  * We check the chosen template for those, plus a few content-level issues.
  */
 export function analyzeAts(cv: CvData, template: TemplateMeta): AtsReport {
+  const signals = atsSignals(template);
   const checks: AtsCheck[] = [];
   const passed: AtsCheck[] = [];
 
@@ -43,7 +44,7 @@ export function analyzeAts(cv: CvData, template: TemplateMeta): AtsReport {
   };
 
   // --- Template structure -------------------------------------------------
-  record(!template.ats.multiColumn, {
+  record(!signals.multiColumn, {
     id: "multi-column",
     severity: "error",
     title: "La plantilla usa dos columnas",
@@ -52,7 +53,7 @@ export function analyzeAts(cv: CvData, template: TemplateMeta): AtsReport {
     fix: "Si vas a subir el CV a un portal de empleo, cambia a «Clásica ATS» o «Moderna». Reserva las plantillas de dos columnas para enviarlo por email o en mano.",
   });
 
-  record(!template.ats.usesTables, {
+  record(!signals.usesTables, {
     id: "tables",
     severity: "error",
     title: "La plantilla se apoya en tablas",
@@ -61,7 +62,7 @@ export function analyzeAts(cv: CvData, template: TemplateMeta): AtsReport {
     fix: "Elige una plantilla de flujo simple.",
   });
 
-  record(!template.ats.graphicRatings, {
+  record(!signals.graphicRatings, {
     id: "graphic-ratings",
     severity: "warning",
     title: "El nivel de habilidades se muestra con gráficos",
@@ -70,7 +71,7 @@ export function analyzeAts(cv: CvData, template: TemplateMeta): AtsReport {
     fix: "Añade el nivel también por escrito, o usa una plantilla que lo escriba en texto.",
   });
 
-  record(!template.ats.headerFooterContent, {
+  record(!signals.headerFooterContent, {
     id: "header-footer",
     severity: "warning",
     title: "Hay contenido en la cabecera o el pie de página",

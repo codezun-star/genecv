@@ -1,19 +1,19 @@
 import Link from "next/link";
 
-import { TemplateThumb } from "@/components/landing/sections";
+import { TemplateThumb } from "@/components/cv/template-thumb";
 import { AdSlot } from "@/components/layout/ad-slot";
 import { Container } from "@/components/layout/container";
 import { Badge } from "@/components/ui/badge";
 import { buttonStyles } from "@/components/ui/button";
 import { Card, CardText, CardTitle } from "@/components/ui/card";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/reveal";
-import { FREE_TEMPLATES, PREMIUM_TEMPLATES } from "@/lib/cv/templates";
+import { FREE_TEMPLATES, PREMIUM_TEMPLATES, isAtsSafe } from "@/lib/cv/templates";
 import { buildMetadata } from "@/lib/site";
 
 export const metadata = buildMetadata({
   title: "Plantillas de CV gratuitas y compatibles con ATS",
   description:
-    "Cuatro plantillas gratuitas —clásica ATS, moderna, creativa y ejecutiva— más los diseños premium que llegarán próximamente. Cambia de plantilla sin perder tu contenido.",
+    "Tres plantillas gratuitas de una sola columna —Clásica ATS, Moderna y Minimal— más diez diseños premium en preparación. Cambia de plantilla sin perder tu contenido.",
   path: "/plantillas",
   keywords: [
     "plantillas de cv",
@@ -29,13 +29,14 @@ export default function TemplatesPage() {
         <Reveal className="max-w-2xl">
           <h1 className="text-4xl font-bold sm:text-5xl">Plantillas</h1>
           <p className="text-ink-soft mt-4 text-lg leading-relaxed">
-            Todas comparten el mismo contenido: elige una, cámbiala cuando
-            quieras y exporta el mismo PDF nítido. Las marcadas como ATS usan
-            una sola columna, que es lo que mejor leen los filtros automáticos.
+            Tres diseños gratuitos y diez premium en preparación. Todos
+            comparten el mismo contenido: elige uno, cámbialo cuando quieras y
+            exporta el mismo PDF nítido. Los marcados como ATS usan una sola
+            columna, que es lo que mejor leen los filtros automáticos.
           </p>
         </Reveal>
 
-        <RevealGroup className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <RevealGroup className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {FREE_TEMPLATES.map((template) => (
             <RevealItem key={template.id}>
               <Link
@@ -44,16 +45,11 @@ export default function TemplatesPage() {
               >
                 <Card className="group-hover:shadow-lift group-hover:border-secondary-200 h-full transition-[box-shadow,border-color,transform] duration-200 group-hover:-translate-y-1">
                   <div className="bg-surface border-line mb-4 aspect-[3/4] overflow-hidden rounded-lg border">
-                    <TemplateThumb
-                      accent={template.accent}
-                      twoColumn={template.layout === "two-column"}
-                    />
+                    <TemplateThumb template={template} />
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
                     <CardTitle className="text-base">{template.name}</CardTitle>
-                    {!template.ats.multiColumn && (
-                      <Badge tone="success">ATS</Badge>
-                    )}
+                    {isAtsSafe(template) && <Badge tone="success">ATS</Badge>}
                   </div>
                   <CardText>{template.description}</CardText>
                   <ul className="mt-4 flex flex-wrap gap-1.5">
@@ -83,9 +79,10 @@ export default function TemplatesPage() {
             <Badge tone="premium">Próximamente</Badge>
             <h2 className="mt-4 text-3xl font-bold">Plantillas premium</h2>
             <p className="text-ink-soft mt-3 leading-relaxed">
-              Diseños adicionales con maquetación más trabajada. El pago se hará
-              en USDT y todavía no está activo: por ahora puedes verlos, pero no
-              seleccionarlos.
+              Diez diseños con maquetación más trabajada: barras laterales,
+              líneas de tiempo, retículas editoriales y versiones compactas. El
+              pago se hará en USDT y todavía no está activo, así que por ahora
+              puedes verlos pero no seleccionarlos.
             </p>
           </Reveal>
 
@@ -95,10 +92,7 @@ export default function TemplatesPage() {
                 <Card className="h-full opacity-90">
                   <div className="bg-surface border-line relative mb-4 aspect-[3/4] overflow-hidden rounded-lg border">
                     <div className="blur-[1.5px]">
-                      <TemplateThumb
-                        accent={template.accent}
-                        twoColumn={template.layout === "two-column"}
-                      />
+                      <TemplateThumb template={template} />
                     </div>
                     <div className="bg-primary-900/25 absolute inset-0 grid place-items-center">
                       <span className="bg-canvas text-primary shadow-soft grid size-10 place-items-center rounded-full">

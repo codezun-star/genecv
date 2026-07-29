@@ -6,7 +6,8 @@ import { buttonStyles } from "@/components/ui/button";
 import { Card, CardText, CardTitle } from "@/components/ui/card";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/reveal";
 import { REGION_LIST } from "@/lib/cv/regions";
-import { FREE_TEMPLATES } from "@/lib/cv/templates";
+import { TemplateThumb } from "@/components/cv/template-thumb";
+import { FREE_TEMPLATES, isAtsSafe } from "@/lib/cv/templates";
 
 function SectionHeading({
   eyebrow,
@@ -199,11 +200,11 @@ export function TemplatesShowcase() {
       <Container>
         <SectionHeading
           eyebrow="Plantillas"
-          title="Cuatro diseños gratuitos"
-          description="Todos exportan al mismo PDF nítido. Cambia de plantilla cuando quieras: tu contenido se mantiene intacto."
+          title="Tres diseños gratuitos"
+          description="Las tres son de una sola columna, así que pasan bien por los filtros automáticos. Cambia de plantilla cuando quieras: tu contenido se mantiene intacto."
         />
 
-        <RevealGroup className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <RevealGroup className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {FREE_TEMPLATES.map((template) => (
             <RevealItem key={template.id}>
               <Link
@@ -212,16 +213,11 @@ export function TemplatesShowcase() {
               >
                 <Card className="group-hover:shadow-lift group-hover:border-secondary-200 h-full transition-[box-shadow,border-color,transform] duration-200 group-hover:-translate-y-1">
                   <div className="bg-surface border-line mb-4 aspect-[3/4] overflow-hidden rounded-lg border">
-                    <TemplateThumb
-                      accent={template.accent}
-                      twoColumn={template.layout === "two-column"}
-                    />
+                    <TemplateThumb template={template} />
                   </div>
                   <div className="flex items-center gap-2">
                     <CardTitle className="text-base">{template.name}</CardTitle>
-                    {!template.ats.multiColumn && (
-                      <Badge tone="success">ATS</Badge>
-                    )}
+                    {isAtsSafe(template) && <Badge tone="success">ATS</Badge>}
                   </div>
                   <CardText className="line-clamp-3">
                     {template.description}
@@ -239,52 +235,6 @@ export function TemplatesShowcase() {
         </Reveal>
       </Container>
     </section>
-  );
-}
-
-/** Tiny abstract preview of a template layout. */
-export function TemplateThumb({
-  accent,
-  twoColumn,
-}: {
-  accent: string;
-  twoColumn: boolean;
-}) {
-  return (
-    <div className="bg-canvas flex h-full w-full">
-      {twoColumn && (
-        <div
-          className="w-1/3 shrink-0 p-2"
-          style={{ backgroundColor: accent }}
-          aria-hidden
-        >
-          <div className="mx-auto mb-2 size-6 rounded-full bg-white/35" />
-          <div className="space-y-1">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-1 rounded-full bg-white/30" />
-            ))}
-          </div>
-        </div>
-      )}
-      <div className="flex-1 p-2.5" aria-hidden>
-        <div
-          className="mb-1 h-1.5 w-3/5 rounded-full"
-          style={{ backgroundColor: accent }}
-        />
-        <div className="bg-secondary-200 mb-3 h-1 w-2/5 rounded-full" />
-        {[3, 2, 3].map((lines, i) => (
-          <div key={i} className="mb-2.5">
-            <div
-              className="mb-1 h-1 w-1/3 rounded-full opacity-70"
-              style={{ backgroundColor: accent }}
-            />
-            {Array.from({ length: lines }).map((_, j) => (
-              <div key={j} className="bg-surface-dark mb-0.5 h-0.5 rounded-full" />
-            ))}
-          </div>
-        ))}
-      </div>
-    </div>
   );
 }
 

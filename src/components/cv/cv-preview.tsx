@@ -3,23 +3,14 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
-import { ClasicaTemplate } from "@/components/cv/templates/clasica";
-import { CreativaTemplate } from "@/components/cv/templates/creativa";
-import { EjecutivaTemplate } from "@/components/cv/templates/ejecutiva";
-import { ModernaTemplate } from "@/components/cv/templates/moderna";
+import { TemplateRenderer } from "@/components/cv/templates/render";
+import { getTemplate } from "@/lib/cv/templates";
 import type { CvView } from "@/lib/cv/view";
 import { cn } from "@/lib/utils";
 
 /** A4 at 96dpi. The sheet renders at this size and is scaled to fit. */
 export const SHEET_WIDTH = 794;
 export const SHEET_HEIGHT = 1123;
-
-const TEMPLATES: Record<string, (props: { view: CvView }) => React.ReactNode> = {
-  clasica: ClasicaTemplate,
-  moderna: ModernaTemplate,
-  creativa: CreativaTemplate,
-  ejecutiva: EjecutivaTemplate,
-};
 
 export function CvSheet({
   view,
@@ -28,14 +19,12 @@ export function CvSheet({
   view: CvView;
   templateId: string;
 }) {
-  const Template = TEMPLATES[templateId] ?? ClasicaTemplate;
-
   return (
     <div
       style={{ width: SHEET_WIDTH, height: SHEET_HEIGHT }}
       className="overflow-hidden bg-white text-black"
     >
-      <Template view={view} />
+      <TemplateRenderer view={view} template={getTemplate(templateId)} />
     </div>
   );
 }

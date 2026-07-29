@@ -7,9 +7,9 @@ import { AtsPanel } from "@/components/editor/ats-panel";
 import { useCv } from "@/components/editor/use-cv";
 import { FieldGroup } from "@/components/editor/fields";
 import { SortableList, SortableRow } from "@/components/editor/sortable-list";
-import { TemplateThumb } from "@/components/landing/sections";
+import { TemplateThumb } from "@/components/cv/template-thumb";
 import { Badge } from "@/components/ui/badge";
-import { FREE_TEMPLATES, PREMIUM_TEMPLATES } from "@/lib/cv/templates";
+import { FREE_TEMPLATES, PREMIUM_TEMPLATES, isAtsSafe } from "@/lib/cv/templates";
 import type { SectionId } from "@/lib/cv/types";
 import { cn } from "@/lib/utils";
 
@@ -35,7 +35,7 @@ export function DesignStep() {
         title="Plantilla"
         description="Cambiar de plantilla no altera tu contenido."
       >
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-3">
           {FREE_TEMPLATES.map((option) => {
             const selected = cv.templateId === option.id;
 
@@ -53,10 +53,7 @@ export function DesignStep() {
                 )}
               >
                 <div className="bg-surface border-line mb-3 aspect-[3/4] overflow-hidden rounded-md border">
-                  <TemplateThumb
-                    accent={option.accent}
-                    twoColumn={option.layout === "two-column"}
-                  />
+                  <TemplateThumb template={option} />
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-ink text-sm font-semibold">
@@ -82,7 +79,7 @@ export function DesignStep() {
                     </motion.span>
                   )}
                 </div>
-                {!option.ats.multiColumn && (
+                {isAtsSafe(option) && (
                   <Badge tone="success" className="mt-2">
                     ATS
                   </Badge>
@@ -103,8 +100,8 @@ export function DesignStep() {
                 </Badge>
               </p>
               <p className="text-ink-muted mt-1 text-xs">
-                {PREMIUM_TEMPLATES.map((t) => t.name).join(" · ")} — se
-                desbloquearán con un pago único en USDT.
+                {PREMIUM_TEMPLATES.length} diseños adicionales que se desbloquearán con
+                un pago único en USDT.
               </p>
             </div>
             <Link
