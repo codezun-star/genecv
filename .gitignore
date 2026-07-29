@@ -32,6 +32,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# Excepción: la plantilla de variables SÍ va al repositorio. Solo lleva
+# nombres y comentarios, ningún valor real.
+!.env.example
 
 # vercel
 .vercel

@@ -15,11 +15,87 @@ Todo ocurre en una sola sesión:
 CV gratis → previsualiza premium (con marca de agua) → paga → descarga → fin
 ```
 
+## Modo de monetización (`NEXT_PUBLIC_PREMIUM_MODE`)
+
+Toda la integración descrita en este documento sigue en el repositorio y
+funcionando. Un único flag decide si se ejecuta.
+
+| Valor | Qué pasa |
+| --- | --- |
+| `free_launch` | Las plantillas premium se descargan **gratis y sin marca de agua**, con un aviso de que después tendrán coste. No se abre el checkout, no se llama a `/api/generate-pdf` y no se contacta con Paddle. |
+| `paid` | El flujo real: checkout de Paddle, verificación en servidor y descarga servida por `/api/generate-pdf`. |
+
+**Estado actual: `free_launch`**, para validar demanda antes de cobrar.
+
+Ante una variable ausente o mal escrita el valor cae en `free_launch`: el
+fallo seguro es no cobrar, nunca cobrar por error.
+
+### Qué cambia en la interfaz
+
+En `free_launch`:
+
+- La descarga de una plantilla premium usa el **mismo camino que las
+  gratuitas** (`downloadCvPdf`, en el navegador). No pasa por el endpoint
+  verificado porque no hay pago que verificar.
+- Desaparecen la marca de agua de la vista previa, el candado de las tarjetas
+  y el desenfoque de la galería: mostrarlos cuando la descarga es libre sería
+  engañar al usuario.
+- Aparece el aviso de lanzamiento justo encima del botón de descarga.
+- Los textos de `/premium`, `/plantillas` y `/terminos` cambian solos: en modo
+  gratuito no pueden seguir diciendo que se cobra.
+
+### Dónde se editan los textos
+
+Todos en `src/lib/payments/mode.ts`, en `FREE_LAUNCH_COPY`.
+
+El precio anunciado vive en `priceLabel`. Mientras esté vacío el aviso dice
+«Más adelante pasará a ser de pago»; en cuanto se le pone un valor (`"4,99 €"`)
+pasa a decir «Más adelante costará 4,99 €». No hay que reescribir la frase ni
+tocar ningún componente.
+
+### Cómo reactivar los cobros
+
+1. Poner `NEXT_PUBLIC_PREMIUM_MODE=paid` en Vercel y en `.env.local`.
+2. **Redesplegar.** Las variables `NEXT_PUBLIC_` se incrustan en el bundle en
+   tiempo de compilación: cambiarlas en el panel de Vercel no surte efecto
+   hasta que hay un build nuevo.
+3. Comprobar con un pago de sandbox que el flujo completo sigue funcionando.
+
+Eso es todo lo que hace falta en el código. Lo que queda son decisiones de
+negocio y trámites en Paddle:
+
+- **Confirmar los precios finales** y crearlos con
+  `npm run paddle:seed -- --amount=... --currency=...`. Verificar con
+  `npm run paddle:check` que las 17 plantillas tienen `price_id` y que no
+  queda ningún marcador `pri_PENDIENTE_*`.
+- **Revisar la categoría fiscal** de cada producto. Debe ser «Standard digital
+  goods» (`standard`), no «SaaS»: determina qué impuesto cobra Paddle en cada
+  país.
+- **Pasar Paddle a producción**: cuenta verificada (pide datos fiscales y
+  tarda días, conviene empezarlo antes), productos y precios recreados en la
+  cuenta real, `PRODUCTION_PRICE_IDS` rellenado en `catalog.ts`,
+  `NEXT_PUBLIC_PADDLE_ENV=production`, claves de producción, nuevo destino de
+  webhook con su propio secreto y dominio aprobado en *Checkout → Website
+  approval*.
+- **Revisar `/terminos`**: el texto de pago vuelve solo al cambiar el flag,
+  pero conviene añadir la política de reembolsos concreta.
+
+### Lo que el flag NO toca
+
+Nada del backend cambia: `supabase/schema.sql`, `/api/webhooks/paddle`,
+`/api/generate-pdf` y `catalog.ts` quedan exactamente igual. El endpoint sigue
+activo y sigue exigiendo un pago verificado, así que aunque alguien lo llame
+directamente durante el lanzamiento gratuito no obtiene nada sin una
+transacción real. Los productos de Paddle Sandbox tampoco hay que borrarlos:
+simplemente no se llaman.
+
 ## Dónde vive cada cosa
 
 | Fichero | Papel |
 | --- | --- |
 | `supabase/schema.sql` | Tabla `pdf_purchases`, RLS y función de consumo atómico |
+| `src/lib/payments/mode.ts` | **El flag y los textos del lanzamiento gratuito** |
+| `src/components/editor/free-launch-notice.tsx` | Aviso de «gratis por lanzamiento» |
 | `src/lib/payments/catalog.ts` | Mapa `template_id` ↔ `price_id` (sandbox y producción) |
 | `src/lib/payments/paddle-server.ts` | Verificación del pago contra la API de Paddle |
 | `src/lib/payments/purchases.ts` | Acceso a Supabase con service role |
