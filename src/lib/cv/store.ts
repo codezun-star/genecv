@@ -221,8 +221,9 @@ export function setRegion(regionId: RegionId) {
 
 /**
  * Any template can be selected, premium included: the user needs to see their
- * own CV in a design before deciding to pay for it. What premium blocks is the
- * export, not the preview (see `lib/cv/unlock.ts`).
+ * own CV in a design before deciding to pay for it. Premium blocks the export,
+ * not the preview — the paid download goes through the checkout in the last
+ * step (see `components/editor/premium-checkout.tsx`).
  */
 export function setTemplate(templateId: string) {
   init();

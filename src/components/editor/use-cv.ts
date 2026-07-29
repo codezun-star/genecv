@@ -14,7 +14,6 @@ import {
   updatePersonal,
 } from "@/lib/cv/store";
 import { getTemplate } from "@/lib/cv/templates";
-import { isUnlocked } from "@/lib/cv/unlock";
 
 /**
  * Subscribes a component to the draft. The mutators are module-level
@@ -36,8 +35,12 @@ export function useCv() {
     hydrated,
     region: getRegion(cv.region),
     template,
-    /** Premium template the user has not paid for: preview yes, export no. */
-    locked: template.isPremium && !isUnlocked(template.id),
+    /**
+     * Premium: se previsualiza siempre, pero la descarga pasa por el checkout.
+     * No hay estado de "desbloqueado": cada descarga es un pago, así que esto
+     * depende solo del diseño elegido.
+     */
+    locked: template.isPremium,
     update: updateCv,
     updatePersonal,
     setRegion,

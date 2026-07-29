@@ -37,9 +37,11 @@ export default function TermsPage() {
             Plantillas premium
           </h2>
           <p className="mt-2">
-            Las plantillas premium todavía no están disponibles. Cuando se
-            activen, se venderán mediante un pago único en USDT y estas
-            condiciones se ampliarán con la política de reembolsos.
+            Las plantillas premium se venden como descargas puntuales: cada
+            pago da derecho a generar un PDF concreto, no a un acceso
+            permanente ni reutilizable. El cobro lo procesa Paddle, que actúa
+            como comerciante registrado y emite la factura. Para reembolsos,
+            escríbenos indicando el identificador de la transacción.
           </p>
         </section>
         <section>

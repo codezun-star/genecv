@@ -57,7 +57,7 @@ src/
   app/                  Rutas (App Router)
     crear/              Editor multi-paso
     plantillas/         Galería de plantillas
-    premium/            Placeholder de plantillas premium (pago en USDT)
+    premium/            Página comercial de las plantillas premium
     articulos/[slug]/   Guías por país (renderizadas desde Markdown)
   components/
     layout/             Navbar, footer, contenedor, ad slots
@@ -92,10 +92,10 @@ estructurado (`Article`, `BreadcrumbList` y `FAQPage`).
 - **Publicidad**: `<AdSlot />` reserva el espacio de cada banner sin cargar
   todavía ninguna red de anuncios. Al integrar un proveedor, el script se
   renderiza dentro del mismo contenedor para evitar saltos de layout.
-- **Plantillas premium**: tres plantillas son gratuitas y diez están marcadas
-  como `isPremium`. Se renderizan igual que las gratuitas pero no se pueden
-  seleccionar. El pago en USDT está esbozado en `/premium`, pero **no hay
-  wallet ni pasarela conectada**.
+- **Plantillas premium**: tres plantillas son gratuitas y diecisiete están
+  marcadas como `isPremium`. Se previsualizan con marca de agua y la descarga
+  sin marca se paga una vez por descarga (Paddle Billing + Supabase). El
+  detalle está en [`docs/PAGOS.md`](docs/PAGOS.md).
 
 ## Privacidad
 

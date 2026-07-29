@@ -13,7 +13,6 @@ import {
   isAtsSafe,
   type TemplateMeta,
 } from "@/lib/cv/templates";
-import { isUnlocked } from "@/lib/cv/unlock";
 import { cn } from "@/lib/utils";
 
 /** Accent options drawn from the brand palette plus a few neutral extras. */
@@ -51,7 +50,7 @@ export function TemplateStep() {
 
       <FieldGroup
         title="Plantillas premium"
-        description="Puedes seleccionarlas y ver tu CV con ese diseño. Para descargarlo sin marca de agua habrá que desbloquearlas con un pago único en USDT, que todavía no está activo."
+        description="Puedes seleccionarlas y ver tu CV con ese diseño. La descarga sin marca de agua se paga una vez, en el último paso: es esa descarga concreta, no un acceso permanente."
         action={
           <Link
             href="/premium"
@@ -117,7 +116,7 @@ function TemplateCard({
   selected: boolean;
   onSelect: () => void;
 }) {
-  const locked = option.isPremium && !isUnlocked(option.id);
+  const locked = option.isPremium;
 
   return (
     <button

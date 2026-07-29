@@ -32,8 +32,7 @@ const STEPS = [
 ] as const;
 
 export function EditorShell() {
-  const { cv, hydrated, resumed, saveState, locked, template, reset } =
-    useCv();
+  const { cv, hydrated, resumed, saveState, locked, reset } = useCv();
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
   const [showPreviewMobile, setShowPreviewMobile] = useState(false);
@@ -53,7 +52,8 @@ export function EditorShell() {
   }
 
   async function handleExport() {
-    // Premium templates preview freely but do not export until unlocked.
+    // La descarga premium no pasa por aquí: la sirve el servidor tras
+    // verificar el pago (ver PremiumCheckout).
     if (locked) return;
 
     setExporting(true);
@@ -148,21 +148,13 @@ export function EditorShell() {
             <div className="flex flex-wrap items-center gap-3">
               <SaveIndicator state={saveState} />
               {isLast ? (
-                <Button
-                  onClick={handleExport}
-                  disabled={exporting || locked}
-                  title={
-                    locked
-                      ? `«${template.name}» es premium: elige una plantilla gratuita para descargar`
-                      : undefined
-                  }
-                >
-                  {locked
-                    ? "Plantilla premium"
-                    : exporting
-                      ? "Generando PDF…"
-                      : "Descargar PDF"}
-                </Button>
+                // Con una plantilla premium la descarga la lleva el bloque de
+                // compra del paso de revisión, no este botón.
+                !locked && (
+                  <Button onClick={handleExport} disabled={exporting}>
+                    {exporting ? "Generando PDF…" : "Descargar PDF"}
+                  </Button>
+                )
               ) : (
                 <Button onClick={() => goTo(step + 1)}>Siguiente →</Button>
               )}

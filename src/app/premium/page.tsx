@@ -10,9 +10,9 @@ import { PREMIUM_TEMPLATES } from "@/lib/cv/templates";
 import { buildMetadata } from "@/lib/site";
 
 export const metadata = buildMetadata({
-  title: "Plantillas premium — próximamente, pago en USDT",
+  title: "Plantillas premium — pruébalas gratis, paga solo la descarga",
   description:
-    "Diecisiete diseños premium de CV: barras laterales, líneas de tiempo y retículas editoriales. Pruébalos gratis con tu contenido; la descarga se desbloqueará con un pago único en USDT.",
+    "Diecisiete diseños premium de CV: barras laterales, líneas de tiempo y retículas editoriales. Pruébalos gratis con tu contenido y paga solo cuando descargues el PDF sin marca de agua.",
   path: "/premium",
 });
 
@@ -22,12 +22,12 @@ const STEPS = [
     text: "Selecciónala en el editor y mira tu CV real con ese diseño, con marca de agua.",
   },
   {
-    title: "Pagas en USDT",
-    text: "Un pago único por plantilla, sin suscripción ni datos bancarios.",
+    title: "Pagas esa descarga",
+    text: "Un pago único con tarjeta a través de Paddle. Sin suscripción y sin crear ninguna cuenta.",
   },
   {
-    title: "Se desbloquea al instante",
-    text: "La plantilla queda disponible en este navegador y exporta sin marca de agua.",
+    title: "Descargas al instante",
+    text: "El PDF sin marca de agua se genera y descarga en la misma sesión, sin esperas.",
   },
 ];
 
@@ -42,37 +42,33 @@ export default function PremiumPage() {
         <p className="text-ink-soft mt-4 text-lg leading-relaxed">
           Diecisiete diseños con maquetación más trabajada para perfiles que
           necesitan destacar. Puedes probarlos ahora mismo en el editor y ver tu
-          CV con cualquiera de ellos. El pago se hará{" "}
-          <strong className="text-ink font-semibold">en USDT</strong>, con un
-          cobro único por plantilla.
+          CV con cualquiera de ellos. Lo que se paga es{" "}
+          <strong className="text-ink font-semibold">una descarga concreta</strong>,
+          no un acceso permanente: si más adelante quieres otro PDF, se paga de
+          nuevo.
         </p>
         <p className="text-ink-soft mt-3 leading-relaxed">
-          Todavía no hay pasarela de pago conectada, así que de momento las
-          plantillas premium se pueden previsualizar pero no descargar. Las tres
-          plantillas gratuitas seguirán siendo gratuitas y sin marca de agua.
+          No hay cuentas ni contraseñas: el correo se pide solo porque la
+          pasarela lo necesita para emitir la factura. Las tres plantillas
+          gratuitas seguirán siendo gratuitas y sin marca de agua.
         </p>
       </Reveal>
 
-      {/* Placeholder for the future checkout — no wallet, no payment logic. */}
       <Reveal className="mt-10">
-        <div className="border-primary-200 bg-primary-soft rounded-card border border-dashed p-6">
+        <div className="border-primary-200 bg-primary-soft rounded-card border p-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="font-display text-primary font-semibold">
-                Pago en USDT — pendiente de integrar
+                El pago ocurre dentro del editor
               </p>
               <p className="text-ink-soft mt-1 text-sm">
-                Aquí aparecerán la red (TRC-20 / ERC-20), el importe y el código
-                QR de pago.
+                Monta tu CV, elige un diseño premium y paga en el último paso.
+                El PDF se descarga en esa misma sesión.
               </p>
             </div>
-            <button
-              type="button"
-              disabled
-              className={buttonStyles({ className: "cursor-not-allowed" })}
-            >
-              Pagar con USDT
-            </button>
+            <Link href="/crear" className={buttonStyles()}>
+              Crear mi CV
+            </Link>
           </div>
         </div>
       </Reveal>

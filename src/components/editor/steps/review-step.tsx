@@ -1,13 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "motion/react";
 
 import { AtsPanel } from "@/components/editor/ats-panel";
+import { PremiumCheckout } from "@/components/editor/premium-checkout";
 import { useCv } from "@/components/editor/use-cv";
 import { FieldGroup } from "@/components/editor/fields";
 import { SortableList, SortableRow } from "@/components/editor/sortable-list";
-import { Badge } from "@/components/ui/badge";
 import type { SectionId } from "@/lib/cv/types";
 
 export function ReviewStep() {
@@ -18,29 +17,7 @@ export function ReviewStep() {
 
   return (
     <div className="space-y-10">
-      {locked && (
-        <div className="border-primary-200 bg-primary-soft rounded-card border p-5">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="font-display text-primary flex flex-wrap items-center gap-2 font-semibold">
-                «{template.name}» es una plantilla premium
-                <Badge tone="premium">Bloqueada</Badge>
-              </p>
-              <p className="text-ink-soft mt-1.5 text-sm leading-relaxed">
-                Puedes seguir viendo tu CV con este diseño en la vista previa,
-                pero la descarga está desactivada. Elige una plantilla gratuita
-                en el paso «Plantilla» para exportar el PDF ahora mismo.
-              </p>
-            </div>
-            <Link
-              href="/premium"
-              className="text-secondary hover:text-primary -mx-1 inline-flex min-h-9 shrink-0 items-center px-1 text-xs font-semibold transition-colors duration-150"
-            >
-              Saber más →
-            </Link>
-          </div>
-        </div>
-      )}
+      {locked && <PremiumCheckout template={template} cv={cv} />}
 
       <FieldGroup
         title="Orden de las secciones"

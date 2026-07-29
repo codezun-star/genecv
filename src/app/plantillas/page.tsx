@@ -82,8 +82,8 @@ export default function TemplatesPage() {
               Diecisiete diseños con maquetación más trabajada: barras
               laterales, líneas de tiempo, retículas editoriales y versiones
               compactas. Puedes seleccionarlos en el editor y ver tu CV con
-              ellos; lo que queda bloqueado hasta el pago en USDT —todavía no
-              activo— es la descarga sin marca de agua.
+              ellos; lo que se paga es la descarga sin marca de agua, una vez
+              por descarga.
             </p>
           </Reveal>
 
