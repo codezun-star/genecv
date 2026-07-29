@@ -32,7 +32,7 @@ export function PhrasePicker({
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="text-secondary hover:text-primary inline-flex items-center gap-1.5 text-xs font-semibold transition-colors duration-150"
+        className="text-secondary hover:text-primary -mx-1 inline-flex min-h-9 items-center gap-1.5 px-1 text-xs font-semibold transition-colors duration-150"
       >
         <svg
           viewBox="0 0 24 24"

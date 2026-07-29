@@ -12,14 +12,14 @@ import { buildMetadata } from "@/lib/site";
 export const metadata = buildMetadata({
   title: "Plantillas premium — próximamente, pago en USDT",
   description:
-    "Diez diseños premium de CV en preparación: barras laterales, líneas de tiempo y retículas editoriales. El pago se realizará en USDT. Las plantillas gratuitas seguirán siendo gratuitas.",
+    "Diecisiete diseños premium de CV: barras laterales, líneas de tiempo y retículas editoriales. Pruébalos gratis con tu contenido; la descarga se desbloqueará con un pago único en USDT.",
   path: "/premium",
 });
 
 const STEPS = [
   {
-    title: "Eliges la plantilla",
-    text: "Desde la galería, igual que con las gratuitas.",
+    title: "La pruebas gratis",
+    text: "Selecciónala en el editor y mira tu CV real con ese diseño, con marca de agua.",
   },
   {
     title: "Pagas en USDT",
@@ -40,15 +40,16 @@ export default function PremiumPage() {
           Plantillas premium
         </h1>
         <p className="text-ink-soft mt-4 text-lg leading-relaxed">
-          Estamos preparando diez diseños con maquetación más trabajada para
-          perfiles que necesitan destacar. El pago se hará{" "}
+          Diecisiete diseños con maquetación más trabajada para perfiles que
+          necesitan destacar. Puedes probarlos ahora mismo en el editor y ver tu
+          CV con cualquiera de ellos. El pago se hará{" "}
           <strong className="text-ink font-semibold">en USDT</strong>, con un
           cobro único por plantilla.
         </p>
         <p className="text-ink-soft mt-3 leading-relaxed">
-          Todavía no hay pasarela de pago conectada: esta página existe para que
-          sepas qué viene. Las tres plantillas actuales seguirán siendo gratuitas
-          y sin marca de agua.
+          Todavía no hay pasarela de pago conectada, así que de momento las
+          plantillas premium se pueden previsualizar pero no descargar. Las tres
+          plantillas gratuitas seguirán siendo gratuitas y sin marca de agua.
         </p>
       </Reveal>
 
@@ -93,7 +94,7 @@ export default function PremiumPage() {
       </RevealGroup>
 
       <Reveal className="mt-16">
-        <h2 className="text-2xl font-bold">En preparación</h2>
+        <h2 className="text-2xl font-bold">Los diseños</h2>
       </Reveal>
 
       <RevealGroup className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">

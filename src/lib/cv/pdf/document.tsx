@@ -634,7 +634,8 @@ const pageBase = (t: Tokens): PdfStyle => ({
 });
 
 function SingleColumn({ ctx }: { ctx: Ctx }) {
-  const { t, accent } = ctx;
+  const { t, accent, view, design } = ctx;
+  const size = 58;
 
   return (
     <Page
@@ -645,11 +646,32 @@ function SingleColumn({ ctx }: { ctx: Ctx }) {
         paddingVertical: t.padY,
       }}
     >
-      <View style={{ borderBottomWidth: 1, borderBottomColor: accent, paddingBottom: 6 }}>
-        <NameBlock ctx={ctx} />
-        <View style={{ marginTop: 6 }}>
-          <ContactInline ctx={ctx} />
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          borderBottomWidth: 1,
+          borderBottomColor: accent,
+          paddingBottom: 6,
+        }}
+      >
+        <View style={{ flex: 1 }}>
+          <NameBlock ctx={ctx} />
+          <View style={{ marginTop: 6 }}>
+            <ContactInline ctx={ctx} />
+          </View>
         </View>
+        {view.showPhoto && view.photo ? (
+          <Image
+            src={view.photo}
+            style={{
+              width: size,
+              height: size,
+              borderRadius: photoRadius(design.photo, size),
+              marginLeft: 14,
+            }}
+          />
+        ) : null}
       </View>
       <Sections sections={ctx.view.sections} ctx={ctx} />
     </Page>
@@ -823,8 +845,9 @@ function SidebarRight({ ctx }: { ctx: Ctx }) {
 }
 
 function SplitHeader({ ctx }: { ctx: Ctx }) {
-  const { t, accent } = ctx;
+  const { t, accent, view, design } = ctx;
   const { sidebar, body } = splitSections(ctx);
+  const size = 57;
 
   return (
     <Page
@@ -835,7 +858,22 @@ function SplitHeader({ ctx }: { ctx: Ctx }) {
         paddingVertical: t.padY,
       }}
     >
-      <NameBlock ctx={ctx} />
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ flex: 1 }}>
+          <NameBlock ctx={ctx} />
+        </View>
+        {view.showPhoto && view.photo ? (
+          <Image
+            src={view.photo}
+            style={{
+              width: size,
+              height: size,
+              borderRadius: photoRadius(design.photo, size),
+              marginLeft: 14,
+            }}
+          />
+        ) : null}
+      </View>
       <View style={{ height: 2.25, backgroundColor: accent, marginTop: 9 }} />
       <View style={{ marginTop: 6 }}>
         <ContactInline ctx={ctx} />

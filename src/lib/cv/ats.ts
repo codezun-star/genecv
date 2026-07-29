@@ -131,8 +131,12 @@ export function analyzeAts(cv: CvData, template: TemplateMeta): AtsReport {
     fix: "Añade al menos un puesto; también valen prácticas o voluntariado.",
   });
 
+  // A half-picked date ("2021-" with no month) does not count as complete.
+  const hasFullMonth = (value: string) => /^\d{4}-\d{2}$/.test(value);
   const datedExperience = filledExperience.filter(
-    (item) => item.startDate && (item.endDate || item.current),
+    (item) =>
+      hasFullMonth(item.startDate) &&
+      (item.current || hasFullMonth(item.endDate)),
   );
   record(
     filledExperience.length === 0 ||

@@ -10,20 +10,78 @@ type BaseProps = {
   className?: string;
 };
 
+/** Collapses runs of whitespace and drops zero-width characters. */
+function squashSpaces(value: string) {
+  return value
+    .replace(/[\u200b-\u200d\ufeff]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Same, but preserves paragraph breaks. */
+function squashSpacesMultiline(value: string) {
+  return value
+    .replace(/[\u200b-\u200d\ufeff]/g, "")
+    .replace(/[^\S\n]+/g, " ")
+    .replace(/ *\n */g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+/**
+ * Cleans the field when it loses focus.
+ *
+ * Pasting from Word, LinkedIn or a PDF drags in double spaces, non-breaking
+ * spaces and trailing newlines. The view model strips them before rendering,
+ * but doing it here too means the stored draft stays clean and the user sees
+ * the correction instead of wondering why the preview differs from the input.
+ *
+ * The native value is rewritten before re-dispatching so the existing
+ * `e.target.value` handlers pick up the cleaned string unchanged.
+ */
+function useBlurNormaliser<T extends HTMLInputElement | HTMLTextAreaElement>(
+  onChange: React.ChangeEventHandler<T> | undefined,
+  onBlur: React.FocusEventHandler<T> | undefined,
+  multiline = false,
+) {
+  return (event: React.FocusEvent<T>) => {
+    const raw = event.target.value;
+    const cleaned = multiline
+      ? squashSpacesMultiline(raw)
+      : squashSpaces(raw);
+
+    if (cleaned !== raw) {
+      event.target.value = cleaned;
+      onChange?.(event as unknown as React.ChangeEvent<T>);
+    }
+
+    onBlur?.(event);
+  };
+}
+
 export function TextField({
   label,
   hint,
   className,
+  onChange,
+  onBlur,
   ...props
 }: BaseProps & React.InputHTMLAttributes<HTMLInputElement>) {
   const id = useId();
+  const handleBlur = useBlurNormaliser(onChange, onBlur);
 
   return (
     <div className={className}>
       <label htmlFor={id} className="field-label">
         {label}
       </label>
-      <input id={id} className="field" {...props} />
+      <input
+        id={id}
+        className="field"
+        onChange={onChange}
+        onBlur={handleBlur}
+        {...props}
+      />
       {hint && <p className="text-ink-muted mt-1 text-xs">{hint}</p>}
     </div>
   );
@@ -34,16 +92,26 @@ export function TextAreaField({
   hint,
   className,
   rows = 4,
+  onChange,
+  onBlur,
   ...props
 }: BaseProps & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   const id = useId();
+  const handleBlur = useBlurNormaliser(onChange, onBlur, true);
 
   return (
     <div className={className}>
       <label htmlFor={id} className="field-label">
         {label}
       </label>
-      <textarea id={id} rows={rows} className="field resize-y" {...props} />
+      <textarea
+        id={id}
+        rows={rows}
+        className="field resize-y"
+        onChange={onChange}
+        onBlur={handleBlur}
+        {...props}
+      />
       {hint && <p className="text-ink-muted mt-1 text-xs">{hint}</p>}
     </div>
   );
@@ -74,21 +142,94 @@ export function SelectField({
   );
 }
 
-/** <input type="month"> — stores "YYYY-MM", which is what the view formats. */
+/**
+ * Month + year as two selects instead of `<input type="month">`.
+ *
+ * The native control renders inconsistently across browsers (and is a numeric
+ * spinner on several mobile ones), and it never shows the month by name. Two
+ * selects give full month names, work identically everywhere, and are far
+ * easier to operate on a phone. The stored value stays "YYYY-MM".
+ */
+const MONTH_NAMES = Array.from({ length: 12 }, (_, i) =>
+  new Intl.DateTimeFormat("es-ES", { month: "long" }).format(
+    new Date(2000, i, 1),
+  ),
+);
+
+function capitalise(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 export function MonthField({
   label,
   hint,
   className,
-  ...props
-}: BaseProps & React.InputHTMLAttributes<HTMLInputElement>) {
+  value = "",
+  disabled,
+  onChange,
+  "aria-label": ariaLabel,
+}: {
+  label: string;
+  hint?: string;
+  className?: string;
+  value?: string;
+  disabled?: boolean;
+  onChange: (value: string) => void;
+  "aria-label"?: string;
+}) {
+  const monthId = useId();
+  const [year = "", month = ""] = value.split("-");
+
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 66 }, (_, i) => String(currentYear + 5 - i));
+
+  function emit(nextYear: string, nextMonth: string) {
+    // Half-filled values are stored as "2021-" or "-09" rather than dropped:
+    // the two selects are filled one at a time, so discarding the incomplete
+    // state would make it impossible to ever set a date. The view formats a
+    // year-only value as just the year, and ignores a month without a year.
+    if (!nextYear && !nextMonth) return onChange("");
+    onChange(`${nextYear}-${nextMonth}`);
+  }
+
   return (
-    <TextField
-      type="month"
-      label={label}
-      hint={hint}
-      className={className}
-      {...props}
-    />
+    <div className={className}>
+      <label htmlFor={monthId} className="field-label">
+        {label}
+      </label>
+      <div className="flex gap-2">
+        <select
+          id={monthId}
+          className="field min-w-0 flex-1 cursor-pointer"
+          value={month}
+          disabled={disabled}
+          aria-label={ariaLabel ? `${ariaLabel} — mes` : `${label} — mes`}
+          onChange={(e) => emit(year, e.target.value)}
+        >
+          <option value="">Mes</option>
+          {MONTH_NAMES.map((name, i) => (
+            <option key={name} value={String(i + 1).padStart(2, "0")}>
+              {capitalise(name)}
+            </option>
+          ))}
+        </select>
+        <select
+          className="field w-[5.75rem] shrink-0 cursor-pointer"
+          value={year}
+          disabled={disabled}
+          aria-label={ariaLabel ? `${ariaLabel} — año` : `${label} — año`}
+          onChange={(e) => emit(e.target.value, month)}
+        >
+          <option value="">Año</option>
+          {years.map((y) => (
+            <option key={y} value={y}>
+              {y}
+            </option>
+          ))}
+        </select>
+      </div>
+      {hint && <p className="text-ink-muted mt-1 text-xs">{hint}</p>}
+    </div>
   );
 }
 
@@ -99,17 +240,19 @@ export function Checkbox({
 }: { label: string; className?: string } & React.InputHTMLAttributes<HTMLInputElement>) {
   const id = useId();
 
+  // The label carries the tap area so the whole row is comfortably tappable
+  // on a phone, not just the 20px box.
   return (
-    <div className={cn("flex items-center gap-2", className)}>
+    <div className={cn("flex items-center", className)}>
       <input
         id={id}
         type="checkbox"
-        className="accent-primary size-4 cursor-pointer rounded"
+        className="accent-primary size-5 shrink-0 cursor-pointer rounded"
         {...props}
       />
       <label
         htmlFor={id}
-        className="text-ink-soft cursor-pointer text-sm select-none"
+        className="text-ink-soft flex min-h-11 cursor-pointer items-center pl-2.5 text-sm select-none"
       >
         {label}
       </label>

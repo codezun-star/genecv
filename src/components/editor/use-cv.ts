@@ -14,6 +14,7 @@ import {
   updatePersonal,
 } from "@/lib/cv/store";
 import { getTemplate } from "@/lib/cv/templates";
+import { isUnlocked } from "@/lib/cv/unlock";
 
 /**
  * Subscribes a component to the draft. The mutators are module-level
@@ -26,13 +27,17 @@ export function useCv() {
     getServerSnapshot,
   );
 
+  const template = getTemplate(cv.templateId);
+
   return {
     cv,
     saveState,
     resumed,
     hydrated,
     region: getRegion(cv.region),
-    template: getTemplate(cv.templateId),
+    template,
+    /** Premium template the user has not paid for: preview yes, export no. */
+    locked: template.isPremium && !isUnlocked(template.id),
     update: updateCv,
     updatePersonal,
     setRegion,

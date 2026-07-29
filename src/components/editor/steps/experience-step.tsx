@@ -105,23 +105,24 @@ export function ExperienceStep() {
                     }
                     placeholder="Madrid (híbrido)"
                   />
-                  <div className="grid grid-cols-2 gap-3">
-                    <MonthField
-                      label="Inicio"
-                      value={item.startDate}
-                      onChange={(e) =>
-                        patchItem(item.id, { startDate: e.target.value })
-                      }
-                    />
-                    <MonthField
-                      label="Fin"
-                      value={item.endDate}
-                      disabled={item.current}
-                      onChange={(e) =>
-                        patchItem(item.id, { endDate: e.target.value })
-                      }
-                    />
-                  </div>
+                </div>
+
+                {/* Dates need the full width: a month name plus a year does
+                    not fit in half a column on a phone. */}
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <MonthField
+                    label="Inicio"
+                    value={item.startDate}
+                    aria-label={`Inicio del puesto ${index + 1}`}
+                    onChange={(v) => patchItem(item.id, { startDate: v })}
+                  />
+                  <MonthField
+                    label="Fin"
+                    value={item.endDate}
+                    disabled={item.current}
+                    aria-label={`Fin del puesto ${index + 1}`}
+                    onChange={(v) => patchItem(item.id, { endDate: v })}
+                  />
                 </div>
 
                 <Checkbox
@@ -146,7 +147,7 @@ export function ExperienceStep() {
                           achievements: [...item.achievements, ""],
                         })
                       }
-                      className="text-secondary hover:text-primary text-xs font-semibold transition-colors duration-150"
+                      className="text-secondary hover:text-primary -mx-1 inline-flex min-h-9 items-center px-1 text-xs font-semibold transition-colors duration-150"
                     >
                       + Añadir línea
                     </button>

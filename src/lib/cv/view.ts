@@ -75,7 +75,13 @@ export interface CvView {
   documentName: string;
 }
 
-/** "2021-03" -> "mar 2021" (es) / "Mar 2021" (en). */
+/**
+ * "2021-03" -> "Marzo 2021" (es) / "March 2021" (en).
+ *
+ * Built from the month name alone rather than a full date format because
+ * Spanish locales render "septiembre de 2018", and the connector reads badly
+ * inside a CV date range.
+ */
 function formatMonth(value: string, locale: string): string {
   if (!value) return "";
   const [year, month] = value.split("-");
@@ -85,12 +91,10 @@ function formatMonth(value: string, locale: string): string {
   const date = new Date(Number(year), Number(month) - 1, 1);
   if (Number.isNaN(date.getTime())) return value;
 
-  const label = new Intl.DateTimeFormat(locale, {
-    month: "short",
-    year: "numeric",
-  }).format(date);
+  const name = new Intl.DateTimeFormat(locale, { month: "long" }).format(date);
+  const capitalised = name.charAt(0).toLocaleUpperCase(locale) + name.slice(1);
 
-  return label.replace(/\./g, "");
+  return `${capitalised} ${year}`;
 }
 
 function formatRange(
@@ -109,9 +113,37 @@ function formatRange(
   return `${from} — ${to}`;
 }
 
+/**
+ * Trims and collapses runs of whitespace.
+ *
+ * People paste from Word and LinkedIn constantly, which brings double spaces,
+ * non-breaking spaces and stray line breaks. Left alone they show up as gaps
+ * in the rendered CV and as odd spacing in the extracted PDF text, so every
+ * string entering the view goes through here.
+ */
+function clean(value: string | undefined | null): string {
+  if (!value) return "";
+  return value
+    // JS \s already covers NBSP; zero-width characters it does not.
+    .replace(/[\u200b-\u200d\ufeff]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Same as `clean`, but keeps paragraph breaks in multi-line fields. */
+function cleanMultiline(value: string | undefined | null): string {
+  if (!value) return "";
+  return value
+    .replace(/[\u200b-\u200d\ufeff]/g, "")
+    .replace(/[^\S\n]+/g, " ")
+    .replace(/ *\n */g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 /** Joins non-empty parts with a separator. */
 function join(parts: (string | undefined)[], separator = " · ") {
-  return parts.filter((part) => part && part.trim()).join(separator);
+  return parts.map(clean).filter(Boolean).join(separator);
 }
 
 export function buildCvView(cv: CvData): CvView {
@@ -120,44 +152,44 @@ export function buildCvView(cv: CvData): CvView {
   const presentLabel = cv.region === "anglo" ? "Present" : "Actualidad";
   const p = cv.personal;
 
-  const hasName = Boolean(p.firstName.trim() || p.lastName.trim());
+  const hasName = Boolean(clean(p.firstName) || clean(p.lastName));
   const fullName = hasName
-    ? join([p.firstName.trim(), p.lastName.trim()], " ")
+    ? join([p.firstName, p.lastName], " ")
     : `${PREVIEW_PLACEHOLDERS.firstName} ${PREVIEW_PLACEHOLDERS.lastName}`;
 
   const contact = [
-    p.email.trim(),
-    p.phone.trim(),
-    join([p.city.trim(), p.country.trim()], ", "),
-    p.linkedin.trim(),
-    p.website.trim(),
+    clean(p.email),
+    clean(p.phone),
+    join([p.city, p.country], ", "),
+    clean(p.linkedin),
+    clean(p.website),
   ].filter(Boolean);
 
   const extras: string[] = [];
-  if (region.personalFields.birthDate && p.birthDate.trim()) {
-    extras.push(`Fecha de nacimiento: ${p.birthDate.trim()}`);
+  if (region.personalFields.birthDate && clean(p.birthDate)) {
+    extras.push(`Fecha de nacimiento: ${clean(p.birthDate)}`);
   }
-  if (region.personalFields.nationality && p.nationality.trim()) {
-    extras.push(`Nacionalidad: ${p.nationality.trim()}`);
+  if (region.personalFields.nationality && clean(p.nationality)) {
+    extras.push(`Nacionalidad: ${clean(p.nationality)}`);
   }
-  if (region.personalFields.drivingLicense && p.drivingLicense.trim()) {
-    extras.push(`Carnet de conducir: ${p.drivingLicense.trim()}`);
+  if (region.personalFields.drivingLicense && clean(p.drivingLicense)) {
+    extras.push(`Carnet de conducir: ${clean(p.drivingLicense)}`);
   }
 
-  const summaryText = p.summary.trim();
+  const summaryText = cleanMultiline(p.summary);
 
   const experience: ExperienceView[] = cv.experience
     .filter(
       (item) =>
-        item.position.trim() ||
-        item.company.trim() ||
-        item.achievements.some((a) => a.trim()),
+        clean(item.position) ||
+        clean(item.company) ||
+        item.achievements.some((a) => clean(a)),
     )
     .map((item) => ({
       id: item.id,
-      position: item.position.trim() || PREVIEW_PLACEHOLDERS.position,
-      company: item.company.trim() || PREVIEW_PLACEHOLDERS.company,
-      location: item.location.trim(),
+      position: clean(item.position) || PREVIEW_PLACEHOLDERS.position,
+      company: clean(item.company) || PREVIEW_PLACEHOLDERS.company,
+      location: clean(item.location),
       dates: formatRange(
         item.startDate,
         item.endDate,
@@ -165,19 +197,17 @@ export function buildCvView(cv: CvData): CvView {
         locale,
         presentLabel,
       ),
-      achievements: item.achievements
-        .map((line) => line.trim())
-        .filter(Boolean),
+      achievements: item.achievements.map(clean).filter(Boolean),
       isPlaceholder: false,
     }));
 
   const education: EducationView[] = cv.education
-    .filter((item) => item.degree.trim() || item.institution.trim())
+    .filter((item) => clean(item.degree) || clean(item.institution))
     .map((item) => ({
       id: item.id,
-      degree: item.degree.trim() || PREVIEW_PLACEHOLDERS.degree,
-      institution: item.institution.trim() || PREVIEW_PLACEHOLDERS.institution,
-      location: item.location.trim(),
+      degree: clean(item.degree) || PREVIEW_PLACEHOLDERS.degree,
+      institution: clean(item.institution) || PREVIEW_PLACEHOLDERS.institution,
+      location: clean(item.location),
       dates: formatRange(
         item.startDate,
         item.endDate,
@@ -185,24 +215,24 @@ export function buildCvView(cv: CvData): CvView {
         locale,
         presentLabel,
       ),
-      description: item.description.trim(),
+      description: clean(item.description),
       isPlaceholder: false,
     }));
 
   const skills = cv.skills
-    .filter((skill) => skill.name.trim())
+    .filter((skill) => clean(skill.name))
     .map((skill) => ({
       id: skill.id,
-      name: skill.name.trim(),
+      name: clean(skill.name),
       level: skill.level,
       levelLabel: SKILL_LEVEL_LABELS[skill.level],
     }));
 
   const languages = cv.languages
-    .filter((language) => language.name.trim())
+    .filter((language) => clean(language.name))
     .map((language) => ({
       id: language.id,
-      name: language.name.trim(),
+      name: clean(language.name),
       levelLabel: LANGUAGE_LEVEL_LABELS[language.level],
     }));
 
@@ -221,7 +251,7 @@ export function buildCvView(cv: CvData): CvView {
 
   return {
     fullName,
-    headline: p.headline.trim() || PREVIEW_PLACEHOLDERS.headline,
+    headline: clean(p.headline) || PREVIEW_PLACEHOLDERS.headline,
     contact,
     extras,
     photo: p.photo,

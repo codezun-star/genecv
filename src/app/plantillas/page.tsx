@@ -13,7 +13,7 @@ import { buildMetadata } from "@/lib/site";
 export const metadata = buildMetadata({
   title: "Plantillas de CV gratuitas y compatibles con ATS",
   description:
-    "Tres plantillas gratuitas de una sola columna —Clásica ATS, Moderna y Minimal— más diez diseños premium en preparación. Cambia de plantilla sin perder tu contenido.",
+    "Tres plantillas gratuitas de una sola columna —Clásica ATS, Moderna y Minimal— más diecisiete diseños premium. Pruébalas todas con tu contenido y cambia cuando quieras.",
   path: "/plantillas",
   keywords: [
     "plantillas de cv",
@@ -29,10 +29,10 @@ export default function TemplatesPage() {
         <Reveal className="max-w-2xl">
           <h1 className="text-4xl font-bold sm:text-5xl">Plantillas</h1>
           <p className="text-ink-soft mt-4 text-lg leading-relaxed">
-            Tres diseños gratuitos y diez premium en preparación. Todos
-            comparten el mismo contenido: elige uno, cámbialo cuando quieras y
-            exporta el mismo PDF nítido. Los marcados como ATS usan una sola
-            columna, que es lo que mejor leen los filtros automáticos.
+            Tres diseños gratuitos y diecisiete premium. Todos comparten el
+            mismo contenido: elige uno, cámbialo cuando quieras y exporta el
+            mismo PDF nítido. Los marcados como ATS usan una sola columna, que
+            es lo que mejor leen los filtros automáticos.
           </p>
         </Reveal>
 
@@ -79,10 +79,11 @@ export default function TemplatesPage() {
             <Badge tone="premium">Próximamente</Badge>
             <h2 className="mt-4 text-3xl font-bold">Plantillas premium</h2>
             <p className="text-ink-soft mt-3 leading-relaxed">
-              Diez diseños con maquetación más trabajada: barras laterales,
-              líneas de tiempo, retículas editoriales y versiones compactas. El
-              pago se hará en USDT y todavía no está activo, así que por ahora
-              puedes verlos pero no seleccionarlos.
+              Diecisiete diseños con maquetación más trabajada: barras
+              laterales, líneas de tiempo, retículas editoriales y versiones
+              compactas. Puedes seleccionarlos en el editor y ver tu CV con
+              ellos; lo que queda bloqueado hasta el pago en USDT —todavía no
+              activo— es la descarga sin marca de agua.
             </p>
           </Reveal>
 

@@ -4,12 +4,13 @@ import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState } from "react";
 
 import { useCv } from "@/components/editor/use-cv";
-import { DesignStep } from "@/components/editor/steps/design-step";
+import { ReviewStep } from "@/components/editor/steps/review-step";
 import { EducationStep } from "@/components/editor/steps/education-step";
 import { ExperienceStep } from "@/components/editor/steps/experience-step";
 import { FormatStep } from "@/components/editor/steps/format-step";
 import { PersonalStep } from "@/components/editor/steps/personal-step";
 import { SkillsStep } from "@/components/editor/steps/skills-step";
+import { TemplateStep } from "@/components/editor/steps/template-step";
 import { CvPreview } from "@/components/cv/cv-preview";
 import { AdSlot } from "@/components/layout/ad-slot";
 import { Container } from "@/components/layout/container";
@@ -18,17 +19,21 @@ import { buildFileName, downloadCvPdf } from "@/lib/cv/pdf/export";
 import { buildCvView } from "@/lib/cv/view";
 import { cn } from "@/lib/utils";
 
+// The template is picked up front, right after the market format: seeing the
+// design while filling the form is the whole point of the live preview.
 const STEPS = [
   { id: "formato", label: "Formato", Component: FormatStep },
+  { id: "plantilla", label: "Plantilla", Component: TemplateStep },
   { id: "personal", label: "Datos personales", Component: PersonalStep },
   { id: "experiencia", label: "Experiencia", Component: ExperienceStep },
   { id: "formacion", label: "Formación", Component: EducationStep },
   { id: "habilidades", label: "Habilidades", Component: SkillsStep },
-  { id: "diseno", label: "Diseño y descarga", Component: DesignStep },
+  { id: "revision", label: "Revisión y descarga", Component: ReviewStep },
 ] as const;
 
 export function EditorShell() {
-  const { cv, hydrated, resumed, saveState, reset } = useCv();
+  const { cv, hydrated, resumed, saveState, locked, template, reset } =
+    useCv();
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
   const [showPreviewMobile, setShowPreviewMobile] = useState(false);
@@ -48,6 +53,9 @@ export function EditorShell() {
   }
 
   async function handleExport() {
+    // Premium templates preview freely but do not export until unlocked.
+    if (locked) return;
+
     setExporting(true);
     setExportError(null);
     try {
@@ -101,7 +109,7 @@ export function EditorShell() {
           <button
             type="button"
             onClick={() => setDismissedResume(true)}
-            className="text-secondary hover:text-primary text-xs font-semibold transition-colors duration-150"
+            className="text-secondary hover:text-primary -mx-1 inline-flex min-h-9 items-center px-1 text-xs font-semibold transition-colors duration-150"
           >
             Entendido
           </button>
@@ -140,8 +148,20 @@ export function EditorShell() {
             <div className="flex flex-wrap items-center gap-3">
               <SaveIndicator state={saveState} />
               {isLast ? (
-                <Button onClick={handleExport} disabled={exporting}>
-                  {exporting ? "Generando PDF…" : "Descargar PDF"}
+                <Button
+                  onClick={handleExport}
+                  disabled={exporting || locked}
+                  title={
+                    locked
+                      ? `«${template.name}» es premium: elige una plantilla gratuita para descargar`
+                      : undefined
+                  }
+                >
+                  {locked
+                    ? "Plantilla premium"
+                    : exporting
+                      ? "Generando PDF…"
+                      : "Descargar PDF"}
                 </Button>
               ) : (
                 <Button onClick={() => goTo(step + 1)}>Siguiente →</Button>
@@ -199,7 +219,11 @@ export function EditorShell() {
                 showPreviewMobile ? "block" : "hidden lg:block",
               )}
             >
-              <CvPreview view={view} templateId={cv.templateId} />
+              <CvPreview
+                view={view}
+                templateId={cv.templateId}
+                locked={locked}
+              />
             </div>
 
             <div className="mt-4 hidden lg:block">

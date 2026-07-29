@@ -3,8 +3,8 @@
  *
  * Every design is a configuration rather than a bespoke component: a layout
  * archetype plus a handful of style choices. One HTML renderer and one PDF
- * renderer read this config, which is why 13 templates do not mean 26 files to
- * keep in sync — and why adding a design is a matter of adding an entry here.
+ * renderer read this config, which is why twenty templates do not mean forty
+ * files to keep in sync — and why adding a design is adding an entry here.
  */
 
 /** How the page is divided. */
@@ -51,7 +51,6 @@ export interface TemplateMeta {
   accent: string;
   /** Monochrome designs ignore the accent entirely. */
   monochrome?: boolean;
-  supportsPhoto: boolean;
   tags: string[];
 }
 
@@ -89,7 +88,6 @@ export const TEMPLATES: TemplateMeta[] = [
     isPremium: false,
     accent: "#234D68",
     monochrome: true,
-    supportsPhoto: false,
     design: {
       layout: "single",
       heading: "underline",
@@ -107,7 +105,6 @@ export const TEMPLATES: TemplateMeta[] = [
       "Cabecera con color de acento y jerarquía clara. Mantiene una sola columna, así que sigue siendo legible para los ATS.",
     isPremium: false,
     accent: "#234D68",
-    supportsPhoto: true,
     design: {
       layout: "header-band",
       heading: "plain",
@@ -125,7 +122,6 @@ export const TEMPLATES: TemplateMeta[] = [
       "Mucho aire, titulares finos y separadores discretos. Una sola columna para que el contenido mande.",
     isPremium: false,
     accent: "#566B81",
-    supportsPhoto: false,
     design: {
       layout: "single",
       heading: "caps-rule",
@@ -145,7 +141,6 @@ export const TEMPLATES: TemplateMeta[] = [
       "Barra lateral de color con foto, contacto y habilidades en barras. Para candidaturas directas y perfiles de diseño.",
     isPremium: true,
     accent: "#566B81",
-    supportsPhoto: true,
     design: {
       layout: "sidebar-left",
       heading: "underline",
@@ -164,7 +159,6 @@ export const TEMPLATES: TemplateMeta[] = [
       "Nombre en mayúsculas, columna lateral estrecha y mucho contraste. Para perfiles senior con trayectoria larga.",
     isPremium: true,
     accent: "#1B3C51",
-    supportsPhoto: true,
     design: {
       layout: "sidebar-right",
       heading: "plain",
@@ -183,7 +177,6 @@ export const TEMPLATES: TemplateMeta[] = [
       "Densidad alta para encajar más de diez años de experiencia en una página sin que se vea apretado.",
     isPremium: true,
     accent: "#234D68",
-    supportsPhoto: false,
     design: {
       layout: "single",
       heading: "bar",
@@ -201,7 +194,6 @@ export const TEMPLATES: TemplateMeta[] = [
       "Retícula tipo revista, titulares en caja y habilidades en etiquetas. Para portfolio, marketing y comunicación.",
     isPremium: true,
     accent: "#7A3B4E",
-    supportsPhoto: true,
     design: {
       layout: "sidebar-left",
       heading: "boxed",
@@ -220,7 +212,6 @@ export const TEMPLATES: TemplateMeta[] = [
       "Cabecera de color a sangre y titulares enmarcados. Formal sin renunciar a una sola columna.",
     isPremium: true,
     accent: "#163243",
-    supportsPhoto: true,
     design: {
       layout: "header-band",
       heading: "boxed",
@@ -238,7 +229,6 @@ export const TEMPLATES: TemplateMeta[] = [
       "Columna lateral clara para datos rápidos y cuerpo denso para el detalle. Pensada para perfiles de consultoría.",
     isPremium: true,
     accent: "#2C3740",
-    supportsPhoto: false,
     design: {
       layout: "sidebar-right",
       heading: "caps-rule",
@@ -257,7 +247,6 @@ export const TEMPLATES: TemplateMeta[] = [
       "Bloque de nombre a gran tamaño sobre una regla de color y cuerpo a dos columnas. Para dirección y alta gestión.",
     isPremium: true,
     accent: "#0C1B24",
-    supportsPhoto: false,
     design: {
       layout: "split-header",
       heading: "left-accent",
@@ -276,7 +265,6 @@ export const TEMPLATES: TemplateMeta[] = [
       "Línea de tiempo vertical que hace evidente la progresión de tu carrera. Una sola columna.",
     isPremium: true,
     accent: "#234D68",
-    supportsPhoto: false,
     design: {
       layout: "timeline",
       heading: "plain",
@@ -294,7 +282,6 @@ export const TEMPLATES: TemplateMeta[] = [
       "Estructura amplia y neutra para currículums largos con formación, cursos y publicaciones.",
     isPremium: true,
     accent: "#394753",
-    supportsPhoto: false,
     design: {
       layout: "single",
       heading: "underline",
@@ -312,7 +299,6 @@ export const TEMPLATES: TemplateMeta[] = [
       "Titulares con barra de acento y habilidades en etiquetas, para perfiles con muchas tecnologías.",
     isPremium: true,
     accent: "#2F7D5D",
-    supportsPhoto: false,
     design: {
       layout: "single",
       heading: "left-accent",
@@ -330,7 +316,6 @@ export const TEMPLATES: TemplateMeta[] = [
       "Barra lateral oscura a la izquierda y cuerpo claro, con habilidades en etiquetas. Moderna y legible.",
     isPremium: true,
     accent: "#1F272E",
-    supportsPhoto: true,
     design: {
       layout: "sidebar-left",
       heading: "plain",
@@ -341,6 +326,111 @@ export const TEMPLATES: TemplateMeta[] = [
       sidebarSections: ["skills", "languages"],
     },
     tags: ["Dos columnas", "Con foto", "Contraste"],
+  },
+  {
+    id: "meridiano",
+    name: "Meridiano",
+    description:
+      "Cabecera a sangre con titulares finos y habilidades en etiquetas. Equilibrio entre color y legibilidad.",
+    isPremium: true,
+    accent: "#1F5A6B",
+    design: {
+      layout: "header-band",
+      heading: "caps-rule",
+      name: "large-light",
+      density: "normal",
+      skills: "pills",
+      photo: "circle",
+    },
+    tags: ["Con foto", "Actual", "Etiquetas"],
+  },
+  {
+    id: "nordica",
+    name: "Nórdica",
+    description:
+      "Tipografía en mayúsculas espaciadas y separadores mínimos. Sobria, con mucho aire y una sola columna.",
+    isPremium: true,
+    accent: "#3A4A52",
+    design: {
+      layout: "single",
+      heading: "caps-rule",
+      name: "uppercase-wide",
+      density: "airy",
+      skills: "rows",
+      photo: "square",
+    },
+    tags: ["ATS", "Minimalista", "Sobria"],
+  },
+  {
+    id: "atenea",
+    name: "Atenea",
+    description:
+      "Columna lateral clara con titulares enmarcados y etiquetas de competencias. Para perfiles académicos y de investigación.",
+    isPremium: true,
+    accent: "#4A3B6B",
+    design: {
+      layout: "sidebar-right",
+      heading: "boxed",
+      name: "large-light",
+      density: "airy",
+      skills: "pills",
+      photo: "rounded",
+      sidebarSections: ["skills", "languages"],
+    },
+    tags: ["Dos columnas", "Académica", "Etiquetas"],
+  },
+  {
+    id: "pulso",
+    name: "Pulso",
+    description:
+      "Línea de tiempo compacta con titulares de barra lateral. Muestra una carrera larga sin ocupar dos páginas.",
+    isPremium: true,
+    accent: "#8A4B2A",
+    design: {
+      layout: "timeline",
+      heading: "left-accent",
+      name: "bold",
+      density: "compact",
+      skills: "rows",
+      photo: "circle",
+    },
+    tags: ["Línea de tiempo", "Densa", "Una página"],
+  },
+  {
+    id: "vanguardia",
+    name: "Vanguardia",
+    description:
+      "Nombre a gran tamaño, titulares en barra de color y cuerpo a dos columnas. Pensada para causar impacto.",
+    isPremium: true,
+    accent: "#0F3D3E",
+    design: {
+      layout: "split-header",
+      heading: "bar",
+      name: "large-light",
+      density: "airy",
+      skills: "pills",
+      photo: "rounded",
+      sidebarSections: ["skills", "languages"],
+    },
+    tags: ["Impacto", "Dos columnas", "Editorial"],
+  },
+  {
+    id: "bruma",
+    name: "Bruma",
+    description:
+      "Barra lateral en tono suave con tipografía ligera. Un diseño con foto que no compite con el contenido.",
+    isPremium: true,
+    accent: "#6B7A8F",
+    design: {
+      layout: "sidebar-left",
+      heading: "caps-rule",
+      name: "large-light",
+      density: "airy",
+      skills: "rows",
+      photo: "circle",
+      sidebarSections: ["skills", "languages"],
+    },
+    tags: ["Dos columnas", "Con foto", "Suave"],
   },
 ];
 

@@ -1,6 +1,6 @@
 import { createEmptyCv } from "@/lib/cv/defaults";
 import { getRegion } from "@/lib/cv/regions";
-import { FREE_TEMPLATES, getTemplate } from "@/lib/cv/templates";
+import { TEMPLATES, getTemplate } from "@/lib/cv/templates";
 import {
   clearDraft,
   isOnboarded,
@@ -93,7 +93,7 @@ function paramsFromUrl(): { templateId: string | null; region: RegionId | null }
 
     return {
       templateId:
-        templateId && FREE_TEMPLATES.some((t) => t.id === templateId)
+        templateId && TEMPLATES.some((t) => t.id === templateId)
           ? templateId
           : null,
       region:
@@ -219,11 +219,14 @@ export function setRegion(regionId: RegionId) {
   });
 }
 
+/**
+ * Any template can be selected, premium included: the user needs to see their
+ * own CV in a design before deciding to pay for it. What premium blocks is the
+ * export, not the preview (see `lib/cv/unlock.ts`).
+ */
 export function setTemplate(templateId: string) {
   init();
   const template = getTemplate(templateId);
-  // Premium designs are catalogued but not selectable yet.
-  if (template.isPremium) return;
 
   commit({
     ...snapshot.cv,

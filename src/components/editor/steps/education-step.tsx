@@ -106,23 +106,24 @@ export function EducationStep() {
                     }
                     placeholder="Madrid"
                   />
-                  <div className="grid grid-cols-2 gap-3">
-                    <MonthField
-                      label="Inicio"
-                      value={item.startDate}
-                      onChange={(e) =>
-                        patchItem(item.id, { startDate: e.target.value })
-                      }
-                    />
-                    <MonthField
-                      label="Fin"
-                      value={item.endDate}
-                      disabled={item.current}
-                      onChange={(e) =>
-                        patchItem(item.id, { endDate: e.target.value })
-                      }
-                    />
-                  </div>
+                </div>
+
+                {/* Dates need the full width: a month name plus a year does
+                    not fit in half a column on a phone. */}
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <MonthField
+                    label="Inicio"
+                    value={item.startDate}
+                    aria-label={`Inicio de la formación ${index + 1}`}
+                    onChange={(v) => patchItem(item.id, { startDate: v })}
+                  />
+                  <MonthField
+                    label="Fin"
+                    value={item.endDate}
+                    disabled={item.current}
+                    aria-label={`Fin de la formación ${index + 1}`}
+                    onChange={(v) => patchItem(item.id, { endDate: v })}
+                  />
                 </div>
 
                 <Checkbox

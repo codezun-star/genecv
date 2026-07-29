@@ -122,12 +122,15 @@ function SingleColumn({ view, style }: { view: CvView; style: Style }) {
     >
       <header
         style={{ borderColor: style.accent }}
-        className="border-b pb-3"
+        className="flex items-center gap-5 border-b pb-3"
       >
-        <NameBlock view={view} style={style} />
-        <div style={{ marginTop: 8 }}>
-          <ContactInline view={view} style={style} />
+        <div className="min-w-0 flex-1">
+          <NameBlock view={view} style={style} />
+          <div style={{ marginTop: 8 }}>
+            <ContactInline view={view} style={style} />
+          </div>
         </div>
+        <Photo view={view} size={78} shape={style.design.photo} />
       </header>
 
       <Sections sections={view.sections} view={view} style={style} />
@@ -340,7 +343,12 @@ function SplitHeader({ view, style }: { view: CvView; style: Style }) {
       className="h-full font-sans"
     >
       <header>
-        <NameBlock view={view} style={style} />
+        <div className="flex items-center gap-5">
+          <div className="min-w-0 flex-1">
+            <NameBlock view={view} style={style} />
+          </div>
+          <Photo view={view} size={76} shape={style.design.photo} />
+        </div>
         <div
           style={{ backgroundColor: style.accent, marginTop: 12 }}
           className="h-[3px] w-full"

@@ -19,12 +19,12 @@ export function Footer() {
           {footerNav.map((group) => (
             <div key={group.title}>
               <h2 className="text-ink text-sm font-semibold">{group.title}</h2>
-              <ul className="mt-4 space-y-2.5">
+              <ul className="mt-3 space-y-0.5">
                 {group.links.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-ink-soft hover:text-primary text-sm transition-colors duration-150"
+                      className="text-ink-soft hover:text-primary inline-flex min-h-9 items-center text-sm transition-colors duration-150"
                     >
                       {link.label}
                     </Link>
