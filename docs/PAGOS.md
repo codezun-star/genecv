@@ -119,9 +119,10 @@ comprobar el estado sin tocar nada:
 
 ```bash
 PADDLE_API_KEY=pdl_sdbx_... npm run paddle:check
-``` Los `price_id` no son secretos —viajan al
-navegador para abrir el checkout— por eso viven en el repositorio y no en
-variables de entorno.
+```
+
+Los `price_id` no son secretos —viajan al navegador para abrir el checkout—
+por eso viven en el repositorio y no en variables de entorno.
 
 Mientras una plantilla conserve su marcador `pri_PENDIENTE_*`, la interfaz
 muestra «todavía no está a la venta» en lugar de abrir un checkout roto.
