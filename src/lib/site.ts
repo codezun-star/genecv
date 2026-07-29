@@ -80,8 +80,8 @@ export const footerNav = [
     title: "Recursos",
     links: [
       { href: "/articulos", label: "Guías por país" },
-      { href: "/articulos/como-hacer-cv-en-espana", label: "CV en España" },
-      { href: "/articulos/como-hacer-cv-en-mexico", label: "CV en México" },
+      { href: "/articulos/como-hacer-un-curriculum-en-espana", label: "CV en España" },
+      { href: "/articulos/como-hacer-un-curriculum-en-mexico", label: "CV en México" },
     ],
   },
   {

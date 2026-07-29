@@ -58,7 +58,7 @@ src/
     crear/              Editor multi-paso
     plantillas/         Galería de plantillas
     premium/            Placeholder de plantillas premium (pago en USDT)
-    articulos/[slug]/   Guías por país (estructura lista, contenido pendiente)
+    articulos/[slug]/   Guías por país (renderizadas desde Markdown)
   components/
     layout/             Navbar, footer, contenedor, ad slots
     landing/            Secciones de la portada
@@ -69,17 +69,33 @@ src/
     cv/                 Tipos, presets regionales, catálogo de plantillas,
                         verificador ATS, almacenamiento y exportación a PDF
     site.ts             Configuración del sitio y helper de metadata
+    blog.ts             Lectura y renderizado de los artículos Markdown
   data/                 Banco de frases por profesión
+content/
+  articulos/            20 guías por país en Markdown con frontmatter
 ```
+
+## Blog
+
+Los artículos son ficheros Markdown en `content/articulos`, parseados en
+tiempo de compilación. No hay base de datos ni CMS: **publicar es añadir un
+`.md`** a esa carpeta. Cada fichero lleva frontmatter con el título SEO, la
+meta descripción, el país, la región de CV asociada, las palabras clave, las
+fechas y el bloque de preguntas frecuentes.
+
+A partir de ahí, cada artículo obtiene automáticamente su URL, su entrada en
+el sitemap, su índice de contenidos, sus enlaces relacionados y el marcado
+estructurado (`Article`, `BreadcrumbList` y `FAQPage`).
 
 ## Monetización (pendiente)
 
 - **Publicidad**: `<AdSlot />` reserva el espacio de cada banner sin cargar
   todavía ninguna red de anuncios. Al integrar un proveedor, el script se
   renderiza dentro del mismo contenedor para evitar saltos de layout.
-- **Plantillas premium**: el modelo de datos ya distingue `isPremium`. El pago
-  en USDT está esbozado en `/premium` pero **no hay wallet ni pasarela
-  conectada**.
+- **Plantillas premium**: tres plantillas son gratuitas y diez están marcadas
+  como `isPremium`. Se renderizan igual que las gratuitas pero no se pueden
+  seleccionar. El pago en USDT está esbozado en `/premium`, pero **no hay
+  wallet ni pasarela conectada**.
 
 ## Privacidad
 

@@ -83,14 +83,26 @@ function emit() {
   for (const listener of listeners) listener();
 }
 
-/** Template preselected via ?plantilla= on the gallery links. */
-function templateFromUrl(): string | null {
+/** Reads ?plantilla= and ?formato= from gallery and article links. */
+function paramsFromUrl(): { templateId: string | null; region: RegionId | null } {
   try {
-    const id = new URLSearchParams(window.location.search).get("plantilla");
-    if (!id) return null;
-    return FREE_TEMPLATES.some((t) => t.id === id) ? id : null;
+    const params = new URLSearchParams(window.location.search);
+
+    const templateId = params.get("plantilla");
+    const region = params.get("formato");
+
+    return {
+      templateId:
+        templateId && FREE_TEMPLATES.some((t) => t.id === templateId)
+          ? templateId
+          : null,
+      region:
+        region === "europa" || region === "latam" || region === "anglo"
+          ? region
+          : null,
+    };
   } catch {
-    return null;
+    return { templateId: null, region: null };
   }
 }
 
@@ -100,11 +112,34 @@ function init() {
   initialized = true;
 
   const draft = loadDraft();
-  const requested = templateFromUrl();
-  const base = draft ?? createEmptyCv();
-  const cv = requested
-    ? { ...base, templateId: requested, accentColor: getTemplate(requested).accent }
-    : base;
+  const { templateId, region } = paramsFromUrl();
+
+  let cv = draft ?? createEmptyCv();
+
+  if (templateId) {
+    cv = {
+      ...cv,
+      templateId,
+      accentColor: getTemplate(templateId).accent,
+    };
+  }
+
+  // A ?formato= link (used by the country guides) applies that market's
+  // conventions without touching content the user already typed.
+  if (region) {
+    const preset = getRegion(region);
+    cv = {
+      ...cv,
+      region: preset.id,
+      sectionOrder: [...preset.sectionOrder],
+      personal: {
+        ...cv.personal,
+        showPhoto:
+          preset.photo === "discouraged" ? false : preset.showPhotoByDefault,
+      },
+    };
+    markOnboarded();
+  }
 
   snapshot = {
     cv,

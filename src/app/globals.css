@@ -181,6 +181,130 @@
     color: var(--color-ink-soft);
     letter-spacing: 0.005em;
   }
+
+  /* ----------------------------------------------------------------
+     Article body. Written by hand rather than pulling in a typography
+     plugin so the palette tokens stay the single source of truth.
+     ---------------------------------------------------------------- */
+  .article-body {
+    color: var(--color-ink-soft);
+    font-size: 1.0625rem;
+    line-height: 1.75;
+  }
+
+  .article-body > * + * {
+    margin-top: 1.15em;
+  }
+
+  .article-body h2 {
+    margin-top: 2.5em;
+    margin-bottom: 0.6em;
+    font-size: 1.6rem;
+    scroll-margin-top: 6rem;
+  }
+
+  .article-body h3 {
+    margin-top: 1.9em;
+    margin-bottom: 0.4em;
+    font-size: 1.2rem;
+    scroll-margin-top: 6rem;
+  }
+
+  .article-body h2 + *,
+  .article-body h3 + * {
+    margin-top: 0;
+  }
+
+  .article-body strong {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+
+  .article-body a {
+    color: var(--color-primary);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--color-primary-200);
+    transition: text-decoration-color var(--duration-fast) var(--ease-out-brand);
+  }
+
+  .article-body a:hover {
+    text-decoration-color: var(--color-primary);
+  }
+
+  .article-body ul,
+  .article-body ol {
+    padding-left: 1.35em;
+  }
+
+  .article-body ul {
+    list-style: disc;
+  }
+
+  .article-body ol {
+    list-style: decimal;
+  }
+
+  .article-body li::marker {
+    color: var(--color-secondary-300);
+  }
+
+  .article-body li + li {
+    margin-top: 0.45em;
+  }
+
+  .article-body blockquote {
+    border-left: 3px solid var(--color-primary-200);
+    background-color: var(--color-primary-soft);
+    padding: 1rem 1.25rem;
+    border-radius: 0 var(--radius-field) var(--radius-field) 0;
+    color: var(--color-ink-soft);
+  }
+
+  .article-body blockquote > * + * {
+    margin-top: 0.75em;
+  }
+
+  /* Tables are common in these guides (country comparisons). */
+  .article-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .article-body table {
+    min-width: 32rem;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+  }
+
+  .article-body th,
+  .article-body td {
+    border: 1px solid var(--color-line);
+    padding: 0.6rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .article-body th {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+
+  .article-body code {
+    background-color: var(--color-surface-dark);
+    border-radius: 4px;
+    padding: 0.1em 0.35em;
+    font-size: 0.9em;
+  }
+
+  .article-body hr {
+    border: 0;
+    border-top: 1px solid var(--color-line);
+    margin-block: 2.5em;
+  }
 }
 
 @layer utilities {
