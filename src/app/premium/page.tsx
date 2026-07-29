@@ -1,0 +1,129 @@
+import Link from "next/link";
+
+import { TemplateThumb } from "@/components/landing/sections";
+import { Container } from "@/components/layout/container";
+import { Badge } from "@/components/ui/badge";
+import { buttonStyles } from "@/components/ui/button";
+import { Card, CardText, CardTitle } from "@/components/ui/card";
+import { Reveal, RevealGroup, RevealItem } from "@/components/ui/reveal";
+import { PREMIUM_TEMPLATES } from "@/lib/cv/templates";
+import { buildMetadata } from "@/lib/site";
+
+export const metadata = buildMetadata({
+  title: "Plantillas premium — próximamente, pago en USDT",
+  description:
+    "Diseños premium de CV en preparación. El pago se realizará en USDT (criptomoneda estable). Las plantillas gratuitas seguirán siendo gratuitas.",
+  path: "/premium",
+});
+
+const STEPS = [
+  {
+    title: "Eliges la plantilla",
+    text: "Desde la galería, igual que con las gratuitas.",
+  },
+  {
+    title: "Pagas en USDT",
+    text: "Un pago único por plantilla, sin suscripción ni datos bancarios.",
+  },
+  {
+    title: "Se desbloquea al instante",
+    text: "La plantilla queda disponible en este navegador y exporta sin marca de agua.",
+  },
+];
+
+export default function PremiumPage() {
+  return (
+    <Container className="py-16">
+      <Reveal className="max-w-2xl">
+        <Badge tone="premium">Próximamente</Badge>
+        <h1 className="mt-4 text-4xl font-bold sm:text-5xl">
+          Plantillas premium
+        </h1>
+        <p className="text-ink-soft mt-4 text-lg leading-relaxed">
+          Estamos preparando una colección de diseños con maquetación más
+          trabajada para perfiles que necesitan destacar. El pago se hará{" "}
+          <strong className="text-ink font-semibold">en USDT</strong>, con un
+          cobro único por plantilla.
+        </p>
+        <p className="text-ink-soft mt-3 leading-relaxed">
+          Todavía no hay pasarela de pago conectada: esta página existe para que
+          sepas qué viene. Las cuatro plantillas actuales seguirán siendo
+          gratuitas y sin marca de agua.
+        </p>
+      </Reveal>
+
+      {/* Placeholder for the future checkout — no wallet, no payment logic. */}
+      <Reveal className="mt-10">
+        <div className="border-primary-200 bg-primary-soft rounded-card border border-dashed p-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="font-display text-primary font-semibold">
+                Pago en USDT — pendiente de integrar
+              </p>
+              <p className="text-ink-soft mt-1 text-sm">
+                Aquí aparecerán la red (TRC-20 / ERC-20), el importe y el código
+                QR de pago.
+              </p>
+            </div>
+            <button
+              type="button"
+              disabled
+              className={buttonStyles({ className: "cursor-not-allowed" })}
+            >
+              Pagar con USDT
+            </button>
+          </div>
+        </div>
+      </Reveal>
+
+      <RevealGroup className="mt-14 grid gap-6 md:grid-cols-3">
+        {STEPS.map((step, i) => (
+          <RevealItem key={step.title}>
+            <div>
+              <span className="bg-primary text-canvas font-display grid size-10 place-items-center rounded-full font-bold">
+                {i + 1}
+              </span>
+              <h2 className="font-display mt-4 text-lg font-semibold">
+                {step.title}
+              </h2>
+              <p className="text-ink-soft mt-2 leading-relaxed">{step.text}</p>
+            </div>
+          </RevealItem>
+        ))}
+      </RevealGroup>
+
+      <Reveal className="mt-16">
+        <h2 className="text-2xl font-bold">En preparación</h2>
+      </Reveal>
+
+      <RevealGroup className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {PREMIUM_TEMPLATES.map((template) => (
+          <RevealItem key={template.id}>
+            <Card className="h-full">
+              <div className="bg-surface border-line mb-4 aspect-[3/4] overflow-hidden rounded-lg border">
+                <div className="blur-[1.5px]">
+                  <TemplateThumb
+                    accent={template.accent}
+                    twoColumn={template.layout === "two-column"}
+                  />
+                </div>
+              </div>
+              <CardTitle className="text-base">{template.name}</CardTitle>
+              <CardText>{template.description}</CardText>
+            </Card>
+          </RevealItem>
+        ))}
+      </RevealGroup>
+
+      <Reveal className="mt-14">
+        <p className="text-ink-soft">
+          Mientras tanto,{" "}
+          <Link href="/crear" className="text-primary font-semibold underline">
+            crea tu CV con las plantillas gratuitas
+          </Link>
+          .
+        </p>
+      </Reveal>
+    </Container>
+  );
+}
