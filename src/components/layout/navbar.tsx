@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Container } from "@/components/layout/container";
 import { Logo } from "@/components/layout/logo";
@@ -15,8 +15,9 @@ export function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  // Close the mobile sheet whenever the route changes.
-  useEffect(() => setOpen(false), [pathname]);
+  // Every link in the sheet calls this so navigating closes it. Doing it on
+  // click rather than in an effect keeps the state change out of render.
+  const closeMenu = () => setOpen(false);
 
   return (
     <header className="border-line bg-canvas/85 sticky top-0 z-40 border-b backdrop-blur-md">
@@ -106,6 +107,7 @@ export function Navbar() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={closeMenu}
                   className="text-ink-soft hover:bg-secondary-soft hover:text-primary rounded-field px-3 py-2.5 font-medium transition-colors duration-150"
                 >
                   {item.label}
@@ -113,6 +115,7 @@ export function Navbar() {
               ))}
               <Link
                 href="/crear"
+                onClick={closeMenu}
                 className={buttonStyles({ className: "mt-2 w-full" })}
               >
                 Crear mi CV

@@ -1,0 +1,227 @@
+{
+  "$comment": "Banco de frases sugeridas. Para añadir un rubro nuevo basta con agregar un objeto a 'industries' con la misma forma: id, label, summaries[] y achievements[]. Los corchetes [ ] marcan lo que la persona debe sustituir.",
+  "industries": [
+    {
+      "id": "general",
+      "label": "General",
+      "summaries": [
+        "Profesional con [X] años de experiencia en [sector], orientado a resultados y acostumbrado a trabajar en equipos multidisciplinares.",
+        "Perfil polivalente con experiencia en [área]. Busco un puesto donde aportar [fortaleza principal] y seguir creciendo profesionalmente.",
+        "Titulado en [estudios] con experiencia práctica en [área]. Destaco por mi capacidad de organización y por adaptarme rápido a nuevas herramientas."
+      ],
+      "achievements": [
+        "Reduje [proceso] de [X] a [Y] horas mediante [acción concreta].",
+        "Coordiné un equipo de [X] personas para entregar [proyecto] en [plazo].",
+        "Mejoré [indicador] un [X] % en [periodo] tras implantar [iniciativa].",
+        "Gestioné un presupuesto anual de [importe] cumpliendo el objetivo de coste.",
+        "Formé a [X] compañeros nuevos, reduciendo su tiempo de incorporación a [Y] semanas.",
+        "Propuse e implanté [mejora], adoptada después por [X] equipos."
+      ]
+    },
+    {
+      "id": "tecnologia",
+      "label": "Tecnología y desarrollo",
+      "summaries": [
+        "Desarrollador/a con [X] años construyendo aplicaciones en [stack]. Experiencia end-to-end: diseño, implementación, pruebas y despliegue.",
+        "Ingeniero/a de software especializado/a en [área: backend, frontend, datos…], con foco en rendimiento y calidad de código.",
+        "Perfil técnico con experiencia en entornos [cloud/on-premise] y metodologías ágiles, acostumbrado/a a trabajar con equipos de producto."
+      ],
+      "achievements": [
+        "Reduje el tiempo de carga de [producto] de [X] a [Y] ms optimizando [técnica].",
+        "Migré [sistema] a [tecnología], eliminando [X] horas mensuales de mantenimiento.",
+        "Diseñé e implementé una API REST que soporta [X] peticiones diarias con un [Y] % de disponibilidad.",
+        "Aumenté la cobertura de tests del [X] al [Y] %, reduciendo las incidencias en producción un [Z] %.",
+        "Automaticé el despliegue con [herramienta], bajando el tiempo de release de [X] a [Y] minutos.",
+        "Lideré técnicamente a [X] desarrolladores en la entrega de [proyecto].",
+        "Refactoricé [módulo] eliminando [X] líneas duplicadas y simplificando su mantenimiento."
+      ]
+    },
+    {
+      "id": "ventas",
+      "label": "Ventas y comercial",
+      "summaries": [
+        "Comercial con [X] años de experiencia en [sector], especializado/a en captación de nuevos clientes y cierre de operaciones.",
+        "Perfil orientado a objetivos con histórico de superación de cuota en [tipo de venta: B2B, B2C, canal].",
+        "Responsable comercial acostumbrado/a a gestionar cartera propia y a negociar con perfiles de dirección."
+      ],
+      "achievements": [
+        "Superé el objetivo anual de ventas un [X] %, cerrando [importe] en [periodo].",
+        "Capté [X] clientes nuevos en [periodo], ampliando la cartera un [Y] %.",
+        "Aumenté el ticket medio un [X] % mediante venta cruzada de [productos].",
+        "Reduje el ciclo de venta de [X] a [Y] días rediseñando el proceso de seguimiento.",
+        "Recuperé [X] cuentas inactivas, generando [importe] en facturación adicional.",
+        "Negocié la renovación de [X] contratos clave con una tasa de retención del [Y] %."
+      ]
+    },
+    {
+      "id": "marketing",
+      "label": "Marketing y comunicación",
+      "summaries": [
+        "Especialista en marketing digital con [X] años gestionando campañas de [canal] y presupuestos de [importe].",
+        "Perfil mixto entre estrategia y ejecución: contenido, paid media y analítica para [sector].",
+        "Responsable de comunicación con experiencia en marca, redes sociales y relación con medios."
+      ],
+      "achievements": [
+        "Aumenté el tráfico orgánico un [X] % en [periodo] con una estrategia de contenidos y SEO técnico.",
+        "Reduje el coste por adquisición un [X] % optimizando campañas en [plataforma].",
+        "Lancé [campaña], que generó [X] leads cualificados con un ROI de [Y].",
+        "Hice crecer la comunidad de [red social] de [X] a [Y] seguidores en [periodo].",
+        "Implanté un sistema de email marketing con una tasa de apertura del [X] %.",
+        "Coordiné el rebranding de [empresa], incluyendo identidad visual y web."
+      ]
+    },
+    {
+      "id": "administracion",
+      "label": "Administración y finanzas",
+      "summaries": [
+        "Administrativo/a con [X] años de experiencia en gestión documental, facturación y atención a proveedores.",
+        "Perfil contable con dominio de [software: SAP, A3, Contaplus…] y experiencia en cierres mensuales.",
+        "Responsable administrativo/a acostumbrado/a a coordinar con asesoría externa y a preparar información para dirección."
+      ],
+      "achievements": [
+        "Digitalicé el archivo de [X] expedientes, reduciendo el tiempo de consulta un [Y] %.",
+        "Reduje los errores de facturación un [X] % implantando un doble control de revisión.",
+        "Preparé cierres mensuales de [X] sociedades cumpliendo siempre el calendario fiscal.",
+        "Negocié con proveedores un ahorro anual de [importe] en [categoría de gasto].",
+        "Automaticé la conciliación bancaria, ahorrando [X] horas al mes.",
+        "Elaboré informes de tesorería que permitieron anticipar [decisión concreta]."
+      ]
+    },
+    {
+      "id": "atencion-cliente",
+      "label": "Atención al cliente",
+      "summaries": [
+        "Agente de atención al cliente con [X] años resolviendo incidencias por teléfono, chat y correo.",
+        "Perfil orientado a la satisfacción del cliente, con experiencia en [sector] y manejo de [CRM].",
+        "Responsable de soporte acostumbrado/a a gestionar escalados y a coordinar con equipos técnicos."
+      ],
+      "achievements": [
+        "Mantuve una satisfacción del cliente (CSAT) del [X] % sobre [Y] interacciones mensuales.",
+        "Reduje el tiempo medio de resolución de [X] a [Y] minutos.",
+        "Resolví el [X] % de las incidencias en el primer contacto.",
+        "Redacté [X] artículos de la base de conocimiento, bajando las consultas repetidas un [Y] %.",
+        "Formé a [X] agentes nuevos en producto y protocolo de atención.",
+        "Detecté y escalé un fallo recurrente que afectaba a [X] clientes, acelerando su corrección."
+      ]
+    },
+    {
+      "id": "salud",
+      "label": "Salud y sanidad",
+      "summaries": [
+        "Profesional sanitario/a con [X] años de experiencia en [especialidad], habituado/a a entornos de alta demanda asistencial.",
+        "Titulado/a en [estudios] con experiencia en [tipo de centro: hospital, clínica, residencia] y trato directo con pacientes.",
+        "Perfil asistencial con formación continua en [área] y experiencia en trabajo por turnos."
+      ],
+      "achievements": [
+        "Atendí una media de [X] pacientes por turno manteniendo los protocolos de seguridad.",
+        "Participé en la implantación de [protocolo], que redujo [indicador] un [X] %.",
+        "Formé a [X] estudiantes en prácticas durante [periodo].",
+        "Colaboré en la puesta en marcha de [servicio/unidad] desde su apertura.",
+        "Reduje el tiempo de preparación de [proceso] un [X] % reorganizando el material.",
+        "Mantuve la trazabilidad documental de [X] historiales sin incidencias en auditoría."
+      ]
+    },
+    {
+      "id": "educacion",
+      "label": "Educación y formación",
+      "summaries": [
+        "Docente con [X] años de experiencia en [nivel educativo], especializado/a en [materia].",
+        "Formador/a con experiencia en diseño de contenidos y evaluación por competencias.",
+        "Perfil educativo acostumbrado/a a la atención a la diversidad y al uso de herramientas digitales en el aula."
+      ],
+      "achievements": [
+        "Diseñé el temario de [asignatura] para [X] grupos, alineado con el currículo oficial.",
+        "Mejoré la tasa de aprobados de [X] al [Y] % introduciendo [metodología].",
+        "Coordiné el proyecto [nombre] con la participación de [X] alumnos y [Y] docentes.",
+        "Elaboré materiales digitales usados después por [X] compañeros del departamento.",
+        "Tutoricé a [X] alumnos, con un seguimiento individual del progreso.",
+        "Impartí [X] horas de formación a [público objetivo] con una valoración media de [Y]/10."
+      ]
+    },
+    {
+      "id": "logistica",
+      "label": "Logística y operaciones",
+      "summaries": [
+        "Responsable de operaciones con [X] años gestionando almacén, stock y transporte en [sector].",
+        "Perfil logístico con dominio de [ERP/WMS] y experiencia en optimización de rutas y costes.",
+        "Coordinador/a de cadena de suministro acostumbrado/a a trabajar con proveedores internacionales."
+      ],
+      "achievements": [
+        "Reduje el coste logístico un [X] % renegociando tarifas y optimizando rutas.",
+        "Bajé la rotura de stock del [X] al [Y] % mejorando la previsión de demanda.",
+        "Aumenté la precisión del inventario hasta el [X] % implantando conteos cíclicos.",
+        "Reorganicé el almacén, reduciendo el tiempo de preparación de pedidos un [X] %.",
+        "Coordiné un equipo de [X] operarios en turnos de [Y] horas.",
+        "Implanté [herramienta] para el seguimiento de envíos, reduciendo las incidencias un [X] %."
+      ]
+    },
+    {
+      "id": "hosteleria",
+      "label": "Hostelería y turismo",
+      "summaries": [
+        "Profesional de hostelería con [X] años de experiencia en [tipo de establecimiento] y trato directo con el cliente.",
+        "Perfil de sala/cocina acostumbrado/a a alto volumen y a trabajar bajo presión en temporada alta.",
+        "Responsable de establecimiento con experiencia en gestión de equipo, escandallos y control de costes."
+      ],
+      "achievements": [
+        "Atendí un servicio medio de [X] comensales manteniendo los tiempos de sala.",
+        "Aumenté la valoración media online de [X] a [Y] puntos en [periodo].",
+        "Reduje el desperdicio alimentario un [X] % ajustando escandallos y compras.",
+        "Coordiné un equipo de [X] personas durante la temporada de [periodo].",
+        "Incrementé el ticket medio un [X] % mediante sugerencia de carta.",
+        "Implanté el pedido digital en mesa, reduciendo los errores de comanda un [X] %."
+      ]
+    },
+    {
+      "id": "diseno",
+      "label": "Diseño y creatividad",
+      "summaries": [
+        "Diseñador/a con [X] años de experiencia en [especialidad: gráfico, UX/UI, producto] para [sector].",
+        "Perfil creativo con dominio de [herramientas] y experiencia trabajando con sistemas de diseño.",
+        "Diseñador/a orientado/a a producto, acostumbrado/a a validar decisiones con investigación y datos."
+      ],
+      "achievements": [
+        "Rediseñé [producto/pantalla], aumentando la conversión un [X] %.",
+        "Creé el sistema de diseño de [empresa], adoptado por [X] equipos.",
+        "Reduje el tiempo de maquetación un [X] % con componentes reutilizables.",
+        "Dirigí la identidad visual de [proyecto], desde el concepto hasta la aplicación final.",
+        "Realicé [X] entrevistas con usuarios que redefinieron el flujo de [funcionalidad].",
+        "Entregué [X] piezas gráficas mensuales para campañas de [canal]."
+      ]
+    },
+    {
+      "id": "ingenieria",
+      "label": "Ingeniería e industria",
+      "summaries": [
+        "Ingeniero/a [especialidad] con [X] años de experiencia en [sector industrial], desde el diseño hasta la puesta en marcha.",
+        "Perfil técnico con experiencia en mantenimiento, mejora continua y normativa de seguridad.",
+        "Responsable de proyectos industriales acostumbrado/a a coordinar proveedores y plazos."
+      ],
+      "achievements": [
+        "Reduje las paradas de línea un [X] % implantando mantenimiento preventivo.",
+        "Lideré la instalación de [equipo/línea] con una inversión de [importe] dentro de plazo.",
+        "Mejoré el rendimiento de [proceso] un [X] % aplicando [metodología: Lean, Six Sigma…].",
+        "Redacté la documentación técnica de [X] proyectos conforme a la norma [referencia].",
+        "Reduje el consumo energético de [instalación] un [X] %.",
+        "Coordiné a [X] técnicos y [Y] proveedores externos en [proyecto]."
+      ]
+    },
+    {
+      "id": "rrhh",
+      "label": "Recursos humanos",
+      "summaries": [
+        "Profesional de RRHH con [X] años de experiencia en selección, administración de personal y desarrollo.",
+        "Perfil generalista acostumbrado/a a acompañar a managers en todo el ciclo del empleado.",
+        "Técnico/a de selección especializado/a en perfiles de [área], con experiencia en [ATS]."
+      ],
+      "achievements": [
+        "Cubrí [X] vacantes en [periodo] con un tiempo medio de contratación de [Y] días.",
+        "Reduje la rotación voluntaria del [X] al [Y] % con un plan de acogida y seguimiento.",
+        "Implanté [herramienta] para la gestión de candidaturas, ahorrando [X] horas semanales.",
+        "Diseñé el plan de formación anual para [X] empleados con un presupuesto de [importe].",
+        "Gestioné la nómina de [X] personas sin incidencias durante [periodo].",
+        "Puse en marcha la encuesta de clima, con una participación del [X] %."
+      ]
+    }
+  ]
+}
