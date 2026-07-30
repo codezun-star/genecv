@@ -36,8 +36,12 @@ export const metadata: Metadata = {
     "cv ats",
     "resume builder",
   ],
-  authors: [{ name: "Codezun", url: "https://codezun.com" }],
-  creator: "Codezun",
+  // La autoría apunta a GeneCV y no a la marca matriz: cada subdominio es un
+  // sitio con nombre propio, y señalar al dominio padre desde los metadatos es
+  // parte de lo que lleva a Search a rotular el resultado con el padre.
+  authors: [{ name: siteConfig.name, url: siteConfig.url }],
+  creator: siteConfig.name,
+  publisher: siteConfig.name,
   openGraph: {
     type: "website",
     url: siteConfig.url,
@@ -53,6 +57,12 @@ export const metadata: Metadata = {
     creator: siteConfig.twitter,
   },
   robots: { index: true, follow: true },
+  // Instalada en iOS: sin barra del navegador y con el nombre corto.
+  appleWebApp: {
+    capable: true,
+    title: siteConfig.name,
+    statusBarStyle: "default",
+  },
 };
 
 export const viewport: Viewport = {

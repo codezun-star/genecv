@@ -9,7 +9,14 @@ import {
 } from "@/components/landing/sections";
 import { AdSlot } from "@/components/layout/ad-slot";
 import { Container } from "@/components/layout/container";
-import { absoluteUrl, buildMetadata, publisherJsonLd, siteConfig } from "@/lib/site";
+import {
+  absoluteUrl,
+  buildMetadata,
+  organizationJsonLd,
+  publisherJsonLd,
+  siteConfig,
+  webSiteJsonLd,
+} from "@/lib/site";
 
 export const metadata = buildMetadata({
   title: `${siteConfig.name} — ${siteConfig.tagline}`,
@@ -23,22 +30,29 @@ export const metadata = buildMetadata({
   ],
 });
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  name: siteConfig.name,
-  url: siteConfig.url,
-  applicationCategory: "BusinessApplication",
-  operatingSystem: "Web",
-  description: siteConfig.description,
-  image: absoluteUrl(siteConfig.logo),
-  publisher: publisherJsonLd,
-  offers: {
-    "@type": "Offer",
-    price: "0",
-    priceCurrency: "USD",
+const jsonLd = [
+  webSiteJsonLd,
+  organizationJsonLd,
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "@id": `${siteConfig.url}/#webapp`,
+    name: siteConfig.name,
+    url: `${siteConfig.url}/`,
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+    browserRequirements: "Requiere JavaScript",
+    description: siteConfig.description,
+    image: absoluteUrl(siteConfig.logo),
+    inLanguage: siteConfig.lang,
+    publisher: publisherJsonLd,
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
   },
-};
+];
 
 export default function HomePage() {
   return (

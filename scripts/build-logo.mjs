@@ -414,8 +414,8 @@ async function main() {
   const PLATE = 0.78; // proporción del lado que ocupa el dibujo
 
   /** Icono cuadrado sobre placa blanca, del tamaño pedido. */
-  async function plateIcon(size, cornerRatio) {
-    const inner = Math.round(size * PLATE);
+  async function plateIcon(size, cornerRatio, plateRatio = PLATE) {
+    const inner = Math.round(size * plateRatio);
     const radius = Math.round(size * cornerRatio);
 
     const plate = Buffer.from(
@@ -447,6 +447,26 @@ async function main() {
   await writeFile(
     path.join(APP_DIR, "favicon.ico"),
     icoFromPng(await plateIcon(32, 0.16), 32),
+  );
+
+  /**
+   * Iconos del manifiesto.
+   *
+   * Van en `public/icons/` y no por convención de fichero porque el manifiesto
+   * necesita declarar tres variantes con tamaños y `purpose` distintos, y la
+   * convención de Next solo genera las etiquetas `<link>` del documento.
+   *
+   * El maskable lleva el dibujo al 60 % del lado: Android recorta el icono con
+   * la forma del lanzador (círculo, cuadrado redondeado, gota) y solo el
+   * círculo central del 80 % está garantizado. Al 78 % del resto, el recorte se
+   * comería el borde del documento.
+   */
+  await mkdir(path.join(PUBLIC_DIR, "icons"), { recursive: true });
+  await writeFile(path.join(PUBLIC_DIR, "icons/icon-192.png"), await plateIcon(192, 0.22));
+  await writeFile(path.join(PUBLIC_DIR, "icons/icon-512.png"), await plateIcon(512, 0.22));
+  await writeFile(
+    path.join(PUBLIC_DIR, "icons/maskable-512.png"),
+    await plateIcon(512, 0, 0.6),
   );
 
   // Imagen de OpenGraph: al llamarse así, Next la usa como og:image y

@@ -39,6 +39,42 @@ export const publisherJsonLd = {
   },
 } as const;
 
+/**
+ * Identidad del sitio, para la portada.
+ *
+ * `WebSite` es de donde Google saca el nombre que rotula el resultado. Sin este
+ * nodo, Search cae al dominio registrable y todos los subdominios aparecen
+ * como «codezun.com», como si fueran secciones de otro sitio en vez de
+ * productos con nombre propio. `url` apunta a la raíz de ESTE subdominio, que
+ * es el sitio al que se le está poniendo nombre.
+ *
+ * Va solo en la portada: es donde Search lo lee.
+ */
+export const webSiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": `${siteConfig.url}/#website`,
+  name: siteConfig.name,
+  alternateName: `${siteConfig.name} — Generador de CV`,
+  url: `${siteConfig.url}/`,
+  description: siteConfig.description,
+  inLanguage: siteConfig.lang,
+  publisher: { "@id": `${siteConfig.url}/#organization` },
+} as const;
+
+/** El mismo emisor, pero como nodo con identidad propia y no incrustado. */
+export const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": `${siteConfig.url}/#organization`,
+  name: siteConfig.name,
+  url: `${siteConfig.url}/`,
+  logo: {
+    "@type": "ImageObject",
+    url: absoluteUrl(siteConfig.logo),
+  },
+} as const;
+
 type PageSeo = {
   title: string;
   description: string;
