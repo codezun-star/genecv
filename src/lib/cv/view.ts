@@ -1,5 +1,6 @@
 import { PREVIEW_PLACEHOLDERS } from "@/lib/cv/defaults";
 import { getRegion } from "@/lib/cv/regions";
+import { normaliseLine, normaliseParagraph } from "@/lib/cv/text";
 import type {
   CvData,
   LanguageLevel,
@@ -114,31 +115,21 @@ function formatRange(
 }
 
 /**
- * Trims and collapses runs of whitespace.
+ * Trims whitespace and makes the text safe for the PDF.
  *
  * People paste from Word and LinkedIn constantly, which brings double spaces,
- * non-breaking spaces and stray line breaks. Left alone they show up as gaps
- * in the rendered CV and as odd spacing in the extracted PDF text, so every
- * string entering the view goes through here.
+ * non-breaking spaces, stray line breaks and emoji. Left alone they show up as
+ * gaps in the rendered CV and as mojibake in the PDF, because the document is
+ * typeset in Helvetica and encoded as CP1252. `lib/cv/text.ts` explains the
+ * exact repertoire; every string entering the view goes through here.
  */
 function clean(value: string | undefined | null): string {
-  if (!value) return "";
-  return value
-    // JS \s already covers NBSP; zero-width characters it does not.
-    .replace(/[\u200b-\u200d\ufeff]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
+  return normaliseLine(value).text;
 }
 
 /** Same as `clean`, but keeps paragraph breaks in multi-line fields. */
 function cleanMultiline(value: string | undefined | null): string {
-  if (!value) return "";
-  return value
-    .replace(/[\u200b-\u200d\ufeff]/g, "")
-    .replace(/[^\S\n]+/g, " ")
-    .replace(/ *\n */g, "\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
+  return normaliseParagraph(value).text;
 }
 
 /** Joins non-empty parts with a separator. */

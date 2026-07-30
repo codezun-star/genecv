@@ -8,7 +8,7 @@ import { buttonStyles } from "@/components/ui/button";
 import { Card, CardText, CardTitle } from "@/components/ui/card";
 import { getAllArticles, getArticle, getRelated } from "@/lib/blog";
 import { getRegion } from "@/lib/cv/regions";
-import { buildMetadata, siteConfig } from "@/lib/site";
+import { buildMetadata, publisherJsonLd, siteConfig } from "@/lib/site";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -85,11 +85,7 @@ export default async function ArticlePage({ params }: Params) {
       wordCount: article.wordCount,
       keywords: article.keywords.join(", "),
       author: { "@type": "Organization", name: siteConfig.name, url: siteConfig.url },
-      publisher: {
-        "@type": "Organization",
-        name: siteConfig.name,
-        url: siteConfig.url,
-      },
+      publisher: publisherJsonLd,
     },
     {
       "@context": "https://schema.org",

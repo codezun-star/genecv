@@ -2,6 +2,7 @@
 
 import { useId } from "react";
 
+import { hasUnsupportedChars, tidyEditorText } from "@/lib/cv/text";
 import { cn } from "@/lib/utils";
 
 type BaseProps = {
@@ -10,31 +11,17 @@ type BaseProps = {
   className?: string;
 };
 
-/** Collapses runs of whitespace and drops zero-width characters. */
-function squashSpaces(value: string) {
-  return value
-    .replace(/[\u200b-\u200d\ufeff]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-/** Same, but preserves paragraph breaks. */
-function squashSpacesMultiline(value: string) {
-  return value
-    .replace(/[\u200b-\u200d\ufeff]/g, "")
-    .replace(/[^\S\n]+/g, " ")
-    .replace(/ *\n */g, "\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-}
-
 /**
  * Cleans the field when it loses focus.
  *
  * Pasting from Word, LinkedIn or a PDF drags in double spaces, non-breaking
- * spaces and trailing newlines. The view model strips them before rendering,
- * but doing it here too means the stored draft stays clean and the user sees
- * the correction instead of wondering why the preview differs from the input.
+ * spaces and trailing newlines, and people routinely forget the space after a
+ * full stop. The view model fixes both before rendering, but doing it here too
+ * means the stored draft stays clean and the user sees the correction instead
+ * of wondering why the preview differs from the input.
+ *
+ * It runs on blur rather than on every keystroke so nothing fights the caret
+ * while typing, and the work is a handful of regexes on a single field.
  *
  * The native value is rewritten before re-dispatching so the existing
  * `e.target.value` handlers pick up the cleaned string unchanged.
@@ -46,9 +33,7 @@ function useBlurNormaliser<T extends HTMLInputElement | HTMLTextAreaElement>(
 ) {
   return (event: React.FocusEvent<T>) => {
     const raw = event.target.value;
-    const cleaned = multiline
-      ? squashSpacesMultiline(raw)
-      : squashSpaces(raw);
+    const cleaned = tidyEditorText(raw, multiline);
 
     if (cleaned !== raw) {
       event.target.value = cleaned;
@@ -57,6 +42,25 @@ function useBlurNormaliser<T extends HTMLInputElement | HTMLTextAreaElement>(
 
     onBlur?.(event);
   };
+}
+
+/**
+ * Warning shown under a field whose text carries characters the PDF font cannot
+ * represent. It states what will happen instead of blocking the input, because
+ * the character is only dropped when the CV is rendered.
+ */
+export function UnsupportedCharsNotice() {
+  return (
+    <p className="text-ink-muted mt-1 flex items-start gap-1.5 text-xs">
+      <span aria-hidden="true" className="text-secondary mt-px">
+        &#9432;
+      </span>
+      <span>
+        Los emojis y símbolos especiales no se imprimen en el PDF; se quitarán al
+        descargar.
+      </span>
+    </p>
+  );
 }
 
 export function TextField({
@@ -69,6 +73,7 @@ export function TextField({
 }: BaseProps & React.InputHTMLAttributes<HTMLInputElement>) {
   const id = useId();
   const handleBlur = useBlurNormaliser(onChange, onBlur);
+  const unsupported = hasUnsupportedChars(String(props.value ?? ""));
 
   return (
     <div className={className}>
@@ -83,6 +88,7 @@ export function TextField({
         {...props}
       />
       {hint && <p className="text-ink-muted mt-1 text-xs">{hint}</p>}
+      {unsupported && <UnsupportedCharsNotice />}
     </div>
   );
 }
@@ -98,6 +104,7 @@ export function TextAreaField({
 }: BaseProps & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   const id = useId();
   const handleBlur = useBlurNormaliser(onChange, onBlur, true);
+  const unsupported = hasUnsupportedChars(String(props.value ?? ""));
 
   return (
     <div className={className}>
@@ -113,6 +120,7 @@ export function TextAreaField({
         {...props}
       />
       {hint && <p className="text-ink-muted mt-1 text-xs">{hint}</p>}
+      {unsupported && <UnsupportedCharsNotice />}
     </div>
   );
 }

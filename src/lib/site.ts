@@ -10,6 +10,33 @@ export const siteConfig = {
   locale: "es_ES",
   lang: "es",
   twitter: "@codezun",
+
+  /**
+   * Recursos de marca. Los genera `scripts/build-logo.mjs` a partir de
+   * `assets/logocv.png`; si cambian de nombre, se cambian aquí y ya.
+   *
+   * `logo` es el lockup completo (con eslogan), que es el que tiene sentido en
+   * los datos estructurados. La interfaz usa la versión compacta, porque el
+   * eslogan no se lee a 32 px de alto.
+   */
+  logo: "/logo-genecv.png",
+  logoCompact: "/logo-genecv-compact.png",
+} as const;
+
+/** URL absoluta de un recurso del sitio; los datos estructurados la exigen. */
+export function absoluteUrl(path: string): string {
+  return `${siteConfig.url}${path}`;
+}
+
+/** Organización emisora, reutilizada por los datos estructurados. */
+export const publisherJsonLd = {
+  "@type": "Organization",
+  name: siteConfig.name,
+  url: siteConfig.url,
+  logo: {
+    "@type": "ImageObject",
+    url: absoluteUrl(siteConfig.logo),
+  },
 } as const;
 
 type PageSeo = {

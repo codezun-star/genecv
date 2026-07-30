@@ -8,6 +8,7 @@ import {
   FieldGroup,
   MonthField,
   TextField,
+  UnsupportedCharsNotice,
 } from "@/components/editor/fields";
 import { PhrasePicker } from "@/components/editor/phrase-picker";
 import {
@@ -16,6 +17,7 @@ import {
 } from "@/components/editor/sortable-list";
 import { Button } from "@/components/ui/button";
 import { createExperience } from "@/lib/cv/defaults";
+import { hasUnsupportedChars, tidyEditorText } from "@/lib/cv/text";
 import type { ExperienceItem } from "@/lib/cv/types";
 
 export function ExperienceStep() {
@@ -168,18 +170,35 @@ export function ExperienceStep() {
                           }}
                           className="flex items-start gap-2"
                         >
-                          <textarea
-                            value={line}
-                            rows={2}
-                            onChange={(e) => {
-                              const achievements = [...item.achievements];
-                              achievements[lineIndex] = e.target.value;
-                              patchItem(item.id, { achievements });
-                            }}
-                            placeholder="Reduje el tiempo de carga un 40 % optimizando el bundle."
-                            className="field resize-y"
-                            aria-label={`Logro ${lineIndex + 1}`}
-                          />
+                          <div className="min-w-0 flex-1">
+                            <textarea
+                              value={line}
+                              rows={2}
+                              onChange={(e) => {
+                                const achievements = [...item.achievements];
+                                achievements[lineIndex] = e.target.value;
+                                patchItem(item.id, { achievements });
+                              }}
+                              // Este textarea no pasa por TextAreaField, así que
+                              // aplica la misma limpieza al perder el foco.
+                              onBlur={(e) => {
+                                const cleaned = tidyEditorText(
+                                  e.target.value,
+                                  true,
+                                );
+                                if (cleaned === e.target.value) return;
+                                const achievements = [...item.achievements];
+                                achievements[lineIndex] = cleaned;
+                                patchItem(item.id, { achievements });
+                              }}
+                              placeholder="Reduje el tiempo de carga un 40 % optimizando el bundle."
+                              className="field resize-y"
+                              aria-label={`Logro ${lineIndex + 1}`}
+                            />
+                            {hasUnsupportedChars(line) && (
+                              <UnsupportedCharsNotice />
+                            )}
+                          </div>
                           {item.achievements.length > 1 && (
                             <button
                               type="button"

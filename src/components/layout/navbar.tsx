@@ -26,7 +26,7 @@ export function Navbar() {
           aria-label="Principal"
           className="flex h-16 items-center justify-between gap-4"
         >
-          <Logo />
+          <Logo priority />
 
           <ul className="hidden items-center gap-1 md:flex">
             {mainNav.map((item) => {

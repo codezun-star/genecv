@@ -9,7 +9,7 @@ import {
 } from "@/components/landing/sections";
 import { AdSlot } from "@/components/layout/ad-slot";
 import { Container } from "@/components/layout/container";
-import { buildMetadata, siteConfig } from "@/lib/site";
+import { absoluteUrl, buildMetadata, publisherJsonLd, siteConfig } from "@/lib/site";
 
 export const metadata = buildMetadata({
   title: `${siteConfig.name} — ${siteConfig.tagline}`,
@@ -31,6 +31,8 @@ const jsonLd = {
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web",
   description: siteConfig.description,
+  image: absoluteUrl(siteConfig.logo),
+  publisher: publisherJsonLd,
   offers: {
     "@type": "Offer",
     price: "0",
