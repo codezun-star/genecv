@@ -75,6 +75,87 @@ export const organizationJsonLd = {
   },
 } as const;
 
+/**
+ * Migas de pan. Se pasa la ruta sin el inicio: se añade sola, porque siempre
+ * es la misma y olvidarla es el error más habitual al escribir este esquema.
+ */
+export function breadcrumbJsonLd(
+  steps: { name: string; path: string }[],
+): Record<string, unknown> {
+  const all = [{ name: "Inicio", path: "/" }, ...steps];
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: all.map((step, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: step.name,
+      item: step.path === "/" ? `${siteConfig.url}/` : `${siteConfig.url}${step.path}`,
+    })),
+  };
+}
+
+/**
+ * Preguntas frecuentes.
+ *
+ * Es el esquema del que un motor de respuestas saca una respuesta directa: le
+ * entrega la pregunta y la respuesta ya emparejadas, sin tener que deducir
+ * cuál de los párrafos de la página contesta a qué. Exige que esas mismas
+ * preguntas estén visibles —de ahí que se construya a partir del array que ya
+ * pinta el bloque, y no de una copia.
+ */
+export function faqJsonLd(
+  items: readonly { q: string; a: string }[],
+): Record<string, unknown> | null {
+  if (items.length === 0) return null;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    inLanguage: siteConfig.lang,
+    mainEntity: items.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: { "@type": "Answer", text: item.a },
+    })),
+  };
+}
+
+/**
+ * Los pasos para hacer un CV, como procedimiento.
+ *
+ * Google retiró el resultado enriquecido de `HowTo` en 2023, así que esto no
+ * dibuja nada en la página de resultados. Sigue valiendo la pena por el otro
+ * lector: un asistente al que le preguntan "¿cómo hago un currículum gratis?"
+ * puede responder con los tres pasos reales y citar de dónde salen, en lugar
+ * de resumir la portada a ojo.
+ */
+export function howToJsonLd(
+  steps: readonly { title: string; text: string }[],
+): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "Cómo crear un CV profesional con GeneCV",
+    description:
+      "Tres pasos para generar un currículum en PDF compatible con ATS, sin crear una cuenta.",
+    inLanguage: siteConfig.lang,
+    totalTime: "PT10M",
+    // El procedimiento no cuesta nada: declararlo evita que un asistente
+    // asuma un muro de pago que no existe.
+    estimatedCost: { "@type": "MonetaryAmount", currency: "USD", value: "0" },
+    tool: { "@type": "HowToTool", name: siteConfig.name },
+    step: steps.map((step, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      name: step.title,
+      text: step.text,
+      url: `${siteConfig.url}/crear`,
+    })),
+  };
+}
+
 type PageSeo = {
   title: string;
   description: string;

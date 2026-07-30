@@ -14,7 +14,7 @@ import {
   type TemplateMeta,
 } from "@/lib/cv/templates";
 import { FREE_LAUNCH_COPY, isFreeLaunch } from "@/lib/payments/mode";
-import { buildMetadata } from "@/lib/site";
+import { breadcrumbJsonLd, buildMetadata, siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 export const metadata = buildMetadata({
@@ -84,9 +84,48 @@ function PremiumCard({ template }: { template: TemplateMeta }) {
   );
 }
 
+/**
+ * El catálogo, como lista. Un asistente al que le preguntan "¿qué plantillas
+ * de CV tiene GeneCV?" puede contestar con los nombres y con cuáles pasan un
+ * ATS sin descargar la página entera ni interpretar la retícula de tarjetas.
+ */
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Plantillas de CV de GeneCV",
+    url: `${siteConfig.url}/plantillas`,
+    inLanguage: siteConfig.lang,
+    isPartOf: { "@id": `${siteConfig.url}/#website` },
+    mainEntity: {
+      "@type": "ItemList",
+      name: "Plantillas de currículum",
+      numberOfItems: FREE_TEMPLATES.length + PREMIUM_TEMPLATES.length,
+      itemListElement: [...FREE_TEMPLATES, ...PREMIUM_TEMPLATES].map(
+        (template, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: template.name,
+          url: `${siteConfig.url}/crear?plantilla=${template.id}`,
+          description: `${template.isPremium ? "Plantilla premium" : "Plantilla gratuita"}. ${
+            isAtsSafe(template) ? "Compatible con ATS." : "No recomendada para filtros ATS."
+          }`,
+        }),
+      ),
+    },
+  },
+  breadcrumbJsonLd([{ name: "Plantillas", path: "/plantillas" }]),
+];
+
 export default function TemplatesPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       <Container className="py-14">
         <Reveal className="max-w-2xl">
           <h1 className="text-4xl font-bold sm:text-5xl">Plantillas</h1>

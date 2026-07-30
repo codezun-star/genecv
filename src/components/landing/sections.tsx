@@ -8,6 +8,7 @@ import { Reveal, RevealGroup, RevealItem } from "@/components/ui/reveal";
 import { REGION_LIST } from "@/lib/cv/regions";
 import { TemplateThumb } from "@/components/cv/template-thumb";
 import { FREE_TEMPLATES, isAtsSafe } from "@/lib/cv/templates";
+import { HOME_STEPS, homeFaq } from "@/lib/landing-content";
 
 function SectionHeading({
   eyebrow,
@@ -153,21 +154,6 @@ export function Formats() {
   );
 }
 
-const STEPS = [
-  {
-    title: "Elige tu formato",
-    text: "España y Europa, Latinoamérica o anglosajón. Ajustamos foto, secciones y terminología.",
-  },
-  {
-    title: "Completa el formulario",
-    text: "Paso a paso, con sugerencias de frases por profesión y guardado automático.",
-  },
-  {
-    title: "Elige plantilla y descarga",
-    text: "Compara diseños con la vista previa y exporta el PDF con tu nombre en el archivo.",
-  },
-];
-
 export function HowItWorks() {
   return (
     <section className="py-20">
@@ -175,7 +161,7 @@ export function HowItWorks() {
         <SectionHeading eyebrow="Cómo funciona" title="Tres pasos, sin cuenta" />
 
         <RevealGroup className="mt-12 grid gap-6 md:grid-cols-3">
-          {STEPS.map((step, i) => (
+          {HOME_STEPS.map((step, i) => (
             <RevealItem key={step.title}>
               <div className="relative h-full">
                 <span className="bg-primary text-canvas font-display grid size-11 place-items-center rounded-full text-lg font-bold">
@@ -238,25 +224,6 @@ export function TemplatesShowcase() {
   );
 }
 
-const FAQ = [
-  {
-    q: "¿Es realmente gratis?",
-    a: "Sí. Las cuatro plantillas base, la vista previa y la exportación a PDF son gratuitas y sin marca de agua. Más adelante añadiremos plantillas premium opcionales.",
-  },
-  {
-    q: "¿Dónde se guardan mis datos?",
-    a: "En el almacenamiento local de tu navegador. No hay cuentas ni servidores: si borras los datos del navegador, se borra tu borrador.",
-  },
-  {
-    q: "¿Qué es la compatibilidad ATS?",
-    a: "Los ATS son los sistemas que filtran candidaturas antes de que las lea una persona. Suelen fallar con columnas, tablas y gráficos. GeneCV te avisa cuando tu elección de plantilla puede dar problemas.",
-  },
-  {
-    q: "¿Puedo usarlo para otro país?",
-    a: "Sí. GeneCV no está pensado para un solo mercado: eliges el formato al empezar y puedes cambiarlo en cualquier momento sin perder el contenido.",
-  },
-];
-
 export function Faq() {
   return (
     <section className="py-20">
@@ -264,7 +231,7 @@ export function Faq() {
         <SectionHeading eyebrow="Dudas" title="Preguntas frecuentes" />
 
         <RevealGroup className="mt-10 space-y-3">
-          {FAQ.map((item) => (
+          {homeFaq().map((item) => (
             <RevealItem key={item.q}>
               <details className="border-line bg-canvas group rounded-card border p-5 [&_summary::-webkit-details-marker]:hidden">
                 <summary className="font-display flex cursor-pointer items-center justify-between gap-4 font-semibold">

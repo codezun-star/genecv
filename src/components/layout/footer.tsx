@@ -41,7 +41,20 @@ export function Footer() {
           </p>
           <p>
             Tus datos se guardan solo en tu navegador. Sin registro, sin
-            servidores.
+            servidores.{" "}
+            {/*
+              El enlace a /llms.txt es lo que hace que ese archivo se
+              descubra: su ruta está convenida, pero un rastreador solo la
+              pide si sabe que existe, y robots.txt no tiene ningún campo
+              donde anunciarla.
+            */}
+            <a
+              href="/llms.txt"
+              className="hover:text-primary underline underline-offset-2 transition-colors duration-150"
+              title="Resumen del sitio en texto plano, para modelos de lenguaje"
+            >
+              llms.txt
+            </a>
           </p>
         </div>
       </Container>
