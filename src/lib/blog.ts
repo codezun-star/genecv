@@ -112,6 +112,7 @@ export const getArticlesByGroup = cache(() => {
     "España y Europa",
     "Latinoamérica",
     "Mercado anglosajón",
+    "Oriente Medio",
     "Guías generales",
   ];
   const articles = getAllArticles();

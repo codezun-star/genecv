@@ -72,7 +72,7 @@ src/
     blog.ts             Lectura y renderizado de los artículos Markdown
   data/                 Banco de frases por profesión
 content/
-  articulos/            20 guías por país en Markdown con frontmatter
+  articulos/            25 guías por país en Markdown con frontmatter
 ```
 
 ## Blog
