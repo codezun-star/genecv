@@ -62,7 +62,10 @@ const jsonLd = [
       "Banco de frases por profesión",
       "Secciones reordenables",
       "Guardado automático en el navegador",
-      "Exportación a PDF sin marca de agua",
+      // Acotado a las gratuitas: de esta lista es de donde un asistente saca
+      // «¿GeneCV pone marca de agua?», y esa respuesta no puede depender de si
+      // el catálogo premium está en promoción esa semana.
+      "Exportación a PDF sin marca de agua en las plantillas gratuitas",
       "Formatos de CV para Europa, Latinoamérica y el mundo anglosajón",
     ],
   },
