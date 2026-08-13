@@ -13,7 +13,7 @@ import {
   isAtsSafe,
   type TemplateMeta,
 } from "@/lib/cv/templates";
-import { FREE_LAUNCH_COPY, isFreeLaunch } from "@/lib/payments/mode";
+import { FREE_LAUNCH_COPY, PASS_COPY, isFreeLaunch } from "@/lib/payments/mode";
 import { breadcrumbJsonLd, buildMetadata, siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
@@ -187,7 +187,7 @@ export default function TemplatesPage() {
               compactas.{" "}
               {isFreeLaunch()
                 ? FREE_LAUNCH_COPY.landingLead
-                : "Puedes seleccionarlos en el editor y ver tu CV con ellos; lo que se paga es la descarga sin marca de agua, una vez por descarga."}
+                : `Puedes seleccionarlos en el editor y ver tu CV con ellos. ${PASS_COPY.summary}`}
             </p>
           </Reveal>
 

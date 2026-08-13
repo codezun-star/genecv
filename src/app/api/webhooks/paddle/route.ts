@@ -3,17 +3,16 @@ import { NextResponse } from "next/server";
 
 import { paddle } from "@/lib/payments/paddle-server";
 import { markRefunded, recordPurchase } from "@/lib/payments/purchases";
-import { templateIdForPrice } from "@/lib/payments/catalog";
+import { isPassPrice } from "@/lib/payments/pricing";
 
 /**
  * Webhook de Paddle.
  *
  * Sirve para auditoría y respaldo, NO para autorizar descargas. Si el usuario
- * cierra la pestaña antes de llamar a /api/generate-pdf, el pago queda
- * registrado igualmente y soporte puede localizarlo. La autorización real vive
- * en /api/generate-pdf, que consulta Paddle en el momento de la descarga en
- * lugar de esperar a que llegue este evento (que puede tardar y rompería el
- * flujo de una sola sesión).
+ * cierra la pestaña después de pagar, el pase queda registrado igualmente y
+ * soporte puede localizarlo. La autorización real vive en /api/generate-pdf,
+ * que consulta Paddle en el momento de la descarga en lugar de esperar a que
+ * llegue este evento (que puede tardar y rompería el flujo de una sola sesión).
  */
 
 export const runtime = "nodejs";
@@ -59,12 +58,12 @@ export async function POST(request: Request) {
         break;
       }
 
-      // Un reembolso invalida la compra: si aún no se descargó, ya no podrá.
+      // Un reembolso invalida el pase: si aún no se descargó, ya no podrá.
       case EventName.AdjustmentCreated: {
         const adjustment = event.data as { transactionId?: string; action?: string };
         if (adjustment.action === "refund" && adjustment.transactionId) {
           await markRefunded(adjustment.transactionId);
-          console.info("[paddle-webhook] compra marcada como reembolsada", {
+          console.info("[paddle-webhook] pase marcado como reembolsado", {
             transactionId: adjustment.transactionId,
           });
         }
@@ -94,31 +93,24 @@ interface TransactionEventData {
   customData?: Record<string, unknown> | null;
   items?: { price?: { id?: string | null } | null }[];
   customer?: { email?: string | null } | null;
-  details?: { totals?: unknown } | null;
 }
 
 async function handleTransactionCompleted(data: unknown) {
   const transaction = data as TransactionEventData;
 
-  // La plantilla se deduce del price_id realmente cobrado. `custom_data` lo
-  // fija el cliente al abrir el checkout, así que sirve como pista pero no
-  // como fuente de verdad.
-  const priceIds = (transaction.items ?? [])
-    .map((item) => item.price?.id)
-    .filter((id): id is string => Boolean(id));
+  // La misma cuenta de Paddle sirve a más de un producto, así que no toda
+  // transacción completada es un pase. Se filtra por el price_id realmente
+  // cobrado: sin esto, la compra de cualquier otro producto crearía una fila
+  // aquí y contaría como pase pagado.
+  const isPass = (transaction.items ?? []).some((item) =>
+    isPassPrice(item.price?.id),
+  );
 
-  const templateId =
-    priceIds.map(templateIdForPrice).find((id): id is string => Boolean(id)) ??
-    (typeof transaction.customData?.template_id === "string"
-      ? transaction.customData.template_id
-      : null);
-
-  if (!templateId) {
-    console.warn("[paddle-webhook] transacción sin plantilla identificable", {
+  if (!isPass) {
+    console.info("[paddle-webhook] transacción ajena al pase, ignorada", {
       transactionId: transaction.id,
-      priceIds,
     });
-    // 200: no es un fallo recuperable, reintentar no cambiaría nada.
+    // 200: no es un fallo, simplemente no es nuestra.
     return;
   }
 
@@ -129,14 +121,9 @@ async function handleTransactionCompleted(data: unknown) {
       : null) ??
     "desconocido@genecv.local";
 
-  await recordPurchase({
-    email,
-    templateId,
-    transactionId: transaction.id,
-  });
+  await recordPurchase({ email, transactionId: transaction.id });
 
-  console.info("[paddle-webhook] compra registrada", {
+  console.info("[paddle-webhook] pase registrado", {
     transactionId: transaction.id,
-    templateId,
   });
 }

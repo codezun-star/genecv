@@ -13,7 +13,12 @@ import {
   isAtsSafe,
   type TemplateMeta,
 } from "@/lib/cv/templates";
-import { FREE_LAUNCH_COPY, isFreeLaunch } from "@/lib/payments/mode";
+import {
+  FREE_LAUNCH_COPY,
+  PASS_COPY,
+  isFreeLaunch,
+  isPaidMode,
+} from "@/lib/payments/mode";
 import { cn } from "@/lib/utils";
 
 /** Accent options drawn from the brand palette plus a few neutral extras. */
@@ -29,7 +34,7 @@ const ACCENTS = [
 ];
 
 export function TemplateStep() {
-  const { cv, template, setTemplate, update } = useCv();
+  const { cv, template, passActive, setTemplate, update } = useCv();
 
   return (
     <div className="space-y-10">
@@ -43,6 +48,7 @@ export function TemplateStep() {
               key={option.id}
               option={option}
               selected={cv.templateId === option.id}
+              unlocked={passActive}
               onSelect={() => setTemplate(option.id)}
             />
           ))}
@@ -54,7 +60,9 @@ export function TemplateStep() {
         description={
           isFreeLaunch()
             ? FREE_LAUNCH_COPY.templateSectionDescription
-            : "Puedes seleccionarlas y ver tu CV con ese diseño. La descarga sin marca de agua se paga una vez, en el último paso: es esa descarga concreta, no un acceso permanente."
+            : passActive
+              ? `Las tienes desbloqueadas: pruébalas todas y quédate con la que mejor te siente. ${PASS_COPY.consumedOnDownload}`
+              : `Puedes seleccionarlas y ver tu CV con cada diseño. ${PASS_COPY.summary}`
         }
         action={
           <Link
@@ -71,6 +79,7 @@ export function TemplateStep() {
               key={option.id}
               option={option}
               selected={cv.templateId === option.id}
+              unlocked={passActive}
               onSelect={() => setTemplate(option.id)}
             />
           ))}
@@ -115,16 +124,20 @@ export function TemplateStep() {
 function TemplateCard({
   option,
   selected,
+  unlocked,
   onSelect,
 }: {
   option: TemplateMeta;
   selected: boolean;
+  /** Hay un pase activo: las premium dejan de llevar candado. */
+  unlocked: boolean;
   onSelect: () => void;
 }) {
   // El candado solo tiene sentido si la descarga está realmente bloqueada.
-  // Durante el lanzamiento gratuito se marca como premium, pero sin candado.
+  // Durante el lanzamiento gratuito se marca como premium pero sin candado, y
+  // con un pase comprado tampoco: ahí el candado sería mentir a quien ya pagó.
   const premium = option.isPremium;
-  const locked = premium && !isFreeLaunch();
+  const locked = premium && isPaidMode() && !unlocked;
 
   return (
     <button
@@ -189,6 +202,9 @@ function TemplateCard({
         {premium && <Badge tone="premium">Premium</Badge>}
         {premium && isFreeLaunch() && (
           <Badge tone="success">{FREE_LAUNCH_COPY.badge}</Badge>
+        )}
+        {premium && isPaidMode() && unlocked && (
+          <Badge tone="success">Desbloqueada</Badge>
         )}
       </div>
     </button>

@@ -1,10 +1,17 @@
 -- ---------------------------------------------------------------------------
--- GeneCV — compras de descarga puntual
+-- GeneCV — pases de descarga premium
 --
--- Modelo de negocio: no se vende acceso a una plantilla, se vende UNA descarga
--- concreta. Cada fila es un pago y da derecho exactamente a un PDF.
+-- Modelo de negocio: no se vende acceso a una plantilla concreta ni una
+-- suscripción. Se vende un PASE: un pago desbloquea las diecisiete plantillas
+-- premium, y la descarga del PDF lo consume. Para descargar otra vez, otro
+-- pase.
+--
+-- Cada fila es un pase. Nace sin plantilla —se compran todas a la vez— y se le
+-- anota cuál se descargó al consumirlo.
 --
 -- Ejecutar en el SQL Editor de Supabase.
+-- Si la base ya existe con el modelo anterior (un precio por plantilla), no
+-- ejecutes esto: usa `supabase/migracion-pase.sql`.
 -- ---------------------------------------------------------------------------
 
 create table if not exists public.pdf_purchases (
@@ -14,9 +21,11 @@ create table if not exists public.pdf_purchases (
   -- verificación, solo sirve para el recibo y para dar soporte.
   email text not null,
 
-  -- Plantilla premium por la que se pagó. Se compara contra el template_id que
-  -- pide /api/generate-pdf para que no se pague una barata y se descargue otra.
-  template_id text not null,
+  -- Plantilla con la que se acabó descargando. NULL mientras el pase esté sin
+  -- consumir, porque en el momento de pagar todavía no está decidida: ese es
+  -- justo el punto del modelo. Sirve para saber qué diseños se llevan de
+  -- verdad, no para autorizar nada.
+  template_id text,
 
   -- Identificador de la transacción en Paddle. UNIQUE: es lo que hace que el
   -- webhook sea idempotente (Paddle reintenta) y lo que ancla el consumo.
@@ -25,7 +34,7 @@ create table if not exists public.pdf_purchases (
   status text not null default 'completed'
     check (status in ('completed', 'refunded')),
 
-  -- Marca de consumo: una transacción pagada genera un único PDF.
+  -- Marca de consumo: un pase pagado genera un único PDF.
   pdf_generated boolean not null default false,
   pdf_generated_at timestamptz,
 
@@ -66,11 +75,14 @@ revoke all on public.pdf_purchases from anon, authenticated;
 -- Postgres serializa los UPDATE sobre la misma fila, así que no hace falta un
 -- lock explícito.
 --
+-- `p_template_id` es un dato que se guarda, no una condición: el pase vale
+-- para cualquier plantilla premium, así que no hay nada que emparejar.
+--
 -- Se define como función para que la condición viva junto al esquema y no
 -- pueda relajarse por accidente desde el código.
 -- ---------------------------------------------------------------------------
 
-create or replace function public.consume_pdf_purchase(
+create or replace function public.consume_premium_pass(
   p_transaction_id text,
   p_template_id text
 )
@@ -86,12 +98,12 @@ set search_path = public
 as $$
   update public.pdf_purchases
      set pdf_generated = true,
-         pdf_generated_at = now()
+         pdf_generated_at = now(),
+         template_id = p_template_id
    where paddle_transaction_id = p_transaction_id
-     and template_id = p_template_id
      and status = 'completed'
      and pdf_generated = false
   returning id, email, template_id, paddle_transaction_id;
 $$;
 
-revoke all on function public.consume_pdf_purchase(text, text) from public, anon, authenticated;
+revoke all on function public.consume_premium_pass(text, text) from public, anon, authenticated;

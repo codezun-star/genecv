@@ -9,8 +9,8 @@
  * - "free_launch": las plantillas premium se descargan gratis y sin marca de
  *   agua, con un aviso de que más adelante tendrán coste. No se abre el
  *   checkout, no se llama a /api/generate-pdf y no se contacta con Paddle.
- * - "paid": el flujo real — checkout de Paddle, verificación en servidor y
- *   descarga servida por /api/generate-pdf.
+ * - "paid": el flujo real — se compra un pase, el pase desbloquea las
+ *   diecisiete plantillas premium, y la descarga del PDF lo consume.
  *
  * OJO: las variables NEXT_PUBLIC_ se incrustan en el bundle en tiempo de
  * compilación. Cambiar el valor en Vercel NO surte efecto hasta que se vuelve
@@ -93,3 +93,38 @@ export function freeLaunchBody(): string {
 
   return `${FREE_LAUNCH_COPY.body} ${closing} Aprovecha mientras esté disponible sin cargo.`;
 }
+
+/**
+ * Textos del modo de cobro.
+ *
+ * El modelo cuesta una frase de explicar y es fácil de contar mal, así que la
+ * frase se escribe una vez aquí y la usan el editor, la galería y las páginas
+ * comerciales. Si el modelo cambia, cambia en un sitio.
+ *
+ * La regla al redactar: no prometer «acceso» ni «desbloqueo permanente». Lo que
+ * se compra desbloquea las diecisiete plantillas, pero se gasta al descargar.
+ * Decirlo antes del pago es la diferencia entre un cliente y una devolución.
+ */
+export const PASS_COPY = {
+  /** Nombre del producto, tal y como se le llama al usuario. */
+  name: "Pase de descarga premium",
+
+  /** Insignia corta para el estado desbloqueado. */
+  unlockedBadge: "Premium desbloqueado",
+
+  /** Resumen del modelo, en una frase. Es el texto que más se repite. */
+  summary:
+    "Un solo pago desbloquea las diecisiete plantillas premium: puedes " +
+    "probarlas todas con tu CV y cambiar de diseño las veces que quieras. El " +
+    "pase se consume al descargar el PDF.",
+
+  /** La advertencia, dicha sin rodeos. Va siempre antes de pagar. */
+  consumedOnDownload:
+    "Al descargar, el pase se consume y las plantillas premium vuelven a " +
+    "bloquearse. Una segunda descarga requiere un pago nuevo.",
+
+  /** Confirmación tras una descarga correcta. */
+  afterDownload:
+    "Tu PDF se ha descargado sin marca de agua. El pase ya se ha consumido, " +
+    "así que las plantillas premium vuelven a estar bloqueadas.",
+} as const;

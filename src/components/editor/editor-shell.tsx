@@ -17,6 +17,8 @@ import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { buildFileName, downloadCvPdf } from "@/lib/cv/pdf/export";
 import { buildCvView } from "@/lib/cv/view";
+import { DownloadError, downloadPaidPdf } from "@/lib/payments/checkout-client";
+import { isPaidMode } from "@/lib/payments/mode";
 import { cn } from "@/lib/utils";
 
 // The template is picked up front, right after the market format: seeing the
@@ -32,7 +34,18 @@ const STEPS = [
 ] as const;
 
 export function EditorShell() {
-  const { cv, hydrated, resumed, saveState, locked, reset } = useCv();
+  const {
+    cv,
+    hydrated,
+    resumed,
+    saveState,
+    locked,
+    isPremiumTemplate,
+    pass,
+    consumePass,
+    clearPass,
+    reset,
+  } = useCv();
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
   const [showPreviewMobile, setShowPreviewMobile] = useState(false);
@@ -51,19 +64,60 @@ export function EditorShell() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  /**
+   * El único botón de descarga, para los dos caminos.
+   *
+   * Con una plantilla premium y los cobros activos, el PDF lo sirve el servidor
+   * tras verificar el pase contra Paddle y consumirlo; con cualquier otra
+   * combinación se genera aquí mismo, en el navegador, gratis.
+   *
+   * Con pase, el servidor es quien decide: aquí solo se refleja lo que ya ha
+   * pasado allí. Por eso el pase local se borra *después* de que la descarga
+   * haya ido bien, y no antes.
+   */
   async function handleExport() {
-    // La descarga premium no pasa por aquí: la sirve el servidor tras
-    // verificar el pago (ver PremiumCheckout).
+    // Premium sin pase: la compra la lleva el bloque del paso de revisión.
     if (locked) return;
+
+    const needsPass = isPremiumTemplate && isPaidMode();
+    if (needsPass && !pass) return;
 
     setExporting(true);
     setExportError(null);
+
     try {
-      await downloadCvPdf(cv);
-    } catch {
-      setExportError(
-        "No se pudo generar el PDF. Recarga la página e inténtalo de nuevo.",
-      );
+      if (needsPass && pass) {
+        await downloadPaidPdf({
+          transactionId: pass.transactionId,
+          templateId: cv.templateId,
+          cv,
+        });
+
+        // Consumido en el servidor: se refleja aquí y vuelve el bloqueo.
+        consumePass();
+      } else {
+        await downloadCvPdf(cv);
+      }
+    } catch (error) {
+      if (error instanceof DownloadError) {
+        setExportError(error.message);
+
+        // El pase ya no existe o nunca valió: quitarlo evita dejar al usuario
+        // pulsando un botón que va a fallar siempre. Los demás errores —un
+        // fallo de render, por ejemplo— lo dejan intacto, porque el servidor lo
+        // ha devuelto y el reintento debe ser gratis.
+        if (
+          error.code === "already_used" ||
+          error.code === "not_found" ||
+          error.code === "price_mismatch"
+        ) {
+          clearPass();
+        }
+      } else {
+        setExportError(
+          "No se pudo generar el PDF. Recarga la página e inténtalo de nuevo.",
+        );
+      }
     } finally {
       setExporting(false);
     }
@@ -148,12 +202,22 @@ export function EditorShell() {
             <div className="flex flex-wrap items-center gap-3">
               <SaveIndicator state={saveState} />
               {isLast ? (
-                // Con una plantilla premium la descarga la lleva el bloque de
-                // compra del paso de revisión, no este botón.
+                // Con una premium sin pase la compra la lleva el bloque del
+                // paso de revisión, no este botón.
                 !locked && (
-                  <Button onClick={handleExport} disabled={exporting}>
-                    {exporting ? "Generando PDF…" : "Descargar PDF"}
-                  </Button>
+                  <div className="flex flex-wrap items-center gap-3">
+                    {isPremiumTemplate && isPaidMode() && (
+                      // El botón está al final del formulario, lejos del bloque
+                      // que explica el modelo. Nadie debería gastar el pase sin
+                      // tener el aviso a la vista.
+                      <span className="text-ink-muted text-xs">
+                        Usará tu pase
+                      </span>
+                    )}
+                    <Button onClick={handleExport} disabled={exporting}>
+                      {exporting ? "Generando PDF…" : "Descargar PDF"}
+                    </Button>
+                  </div>
                 )
               ) : (
                 <Button onClick={() => goTo(step + 1)}>Siguiente →</Button>

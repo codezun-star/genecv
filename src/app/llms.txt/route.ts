@@ -41,7 +41,8 @@ export function GET(): Response {
       ]
     : [
         "- Coste: las plantillas gratuitas se descargan sin coste y sin marca de agua.",
-        "  Las premium se prueban gratis y se paga una única vez por descarga.",
+        "  Las premium se prueban gratis; un pago único desbloquea todas las premium",
+        "  y da derecho a una descarga, que consume el pase.",
         "- No hay suscripción ni hace falta crear una cuenta.",
       ];
 

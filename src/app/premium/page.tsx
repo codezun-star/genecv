@@ -7,31 +7,31 @@ import { buttonStyles } from "@/components/ui/button";
 import { Card, CardText, CardTitle } from "@/components/ui/card";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/reveal";
 import { PREMIUM_TEMPLATES } from "@/lib/cv/templates";
-import { FREE_LAUNCH_COPY, isFreeLaunch } from "@/lib/payments/mode";
+import { FREE_LAUNCH_COPY, PASS_COPY, isFreeLaunch } from "@/lib/payments/mode";
 import { buildMetadata } from "@/lib/site";
 
 export const metadata = buildMetadata({
   title: isFreeLaunch()
     ? "Plantillas premium — gratis durante el lanzamiento"
-    : "Plantillas premium — pruébalas gratis, paga solo la descarga",
+    : "Plantillas premium — un pago las desbloquea todas",
   description: isFreeLaunch()
     ? "Diecisiete diseños premium de CV: barras laterales, líneas de tiempo y retículas editoriales. Durante el lanzamiento se descargan gratis y sin marca de agua."
-    : "Diecisiete diseños premium de CV: barras laterales, líneas de tiempo y retículas editoriales. Pruébalos gratis con tu contenido y paga solo cuando descargues el PDF sin marca de agua.",
+    : "Diecisiete diseños premium de CV: barras laterales, líneas de tiempo y retículas editoriales. Un solo pago las desbloquea todas para que compares; el pase se consume al descargar el PDF.",
   path: "/premium",
 });
 
 const PAID_STEPS = [
   {
-    title: "La pruebas gratis",
-    text: "Selecciónala en el editor y mira tu CV real con ese diseño, con marca de agua.",
+    title: "Las pruebas gratis",
+    text: "Elige cualquiera en el editor y mira tu CV real con ese diseño, con marca de agua.",
   },
   {
-    title: "Pagas esa descarga",
-    text: "Un pago único con tarjeta a través de Paddle. Sin suscripción y sin crear ninguna cuenta.",
+    title: "Desbloqueas las diecisiete",
+    text: "Un pago único a través de Paddle, sin suscripción ni cuenta. Las diecisiete quedan disponibles para que compares con calma.",
   },
   {
-    title: "Descargas al instante",
-    text: "El PDF sin marca de agua se genera y descarga en la misma sesión, sin esperas.",
+    title: "Descargas la que elijas",
+    text: "El PDF sin marca de agua se genera al momento. Ahí se consume el pase: descargar otra vez requiere pagar de nuevo.",
   },
 ];
 
@@ -72,12 +72,12 @@ export default function PremiumPage() {
           ) : (
             <>
               Puedes probarlos ahora mismo en el editor y ver tu CV con
-              cualquiera de ellos. Lo que se paga es{" "}
+              cualquiera de ellos. No se compra un diseño suelto:{" "}
               <strong className="text-ink font-semibold">
-                una descarga concreta
-              </strong>
-              , no un acceso permanente: si más adelante quieres otro PDF, se
-              paga de nuevo.
+                un solo pago los desbloquea los diecisiete
+              </strong>{" "}
+              para que compares sin prisa. Ese pase se consume al descargar el
+              PDF, así que un segundo PDF requiere pagar de nuevo.
             </>
           )}
         </p>
@@ -95,12 +95,12 @@ export default function PremiumPage() {
               <p className="font-display text-primary font-semibold">
                 {isFreeLaunch()
                   ? "Ahora mismo son gratis"
-                  : "El pago ocurre dentro del editor"}
+                  : PASS_COPY.name}
               </p>
               <p className="text-ink-soft mt-1 text-sm">
                 {isFreeLaunch()
                   ? "Monta tu CV, elige un diseño premium y descárgalo sin coste ni marca de agua."
-                  : "Monta tu CV, elige un diseño premium y paga en el último paso. El PDF se descarga en esa misma sesión."}
+                  : "Monta tu CV y paga en el último paso: se desbloquean las diecisiete y descargas la que prefieras en esa misma sesión."}
               </p>
             </div>
             <Link href="/crear" className={buttonStyles()}>
