@@ -47,6 +47,45 @@ export function paddle(): Paddle {
  */
 const PAID_STATUSES = new Set(["paid", "completed"]);
 
+/**
+ * El correo del comprador, cueste lo que cueste.
+ *
+ * Paddle lo entrega en dos formas distintas según por dónde se pregunte, y
+ * ninguna es fiable por sí sola:
+ *
+ * - `transactions.get(id, { include: ["customer"] })` debería traerlo incrustado,
+ *   pero el objeto `customer` puede llegar vacío justo después del checkout,
+ *   que es exactamente cuando lo pedimos.
+ * - El evento `transaction.completed` del webhook **nunca** lo trae: el payload
+ *   lleva `customer_id` y punto.
+ *
+ * Con `transaction.customer?.email` a secas las dos vías fallaban a la vez y la
+ * fila acababa con el correo de relleno, que es lo que se veía en la tabla. Así
+ * que cuando no viene incrustado se pide por su id, que sí está siempre.
+ *
+ * Devuelve null solo si Paddle no da ninguna de las dos cosas.
+ */
+export async function resolvePurchaseEmail(input: {
+  embedded?: string | null;
+  customerId?: string | null;
+}): Promise<string | null> {
+  if (input.embedded) return input.embedded;
+  if (!input.customerId) return null;
+
+  try {
+    const customer = await paddle().customers.get(input.customerId);
+    return customer.email ?? null;
+  } catch (error) {
+    // No es motivo para tumbar una descarga ya pagada: el correo es para el
+    // recibo y para soporte, no para autorizar nada.
+    console.warn("[paddle] no se pudo leer el correo del cliente", {
+      customerId: input.customerId,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return null;
+  }
+}
+
 export type VerificationFailure =
   | "not_configured"
   | "not_found"
@@ -164,7 +203,10 @@ export async function verifyPassTransaction(
   return {
     ok: true,
     transactionId: transaction.id,
-    email: transaction.customer?.email ?? null,
+    email: await resolvePurchaseEmail({
+      embedded: transaction.customer?.email,
+      customerId: transaction.customerId,
+    }),
     status: transaction.status,
   };
 }

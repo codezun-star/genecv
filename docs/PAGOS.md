@@ -24,8 +24,11 @@ Por qué así y no un precio por plantilla:
 - **El valor está en el PDF, no en el diseño.** Lo que la persona quiere es su
   currículum descargado. Cobrar por eso es cobrar por lo que se lleva.
 
-No hay cuentas ni contraseñas. El email se pide solo porque Paddle lo necesita
-para la factura.
+No hay cuentas, ni contraseñas, ni formulario previo: se pulsa el botón y se
+paga. El correo lo pide el overlay de Paddle, que es quien emite la factura;
+nosotros no tenemos campo de correo. El servidor lo recupera después de la
+transacción para poder dar soporte — ver `resolvePurchaseEmail`, que existe
+porque Paddle no lo entrega igual por las dos vías por las que se pregunta.
 
 ### La parte que hay que decir antes de cobrar
 
@@ -269,8 +272,8 @@ CVC: 100
 ```
 
 Flujo esperado: editor → paso «Plantilla» → elegir una premium (con candado) →
-paso «Revisión y descarga» → escribir email → *Pagar y desbloquear las
-premium* → overlay → pago → **los candados desaparecen en las diecisiete** →
+paso «Revisión y descarga» → *Pagar $9,99 y desbloquear las premium* →
+overlay (ahí Paddle pide el correo) → pago → **los candados desaparecen en las diecisiete** →
 volver al paso de plantilla y cambiar de diseño libremente, sin marca de agua →
 *Descargar PDF* → el PDF llega sin marca de agua → **los candados vuelven** y
 aparece el aviso de que el pase se consumió.
@@ -365,6 +368,11 @@ from pdf_purchases
 order by created_at desc
 limit 5;
 ```
+
+`email` debe traer el correo real del comprador. Si sale
+`desconocido@genecv.local`, Paddle no dio ni el objeto `customer` ni el
+`customer_id`: hay un `console.error` en el webhook que lo delata, y conviene
+mirarlo porque esa fila deja de servir para dar soporte.
 
 Debe existir una fila con `status = 'completed'`. `template_id` estará en
 `NULL` hasta que se descargue, y entonces guardará la plantilla elegida — que

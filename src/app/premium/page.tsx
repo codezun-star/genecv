@@ -53,9 +53,10 @@ export default function PremiumPage() {
           así que un segundo PDF requiere pagar de nuevo.
         </p>
         <p className="text-ink-soft mt-3 leading-relaxed">
-          No hay cuentas ni contraseñas: el correo se pide solo porque la
-          pasarela lo necesita para emitir la factura. Las tres plantillas
-          gratuitas seguirán siendo gratuitas y sin marca de agua.
+          No hay cuentas, ni contraseñas, ni formulario: pulsas y pagas. El
+          correo te lo pide Paddle en la propia ventana de pago, solo para
+          emitir la factura. Las tres plantillas gratuitas seguirán siendo
+          gratuitas y sin marca de agua.
         </p>
       </Reveal>
 

@@ -72,10 +72,13 @@ export async function fetchPassPrice(): Promise<string | null> {
 /**
  * Abre el overlay y resuelve con el transaction_id cuando el pago se completa.
  * Resuelve `null` si la persona cierra el overlay sin pagar.
+ *
+ * No se le pasa correo. El overlay de Paddle lo pide él mismo —lo necesita para
+ * la factura y para el recibo—, así que pedirlo antes en nuestro formulario era
+ * hacer teclear dos veces lo mismo para acabar usando el de Paddle igualmente.
+ * El servidor lo recupera de la transacción cuando hace falta.
  */
-export function openPassCheckout(options: {
-  email: string;
-}): Promise<string | null> {
+export function openPassCheckout(): Promise<string | null> {
   const priceId = passPriceId();
 
   if (!priceId) {
@@ -136,7 +139,6 @@ export function openPassCheckout(options: {
 
         paddle.Checkout.open({
           items: [{ priceId, quantity: 1 }],
-          customer: { email: options.email },
           settings: {
             displayMode: "overlay",
             theme: "light",

@@ -1,7 +1,7 @@
 import { EventName } from "@paddle/paddle-node-sdk";
 import { NextResponse } from "next/server";
 
-import { paddle } from "@/lib/payments/paddle-server";
+import { paddle, resolvePurchaseEmail } from "@/lib/payments/paddle-server";
 import { markRefunded, recordPurchase } from "@/lib/payments/purchases";
 import { isPassPrice } from "@/lib/payments/pricing";
 
@@ -92,6 +92,8 @@ interface TransactionEventData {
   id: string;
   customData?: Record<string, unknown> | null;
   items?: { price?: { id?: string | null } | null }[];
+  // El evento trae el id del cliente, no el cliente. Ver `resolvePurchaseEmail`.
+  customerId?: string | null;
   customer?: { email?: string | null } | null;
 }
 
@@ -114,14 +116,25 @@ async function handleTransactionCompleted(data: unknown) {
     return;
   }
 
-  const email =
-    transaction.customer?.email ??
-    (typeof transaction.customData?.email === "string"
-      ? transaction.customData.email
-      : null) ??
-    "desconocido@genecv.local";
+  const email = await resolvePurchaseEmail({
+    embedded: transaction.customer?.email,
+    customerId: transaction.customerId,
+  });
 
-  await recordPurchase({ email, transactionId: transaction.id });
+  if (!email) {
+    // La fila se crea igual —es lo que permite auditar el cobro— pero sin
+    // correo no hay a quién escribir, así que se registra como error y no como
+    // aviso: significa que Paddle no dio ni el objeto ni el id del cliente.
+    console.error("[paddle-webhook] compra sin correo resoluble", {
+      transactionId: transaction.id,
+      customerId: transaction.customerId,
+    });
+  }
+
+  await recordPurchase({
+    email: email ?? "desconocido@genecv.local",
+    transactionId: transaction.id,
+  });
 
   console.info("[paddle-webhook] pase registrado", {
     transactionId: transaction.id,

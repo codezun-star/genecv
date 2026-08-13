@@ -25,18 +25,16 @@ import {
  * Por eso este bloque insiste tanto en el consumo antes de cobrar. El modelo es
  * legítimo pero fácil de malinterpretar como «acceso premium», y descubrir el
  * re-bloqueo *después* de pagar es exactamente como se ganan las devoluciones.
- * No hay cuenta ni sesión: el email se pide solo porque Paddle lo necesita para
- * la factura.
+ *
+ * No hay cuenta, ni sesión, ni formulario: se pulsa el botón y se paga. El
+ * correo lo pide el propio overlay de Paddle, que es quien emite la factura.
  */
 
 type Phase = "idle" | "checkout" | "error";
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
 export function PremiumUnlock({ template }: { template: TemplateMeta }) {
   const { passActive, passChecking, justConsumed, activatePass } = useCv();
 
-  const [email, setEmail] = useState("");
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string | null>(null);
   // Arranca con la etiqueta del repositorio para que el importe se vea desde
@@ -62,13 +60,13 @@ export function PremiumUnlock({ template }: { template: TemplateMeta }) {
   }, [configured, passActive]);
 
   async function handleBuy() {
-    if (!EMAIL_PATTERN.test(email.trim()) || phase === "checkout") return;
+    if (phase === "checkout") return;
 
     setError(null);
     setPhase("checkout");
 
     try {
-      const transactionId = await openPassCheckout({ email: email.trim() });
+      const transactionId = await openPassCheckout();
 
       // El overlay se cerró sin pagar: no es un error, se vuelve al inicio.
       if (!transactionId) {
@@ -177,34 +175,15 @@ export function PremiumUnlock({ template }: { template: TemplateMeta }) {
         </p>
 
         <div className="mt-4">
-          <label htmlFor="checkout-email" className="field-label">
-            Correo para la factura
-          </label>
-          <input
-            id="checkout-email"
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            value={email}
-            disabled={phase === "checkout"}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="tu@email.com"
-            className="field max-w-sm"
-          />
-          <p className="text-ink-muted mt-1 text-xs">
-            Solo se usa para el recibo de Paddle. No creamos ninguna cuenta.
-          </p>
-        </div>
-
-        <div className="mt-4">
-          <Button
-            onClick={handleBuy}
-            disabled={!EMAIL_PATTERN.test(email.trim()) || phase === "checkout"}
-          >
+          <Button onClick={handleBuy} disabled={phase === "checkout"}>
             {phase === "checkout"
               ? "Abriendo el pago…"
               : `Pagar ${price} y desbloquear las premium`}
           </Button>
+          <p className="text-ink-muted mt-2 text-xs">
+            El pago lo procesa Paddle, que te pedirá el correo para la factura.
+            No creamos ninguna cuenta.
+          </p>
         </div>
 
         <AnimatePresence>
