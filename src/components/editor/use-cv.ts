@@ -15,7 +15,6 @@ import {
   updatePersonal,
 } from "@/lib/cv/store";
 import { getTemplate } from "@/lib/cv/templates";
-import { isPaidMode } from "@/lib/payments/mode";
 
 /**
  * Subscribes a component to the draft. The mutators are module-level
@@ -51,12 +50,11 @@ export function useCv() {
     /**
      * Si la descarga está bloqueada.
      *
-     * En modo "free_launch" nunca lo está: las premium se descargan gratis por
-     * el mismo camino que las gratuitas. En "paid" lo está mientras no haya un
-     * pase activo — y vuelve a estarlo en cuanto el pase se consume al
-     * descargar, que es el modelo entero en una línea.
+     * Lo está mientras el diseño sea premium y no haya pase activo — y vuelve a
+     * estarlo en cuanto el pase se consume al descargar, que es el modelo
+     * entero en una línea.
      */
-    locked: template.isPremium && isPaidMode() && !passActive,
+    locked: template.isPremium && !passActive,
     pass,
     passActive,
     passChecking,

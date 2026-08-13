@@ -34,69 +34,54 @@ El re-bloqueo tras la descarga es legítimo pero es **fácil de leer como
 devoluciones y las reseñas malas. Por eso el aviso aparece tres veces antes del
 pago —en el bloque de compra, en el paso de plantilla y junto al botón de
 descarga— y el texto vive en un solo sitio, `PASS_COPY` en
-`src/lib/payments/mode.ts`, para que no pueda decirse distinto en cada pantalla.
+`src/lib/payments/copy.ts`, para que no pueda decirse distinto en cada pantalla.
 
 Si alguna vez se toca ese texto, la regla es: no prometer «acceso» ni
 «desbloqueo permanente».
 
-## Modo de monetización (`NEXT_PUBLIC_PREMIUM_MODE`)
+## Estado: siempre de pago
 
-Toda la integración descrita en este documento sigue en el repositorio y
-funcionando. Un único flag decide si se ejecuta.
+Las plantillas premium se cobran, punto. Hubo un flag
+(`NEXT_PUBLIC_PREMIUM_MODE`) que permitía regalarlas durante el lanzamiento;
+ya no existe, y con él se fueron los textos de «gratis por lanzamiento». Las
+tres gratuitas siguen siendo gratuitas y se descargan en el navegador sin
+tocar ninguna API.
 
-| Valor | Qué pasa |
-| --- | --- |
-| `free_launch` | Las plantillas premium se descargan **gratis y sin marca de agua**, con un aviso de que después tendrán coste. No se abre el checkout, no se llama a `/api/generate-pdf` y no se contacta con Paddle. |
-| `paid` | El flujo real: pase de Paddle, verificación en servidor y descarga servida por `/api/generate-pdf`. |
+**Lo que esto implica: sin `NEXT_PUBLIC_PADDLE_PRICE_ID_PASS` configurado, las
+premium no se pueden comprar.** El editor lo dice —«todavía no están a la
+venta»— en lugar de abrir un checkout roto, pero de cara al negocio son
+diecisiete plantillas que nadie puede llevarse. Es el estado correcto mientras
+se completa el alta en Paddle, y es un estado que conviene no alargar.
 
-**Estado actual: `free_launch`.** El código del modelo de pase ya está
-completo; lo que falta para cobrar son los trámites de Paddle de la sección
-«Cómo activar los cobros».
-
-Ante una variable ausente o mal escrita el valor cae en `free_launch`: el
-fallo seguro es no cobrar, nunca cobrar por error.
-
-### Qué cambia en la interfaz
-
-En `free_launch`:
-
-- La descarga de una plantilla premium usa el **mismo camino que las
-  gratuitas** (`downloadCvPdf`, en el navegador). No pasa por el endpoint
-  verificado porque no hay pago que verificar.
-- Desaparecen la marca de agua de la vista previa, el candado de las tarjetas
-  y el desenfoque de la galería: mostrarlos cuando la descarga es libre sería
-  engañar al usuario.
-- Aparece el aviso de lanzamiento justo encima del botón de descarga.
-- Los textos de `/premium`, `/plantillas` y `/terminos` cambian solos: en modo
-  gratuito no pueden seguir diciendo que se cobra.
+Si algún día hiciera falta volver a regalarlas, es un `git revert` del commit
+que quitó el flag; no hay que reconstruir nada.
 
 ### Dónde se editan los textos
 
-Todos en `src/lib/payments/mode.ts`: `FREE_LAUNCH_COPY` para el lanzamiento
-gratuito y `PASS_COPY` para el modo de cobro.
+Todos en `src/lib/payments/copy.ts`, en `PASS_COPY`.
 
 El precio **no** está ahí a propósito: se le pregunta a Paddle con
 `PricePreview` (`fetchPassPrice`), así sale en la moneda de quien mira y no
 puede desfasarse del que se cobra en el overlay.
 
-### Cómo activar los cobros
+### Qué falta para cobrar de verdad
 
-1. Crear el producto y el precio del pase:
+1. Ejecutar `supabase/migracion-pase.sql` si la base ya existía. **Antes que
+   nada**: sin la función `consume_premium_pass`, se cobra y la descarga falla.
+2. Crear el producto y el precio del pase:
    `PADDLE_API_KEY=pdl_sdbx_... npm run paddle:seed -- --amount=499 --currency=USD`
-2. Copiar el `NEXT_PUBLIC_PADDLE_PRICE_ID_PASS=pri_...` que imprime, a
+3. Copiar el `NEXT_PUBLIC_PADDLE_PRICE_ID_PASS=pri_...` que imprime, a
    `.env.local` y a Vercel.
-3. Poner `NEXT_PUBLIC_PREMIUM_MODE=paid`.
 4. **Redesplegar.** Las variables `NEXT_PUBLIC_` se incrustan en el bundle en
    tiempo de compilación: cambiarlas en el panel de Vercel no surte efecto
    hasta que hay un build nuevo.
-5. Comprobar con un pago de sandbox que el flujo completo sigue funcionando
-   (ver «Pruebas en Sandbox»).
+5. Comprobar con un pago de sandbox que el flujo completo funciona (ver
+   «Pruebas en Sandbox»).
 
-Lo que queda son decisiones de negocio y trámites en Paddle:
+Y los trámites que no son código:
 
 - **Confirmar el precio final.** Se cambia en el dashboard de Paddle y la
-  interfaz lo recoge sola, sin desplegar: el importe no está escrito en el
-  código.
+  interfaz lo recoge sola, sin desplegar: el importe no está en el código.
 - **Revisar la categoría fiscal** del producto. Debe ser «Standard digital
   goods» (`standard`), no «SaaS»: determina qué impuesto cobra Paddle en cada
   país.
@@ -106,16 +91,7 @@ Lo que queda son decisiones de negocio y trámites en Paddle:
   `NEXT_PUBLIC_PADDLE_ENV=production`, claves de producción, nuevo destino de
   webhook con su propio secreto y dominio aprobado en *Checkout → Website
   approval*.
-- **Revisar `/terminos`**: el texto de pago vuelve solo al cambiar el flag,
-  pero conviene añadir la política de reembolsos concreta.
-
-### Lo que el flag NO toca
-
-Nada del backend: `supabase/schema.sql`, `/api/webhooks/paddle`,
-`/api/generate-pdf` y `/api/premium-pass` quedan igual. El endpoint sigue
-activo y sigue exigiendo un pago verificado, así que aunque alguien lo llame
-directamente durante el lanzamiento gratuito no obtiene nada sin una
-transacción real.
+- **Revisar `/terminos`**: conviene añadir la política de reembolsos concreta.
 
 ## Dónde vive cada cosa
 
@@ -123,7 +99,8 @@ transacción real.
 | --- | --- |
 | `supabase/schema.sql` | Tabla `pdf_purchases`, RLS y consumo atómico del pase |
 | `supabase/migracion-pase.sql` | Migración desde el modelo anterior (precio por plantilla) |
-| `src/lib/payments/mode.ts` | **El flag y todos los textos** |
+| `src/components/editor/use-premium-pass.ts` | El pase, visto desde React |
+| `src/lib/payments/copy.ts` | **Todos los textos del modelo** |
 | `src/lib/payments/pricing.ts` | El price_id del pase y contra qué se contrasta |
 | `src/lib/payments/paddle-server.ts` | Verificación del pago contra la API de Paddle |
 | `src/lib/payments/purchases.ts` | Acceso a Supabase con service role |

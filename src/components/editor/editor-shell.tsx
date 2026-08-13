@@ -18,7 +18,6 @@ import { Button } from "@/components/ui/button";
 import { buildFileName, downloadCvPdf } from "@/lib/cv/pdf/export";
 import { buildCvView } from "@/lib/cv/view";
 import { DownloadError, downloadPaidPdf } from "@/lib/payments/checkout-client";
-import { isPaidMode } from "@/lib/payments/mode";
 import { cn } from "@/lib/utils";
 
 // The template is picked up front, right after the market format: seeing the
@@ -67,9 +66,9 @@ export function EditorShell() {
   /**
    * El único botón de descarga, para los dos caminos.
    *
-   * Con una plantilla premium y los cobros activos, el PDF lo sirve el servidor
-   * tras verificar el pase contra Paddle y consumirlo; con cualquier otra
-   * combinación se genera aquí mismo, en el navegador, gratis.
+   * Con una plantilla premium el PDF lo sirve el servidor, tras verificar el
+   * pase contra Paddle y consumirlo. Con una gratuita se genera aquí mismo, en
+   * el navegador, sin pasar por ninguna API.
    *
    * Con pase, el servidor es quien decide: aquí solo se refleja lo que ya ha
    * pasado allí. Por eso el pase local se borra *después* de que la descarga
@@ -79,14 +78,13 @@ export function EditorShell() {
     // Premium sin pase: la compra la lleva el bloque del paso de revisión.
     if (locked) return;
 
-    const needsPass = isPremiumTemplate && isPaidMode();
-    if (needsPass && !pass) return;
+    if (isPremiumTemplate && !pass) return;
 
     setExporting(true);
     setExportError(null);
 
     try {
-      if (needsPass && pass) {
+      if (isPremiumTemplate && pass) {
         await downloadPaidPdf({
           transactionId: pass.transactionId,
           templateId: cv.templateId,
@@ -206,7 +204,7 @@ export function EditorShell() {
                 // paso de revisión, no este botón.
                 !locked && (
                   <div className="flex flex-wrap items-center gap-3">
-                    {isPremiumTemplate && isPaidMode() && (
+                    {isPremiumTemplate && (
                       // El botón está al final del formulario, lejos del bloque
                       // que explica el modelo. Nadie debería gastar el pase sin
                       // tener el aviso a la vista.

@@ -25,6 +25,30 @@
  *   --dry-run           Muestra lo que crearía, sin llamar a la API de escritura.
  */
 
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+
+/**
+ * El precio declarado en `src/lib/payments/copy.ts`.
+ *
+ * Se lee del repositorio en lugar de repetirlo aquí para que `--check` pueda
+ * comparar lo que la web anuncia con lo que Paddle cobra de verdad. Una web que
+ * dice 9,99 mientras el overlay cobra 12,99 es una devolución seguida de una
+ * reseña mala, y es un fallo que nadie nota hasta que lo nota un cliente.
+ */
+function declaredPrice() {
+  const source = readFileSync(join(ROOT, "src/lib/payments/copy.ts"), "utf8");
+  const amount = /amountMinorUnits:\s*(\d+)/.exec(source)?.[1];
+  const currency = /currency:\s*"([A-Z]+)"/.exec(source)?.[1];
+  const label = /label:\s*"([^"]+)"/.exec(source)?.[1];
+  return { amount, currency, label };
+}
+
+const DECLARED = declaredPrice();
+
 // ---------------------------------------------------------------- argumentos
 
 const args = Object.fromEntries(
@@ -34,8 +58,8 @@ const args = Object.fromEntries(
   }),
 );
 
-const AMOUNT = String(args.amount ?? "499");
-const CURRENCY = String(args.currency ?? "USD").toUpperCase();
+const AMOUNT = String(args.amount ?? DECLARED.amount ?? "999");
+const CURRENCY = String(args.currency ?? DECLARED.currency ?? "USD").toUpperCase();
 const TAX_CATEGORY = String(args.tax ?? "standard");
 const ENV = String(args.env ?? process.env.NEXT_PUBLIC_PADDLE_ENV ?? "sandbox");
 const CHECK_ONLY = Boolean(args.check);
@@ -110,7 +134,8 @@ async function listAll(path) {
 // ---------------------------------------------------------------------- main
 
 async function main() {
-  console.log(`Entorno: ${ENV} (${API})\n`);
+  console.log(`Entorno: ${ENV} (${API})`);
+  console.log(`Precio anunciado en la web: ${DECLARED.label} (${DECLARED.amount} ${DECLARED.currency})\n`);
 
   const products = await listAll("/products");
 
@@ -178,7 +203,23 @@ async function main() {
 
   console.log();
 
+  // Lo que Paddle cobra de verdad, frente a lo que la web anuncia.
+  const realAmount = price.unit_price?.amount;
+  const realCurrency = price.unit_price?.currency_code;
+  const priceMatches =
+    realAmount === DECLARED.amount && realCurrency === DECLARED.currency;
+
+  if (!priceMatches) {
+    console.error(
+      `AVISO: Paddle cobra ${realAmount} ${realCurrency} pero la web anuncia ` +
+        `${DECLARED.label} (${DECLARED.amount} ${DECLARED.currency}).\n` +
+        "  Ajusta PASS_PRICE en src/lib/payments/copy.ts o el precio en Paddle.\n",
+    );
+  }
+
   if (CHECK_ONLY || DRY_RUN) {
+    if (!priceMatches) process.exit(1);
+
     if (configured && configured !== price.id) {
       console.error(
         `NEXT_PUBLIC_PADDLE_PRICE_ID_PASS apunta a ${configured}, pero en ${ENV} ` +

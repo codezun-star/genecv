@@ -7,7 +7,7 @@ import { useCv } from "@/components/editor/use-cv";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { TemplateMeta } from "@/lib/cv/templates";
-import { PASS_COPY } from "@/lib/payments/mode";
+import { PASS_COPY, PASS_PRICE } from "@/lib/payments/copy";
 import { isCheckoutConfigured } from "@/lib/payments/pricing";
 import {
   CheckoutError,
@@ -39,7 +39,10 @@ export function PremiumUnlock({ template }: { template: TemplateMeta }) {
   const [email, setEmail] = useState("");
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string | null>(null);
-  const [price, setPrice] = useState<string | null>(null);
+  // Arranca con la etiqueta del repositorio para que el importe se vea desde
+  // el primer fotograma; si Paddle contesta, su cifra la sustituye —es la que
+  // se va a cobrar y viene en la moneda de quien mira.
+  const [price, setPrice] = useState<string>(PASS_PRICE.label);
 
   const configured = isCheckoutConfigured();
 
@@ -50,7 +53,7 @@ export function PremiumUnlock({ template }: { template: TemplateMeta }) {
 
     let cancelled = false;
     void fetchPassPrice().then((value) => {
-      if (!cancelled) setPrice(value);
+      if (!cancelled && value) setPrice(value);
     });
 
     return () => {
@@ -160,11 +163,9 @@ export function PremiumUnlock({ template }: { template: TemplateMeta }) {
             {PASS_COPY.name}
           </p>
           <Badge tone="premium">Premium</Badge>
-          {price && (
-            <span className="text-ink font-display text-sm font-semibold">
-              {price}
-            </span>
-          )}
+          <span className="text-ink font-display text-sm font-semibold">
+            {price}
+          </span>
         </div>
 
         <p className="text-ink-soft mt-1.5 text-sm leading-relaxed">
@@ -202,7 +203,7 @@ export function PremiumUnlock({ template }: { template: TemplateMeta }) {
           >
             {phase === "checkout"
               ? "Abriendo el pago…"
-              : "Pagar y desbloquear las premium"}
+              : `Pagar ${price} y desbloquear las premium`}
           </Button>
         </div>
 

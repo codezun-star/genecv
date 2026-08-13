@@ -3,13 +3,11 @@
 import { motion } from "motion/react";
 
 import { AtsPanel } from "@/components/editor/ats-panel";
-import { FreeLaunchNotice } from "@/components/editor/free-launch-notice";
 import { PremiumUnlock } from "@/components/editor/premium-unlock";
 import { useCv } from "@/components/editor/use-cv";
 import { FieldGroup } from "@/components/editor/fields";
 import { SortableList, SortableRow } from "@/components/editor/sortable-list";
 import type { SectionId } from "@/lib/cv/types";
-import { isFreeLaunch } from "@/lib/payments/mode";
 
 export function ReviewStep() {
   const { cv, region, template, isPremiumTemplate, update } = useCv();
@@ -19,16 +17,9 @@ export function ReviewStep() {
 
   return (
     <div className="space-y-10">
-      {/* Durante el lanzamiento gratuito la premium se descarga por el botón
-          normal, así que aquí solo se informa. Con los cobros activos aparece
-          el bloque del pase, que se encarga tanto de venderlo como de explicar
-          el estado desbloqueado. */}
-      {isPremiumTemplate &&
-        (isFreeLaunch() ? (
-          <FreeLaunchNotice template={template} />
-        ) : (
-          <PremiumUnlock template={template} />
-        ))}
+      {/* El bloque del pase se encarga de las dos caras: venderlo cuando no lo
+          hay y explicar el estado desbloqueado cuando sí. */}
+      {isPremiumTemplate && <PremiumUnlock template={template} />}
 
       <FieldGroup
         title="Orden de las secciones"

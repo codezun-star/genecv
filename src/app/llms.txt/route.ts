@@ -2,7 +2,7 @@ import { getAllArticles } from "@/lib/blog";
 import { REGION_LIST } from "@/lib/cv/regions";
 import { FREE_TEMPLATES, PREMIUM_TEMPLATES } from "@/lib/cv/templates";
 import { HOME_STEPS, homeFaq } from "@/lib/landing-content";
-import { isFreeLaunch } from "@/lib/payments/mode";
+import { PASS_PRICE } from "@/lib/payments/copy";
 import { siteConfig } from "@/lib/site";
 
 /**
@@ -17,8 +17,7 @@ import { siteConfig } from "@/lib/site";
  * Se genera en lugar de escribirse a mano por la misma razón que el sitemap:
  * un archivo estático se queda desfasado en cuanto se publica una guía o se
  * añade una plantilla, y un mapa que miente es peor que no tener mapa. Sale de
- * las mismas fuentes que las páginas, así que no puede desincronizarse — el
- * modo de cobro incluido, que se lee del mismo flag que la interfaz.
+ * las mismas fuentes que las páginas, así que no puede desincronizarse.
  *
  * El formato es el de llms.txt: markdown, un `#` con el nombre, un `>` con el
  * resumen, y secciones `##` con listas anotadas.
@@ -33,18 +32,12 @@ export function GET(): Response {
   const articles = getAllArticles();
   const url = siteConfig.url;
 
-  const precio = isFreeLaunch()
-    ? [
-        "- Coste: todo es gratuito ahora mismo, incluidas las plantillas premium,",
-        "  que se descargan sin marca de agua durante el lanzamiento.",
-        "- No hay suscripción, ni cuenta, ni tarjeta.",
-      ]
-    : [
-        "- Coste: las plantillas gratuitas se descargan sin coste y sin marca de agua.",
-        "  Las premium se prueban gratis; un pago único desbloquea todas las premium",
-        "  y da derecho a una descarga, que consume el pase.",
-        "- No hay suscripción ni hace falta crear una cuenta.",
-      ];
+  const precio = [
+    "- Coste: las plantillas gratuitas se descargan sin coste y sin marca de agua.",
+    `  Las premium se prueban gratis; un pago único de ${PASS_PRICE.label} (${PASS_PRICE.currency})`,
+    "  desbloquea las diecisiete y da derecho a una descarga, que consume el pase.",
+    "- No hay suscripción ni hace falta crear una cuenta.",
+  ];
 
   const body = [
     `# ${siteConfig.name}`,

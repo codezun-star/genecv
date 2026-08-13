@@ -13,12 +13,7 @@ import {
   isAtsSafe,
   type TemplateMeta,
 } from "@/lib/cv/templates";
-import {
-  FREE_LAUNCH_COPY,
-  PASS_COPY,
-  isFreeLaunch,
-  isPaidMode,
-} from "@/lib/payments/mode";
+import { PASS_COPY } from "@/lib/payments/copy";
 import { cn } from "@/lib/utils";
 
 /** Accent options drawn from the brand palette plus a few neutral extras. */
@@ -58,11 +53,9 @@ export function TemplateStep() {
       <FieldGroup
         title="Plantillas premium"
         description={
-          isFreeLaunch()
-            ? FREE_LAUNCH_COPY.templateSectionDescription
-            : passActive
-              ? `Las tienes desbloqueadas: pruébalas todas y quédate con la que mejor te siente. ${PASS_COPY.consumedOnDownload}`
-              : `Puedes seleccionarlas y ver tu CV con cada diseño. ${PASS_COPY.summary}`
+          passActive
+            ? `Las tienes desbloqueadas: pruébalas todas y quédate con la que mejor te siente. ${PASS_COPY.consumedOnDownload}`
+            : `Puedes seleccionarlas y ver tu CV con cada diseño. ${PASS_COPY.summary}`
         }
         action={
           <Link
@@ -133,11 +126,10 @@ function TemplateCard({
   unlocked: boolean;
   onSelect: () => void;
 }) {
-  // El candado solo tiene sentido si la descarga está realmente bloqueada.
-  // Durante el lanzamiento gratuito se marca como premium pero sin candado, y
-  // con un pase comprado tampoco: ahí el candado sería mentir a quien ya pagó.
+  // El candado solo tiene sentido si la descarga está realmente bloqueada: con
+  // un pase comprado sería mentirle a quien ya pagó.
   const premium = option.isPremium;
-  const locked = premium && isPaidMode() && !unlocked;
+  const locked = premium && !unlocked;
 
   return (
     <button
@@ -200,12 +192,7 @@ function TemplateCard({
       <div className="mt-1.5 flex flex-wrap gap-1">
         {isAtsSafe(option) && <Badge tone="success">ATS</Badge>}
         {premium && <Badge tone="premium">Premium</Badge>}
-        {premium && isFreeLaunch() && (
-          <Badge tone="success">{FREE_LAUNCH_COPY.badge}</Badge>
-        )}
-        {premium && isPaidMode() && unlocked && (
-          <Badge tone="success">Desbloqueada</Badge>
-        )}
+        {premium && unlocked && <Badge tone="success">Desbloqueada</Badge>}
       </div>
     </button>
   );
