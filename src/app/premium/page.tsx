@@ -7,84 +7,66 @@ import { buttonStyles } from "@/components/ui/button";
 import { Card, CardText, CardTitle } from "@/components/ui/card";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/reveal";
 import { PREMIUM_TEMPLATES } from "@/lib/cv/templates";
-import { FREE_LAUNCH_COPY, isFreeLaunch } from "@/lib/payments/mode";
 import { buildMetadata } from "@/lib/site";
 
+/**
+ * Los diseños premium.
+ *
+ * «Premium» describe la maquetación —barras laterales, líneas de tiempo,
+ * retículas editoriales—, no un precio: se descargan igual que el resto, gratis
+ * y sin marca de agua.
+ *
+ * La URL se mantiene en /premium aunque no haya nada que cobrar. «Plantilla de
+ * CV premium gratis» es una búsqueda real y con volumen, y cambiar la ruta
+ * tiraría a la basura el posicionamiento que ya tenga por perseguir una
+ * coherencia que solo existe dentro del repositorio.
+ */
+
 export const metadata = buildMetadata({
-  title: isFreeLaunch()
-    ? "Plantillas premium — gratis durante el lanzamiento"
-    : "Plantillas premium — pruébalas gratis, paga solo la descarga",
-  description: isFreeLaunch()
-    ? "Diecisiete diseños premium de CV: barras laterales, líneas de tiempo y retículas editoriales. Durante el lanzamiento se descargan gratis y sin marca de agua."
-    : "Diecisiete diseños premium de CV: barras laterales, líneas de tiempo y retículas editoriales. Pruébalos gratis con tu contenido y paga solo cuando descargues el PDF sin marca de agua.",
+  title: "Plantillas de CV premium, gratis y sin marca de agua",
+  description: `${PREMIUM_TEMPLATES.length} diseños premium de CV: barras laterales, líneas de tiempo y retículas editoriales. Gratis, sin registro y sin marca de agua.`,
   path: "/premium",
+  keywords: [
+    "plantilla cv premium gratis",
+    "curriculum profesional gratis",
+    "plantillas cv dos columnas",
+  ],
 });
 
-const PAID_STEPS = [
-  {
-    title: "La pruebas gratis",
-    text: "Selecciónala en el editor y mira tu CV real con ese diseño, con marca de agua.",
-  },
-  {
-    title: "Pagas esa descarga",
-    text: "Un pago único con tarjeta a través de Paddle. Sin suscripción y sin crear ninguna cuenta.",
-  },
-  {
-    title: "Descargas al instante",
-    text: "El PDF sin marca de agua se genera y descarga en la misma sesión, sin esperas.",
-  },
-];
-
-const FREE_LAUNCH_STEPS = [
+const STEPS = [
   {
     title: "Montas tu CV",
-    text: "El editor es el mismo para todas las plantillas, gratuitas y premium.",
+    text: "El editor es el mismo para todos los diseños: rellenas una vez y lo ves aplicado al instante.",
   },
   {
-    title: "Eliges un diseño premium",
-    text: "Lo ves aplicado a tu contenido real en la vista previa, sin marca de agua.",
+    title: "Pruebas los que quieras",
+    text: "Cambia de plantilla las veces que haga falta. El contenido no se toca al cambiar el diseño.",
   },
   {
-    title: "Descargas gratis",
-    text: "Durante el lanzamiento no hay pago ni registro. Más adelante estas plantillas pasarán a ser de pago.",
+    title: "Descargas el PDF",
+    text: "Sin coste, sin marca de agua y sin crear ninguna cuenta. El archivo lleva tu nombre.",
   },
 ];
-
-const STEPS = isFreeLaunch() ? FREE_LAUNCH_STEPS : PAID_STEPS;
 
 export default function PremiumPage() {
   return (
     <Container className="py-16">
       <Reveal className="max-w-2xl">
-        <Badge tone={isFreeLaunch() ? "success" : "premium"}>
-          {isFreeLaunch() ? FREE_LAUNCH_COPY.badge : "Próximamente"}
-        </Badge>
+        <Badge tone="success">Gratis</Badge>
         <h1 className="mt-4 text-4xl font-bold sm:text-5xl">
-          Plantillas premium
+          Diseños premium
         </h1>
         <p className="text-ink-soft mt-4 text-lg leading-relaxed">
-          Diecisiete diseños con maquetación más trabajada para perfiles que
-          necesitan destacar.{" "}
-          {isFreeLaunch() ? (
-            <strong className="text-ink font-semibold">
-              {FREE_LAUNCH_COPY.landingLead}
-            </strong>
-          ) : (
-            <>
-              Puedes probarlos ahora mismo en el editor y ver tu CV con
-              cualquiera de ellos. Lo que se paga es{" "}
-              <strong className="text-ink font-semibold">
-                una descarga concreta
-              </strong>
-              , no un acceso permanente: si más adelante quieres otro PDF, se
-              paga de nuevo.
-            </>
-          )}
+          {PREMIUM_TEMPLATES.length} diseños con maquetación más trabajada para
+          perfiles que necesitan destacar.{" "}
+          <strong className="text-ink font-semibold">
+            «Premium» se refiere al diseño, no al precio
+          </strong>
+          : se descargan igual que los demás, sin coste y sin marca de agua.
         </p>
         <p className="text-ink-soft mt-3 leading-relaxed">
-          {isFreeLaunch()
-            ? "No hay cuentas, ni contraseñas, ni pasarela de pago activa: montas tu CV y lo descargas. Las tres plantillas gratuitas seguirán siendo gratuitas siempre."
-            : "No hay cuentas ni contraseñas: el correo se pide solo porque la pasarela lo necesita para emitir la factura. Las tres plantillas gratuitas seguirán siendo gratuitas y sin marca de agua."}
+          No hay cuentas, ni contraseñas, ni pasarela de pago. Montas tu CV en
+          el navegador y te llevas el PDF.
         </p>
       </Reveal>
 
@@ -93,14 +75,10 @@ export default function PremiumPage() {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="font-display text-primary font-semibold">
-                {isFreeLaunch()
-                  ? "Ahora mismo son gratis"
-                  : "El pago ocurre dentro del editor"}
+                Todo el catálogo, sin coste
               </p>
               <p className="text-ink-soft mt-1 text-sm">
-                {isFreeLaunch()
-                  ? "Monta tu CV, elige un diseño premium y descárgalo sin coste ni marca de agua."
-                  : "Monta tu CV, elige un diseño premium y paga en el último paso. El PDF se descarga en esa misma sesión."}
+                Elige el diseño que quieras y descárgalo en la misma sesión.
               </p>
             </div>
             <Link href="/crear" className={buttonStyles()}>
@@ -133,26 +111,32 @@ export default function PremiumPage() {
       <RevealGroup className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {PREMIUM_TEMPLATES.map((template) => (
           <RevealItem key={template.id}>
-            <Card className="h-full">
-              <div className="bg-surface border-line mb-4 aspect-[3/4] overflow-hidden rounded-lg border">
-                <div className={isFreeLaunch() ? undefined : "blur-[1.5px]"}>
+            <Link
+              href={`/crear?plantilla=${template.id}`}
+              className="group block h-full"
+            >
+              <Card className="group-hover:border-secondary-200 group-hover:shadow-lift h-full transition-[box-shadow,border-color] duration-200">
+                <div className="bg-surface border-line mb-4 aspect-[3/4] overflow-hidden rounded-lg border">
                   <TemplateThumb template={template} />
                 </div>
-              </div>
-              <CardTitle className="text-base">{template.name}</CardTitle>
-              <CardText>{template.description}</CardText>
-            </Card>
+                <CardTitle className="text-base">{template.name}</CardTitle>
+                <CardText>{template.description}</CardText>
+              </Card>
+            </Link>
           </RevealItem>
         ))}
       </RevealGroup>
 
       <Reveal className="mt-14">
         <p className="text-ink-soft">
-          Mientras tanto,{" "}
-          <Link href="/crear" className="text-primary font-semibold underline">
-            crea tu CV con las plantillas gratuitas
+          ¿Prefieres algo más sobrio?{" "}
+          <Link
+            href="/plantillas"
+            className="text-primary font-semibold underline"
+          >
+            Mira el catálogo completo
           </Link>
-          .
+          , con los diseños de una sola columna pensados para filtros ATS.
         </p>
       </Reveal>
     </Container>

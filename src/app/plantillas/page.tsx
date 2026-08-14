@@ -13,9 +13,7 @@ import {
   isAtsSafe,
   type TemplateMeta,
 } from "@/lib/cv/templates";
-import { FREE_LAUNCH_COPY, isFreeLaunch } from "@/lib/payments/mode";
 import { breadcrumbJsonLd, buildMetadata, siteConfig } from "@/lib/site";
-import { cn } from "@/lib/utils";
 
 export const metadata = buildMetadata({
   title: "Plantillas de CV gratuitas y compatibles con ATS",
@@ -29,57 +27,26 @@ export const metadata = buildMetadata({
   ],
 });
 
+/**
+ * Tarjeta de un diseño premium.
+ *
+ * «Premium» aquí describe la maquetación, no un precio: se descargan igual que
+ * las demás. Por eso la tarjeta no lleva candado ni desenfoque y enlaza al
+ * editor como cualquier otra.
+ */
 function PremiumCard({ template }: { template: TemplateMeta }) {
-  const free = isFreeLaunch();
-
-  const card = (
-    <Card
-      className={cn(
-        "h-full",
-        free
-          ? "group-hover:border-secondary-200 group-hover:shadow-lift transition-[box-shadow,border-color] duration-200"
-          : "opacity-90",
-      )}
-    >
-      <div className="bg-surface border-line relative mb-4 aspect-[3/4] overflow-hidden rounded-lg border">
-        <div className={free ? undefined : "blur-[1.5px]"}>
+  return (
+    <Link href={`/crear?plantilla=${template.id}`} className="group block h-full">
+      <Card className="group-hover:border-secondary-200 group-hover:shadow-lift h-full transition-[box-shadow,border-color] duration-200">
+        <div className="bg-surface border-line mb-4 aspect-[3/4] overflow-hidden rounded-lg border">
           <TemplateThumb template={template} />
         </div>
-        {!free && (
-          <div className="bg-primary-900/25 absolute inset-0 grid place-items-center">
-            <span className="bg-canvas text-primary shadow-soft grid size-10 place-items-center rounded-full">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.8}
-                strokeLinecap="round"
-                className="size-4"
-                aria-hidden
-              >
-                <path d="M7 10V7a5 5 0 0110 0v3M5 10h14v10H5z" />
-              </svg>
-            </span>
-          </div>
-        )}
-      </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <CardTitle className="text-base">{template.name}</CardTitle>
-        <Badge tone="premium">Premium</Badge>
-        {free && <Badge tone="success">{FREE_LAUNCH_COPY.badge}</Badge>}
-      </div>
-      <CardText>{template.description}</CardText>
-    </Card>
-  );
-
-  if (!free) return card;
-
-  return (
-    <Link
-      href={`/crear?plantilla=${template.id}`}
-      className="group block h-full"
-    >
-      {card}
+        <div className="flex flex-wrap items-center gap-2">
+          <CardTitle className="text-base">{template.name}</CardTitle>
+          <Badge tone="premium">Premium</Badge>
+        </div>
+        <CardText>{template.description}</CardText>
+      </Card>
     </Link>
   );
 }
@@ -177,26 +144,18 @@ export default function TemplatesPage() {
       <section className="bg-canvas border-line border-t py-16">
         <Container>
           <Reveal className="max-w-2xl">
-            <Badge tone={isFreeLaunch() ? "success" : "premium"}>
-              {isFreeLaunch() ? FREE_LAUNCH_COPY.badge : "Próximamente"}
-            </Badge>
-            <h2 className="mt-4 text-3xl font-bold">Plantillas premium</h2>
+            <Badge tone="premium">Premium</Badge>
+            <h2 className="mt-4 text-3xl font-bold">Diseños premium</h2>
             <p className="text-ink-soft mt-3 leading-relaxed">
-              Diecisiete diseños con maquetación más trabajada: barras
-              laterales, líneas de tiempo, retículas editoriales y versiones
-              compactas.{" "}
-              {isFreeLaunch()
-                ? FREE_LAUNCH_COPY.landingLead
-                : "Puedes seleccionarlos en el editor y ver tu CV con ellos; lo que se paga es la descarga sin marca de agua, una vez por descarga."}
+              Maquetación más trabajada: barras laterales, líneas de tiempo,
+              retículas editoriales y versiones compactas. Se descargan igual
+              que las demás, sin coste, sin marca de agua y sin registro.
             </p>
           </Reveal>
 
           <RevealGroup className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {PREMIUM_TEMPLATES.map((template) => (
               <RevealItem key={template.id}>
-                {/* Durante el lanzamiento la premium se usa gratis, así que la
-                    tarjeta enlaza al editor y no lleva candado ni desenfoque:
-                    sería mentirle al usuario sobre lo que puede hacer. */}
                 <PremiumCard template={template} />
               </RevealItem>
             ))}

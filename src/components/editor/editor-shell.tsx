@@ -32,7 +32,7 @@ const STEPS = [
 ] as const;
 
 export function EditorShell() {
-  const { cv, hydrated, resumed, saveState, locked, reset } = useCv();
+  const { cv, hydrated, resumed, saveState, reset } = useCv();
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
   const [showPreviewMobile, setShowPreviewMobile] = useState(false);
@@ -52,10 +52,6 @@ export function EditorShell() {
   }
 
   async function handleExport() {
-    // La descarga premium no pasa por aquí: la sirve el servidor tras
-    // verificar el pago (ver PremiumCheckout).
-    if (locked) return;
-
     setExporting(true);
     setExportError(null);
     try {
@@ -148,13 +144,9 @@ export function EditorShell() {
             <div className="flex flex-wrap items-center gap-3">
               <SaveIndicator state={saveState} />
               {isLast ? (
-                // Con una plantilla premium la descarga la lleva el bloque de
-                // compra del paso de revisión, no este botón.
-                !locked && (
-                  <Button onClick={handleExport} disabled={exporting}>
-                    {exporting ? "Generando PDF…" : "Descargar PDF"}
-                  </Button>
-                )
+                <Button onClick={handleExport} disabled={exporting}>
+                  {exporting ? "Generando PDF…" : "Descargar PDF"}
+                </Button>
               ) : (
                 <Button onClick={() => goTo(step + 1)}>Siguiente →</Button>
               )}
@@ -211,11 +203,7 @@ export function EditorShell() {
                 showPreviewMobile ? "block" : "hidden lg:block",
               )}
             >
-              <CvPreview
-                view={view}
-                templateId={cv.templateId}
-                locked={locked}
-              />
+              <CvPreview view={view} templateId={cv.templateId} />
             </div>
 
             <div className="mt-4 hidden lg:block">

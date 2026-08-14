@@ -1,5 +1,4 @@
 import { Container } from "@/components/layout/container";
-import { isFreeLaunch } from "@/lib/payments/mode";
 import { buildMetadata, siteConfig } from "@/lib/site";
 
 export const metadata = buildMetadata({
@@ -35,12 +34,14 @@ export default function TermsPage() {
         </section>
         <section>
           <h2 className="text-ink font-display text-xl font-semibold">
-            Plantillas premium
+            Coste del servicio
           </h2>
           <p className="mt-2">
-            {isFreeLaunch()
-              ? "Durante el periodo de lanzamiento las plantillas premium se descargan sin coste. No hay cobro, ni pasarela de pago activa, ni ningún dato de facturación que se te solicite. Cuando pasen a ser de pago, lo anunciaremos en el propio editor antes de la descarga y actualizaremos estas condiciones."
-              : "Las plantillas premium se venden como descargas puntuales: cada pago da derecho a generar un PDF concreto, no a un acceso permanente ni reutilizable. El cobro lo procesa Paddle, que actúa como comerciante registrado y emite la factura. Para reembolsos, escríbenos indicando el identificador de la transacción."}
+            Todas las plantillas se descargan sin coste y sin marca de agua. No
+            hay pasarela de pago, ni suscripción, ni datos de facturación que se
+            te soliciten. Si esto cambiara en el futuro, lo anunciaríamos en el
+            propio editor antes de cualquier descarga y actualizaríamos estas
+            condiciones.
           </p>
         </section>
         <section>

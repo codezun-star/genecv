@@ -38,13 +38,10 @@ export function CvPreview({
   view,
   templateId,
   className,
-  locked = false,
 }: {
   view: CvView;
   templateId: string;
   className?: string;
-  /** Premium template not yet paid for: preview stays visible, watermarked. */
-  locked?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0.5);
@@ -90,34 +87,9 @@ export function CvPreview({
             </motion.div>
           </AnimatePresence>
 
-          {locked && <PremiumWatermark />}
         </div>
       </div>
     </div>
   );
 }
 
-/**
- * Diagonal overlay for premium templates. Deliberately light: the point is
- * that the user can read their own CV in this design and decide whether to
- * pay, not that the preview is unusable.
- */
-function PremiumWatermark() {
-  return (
-    <div
-      aria-hidden
-      className="pointer-events-none absolute inset-0 overflow-hidden select-none"
-    >
-      <div className="absolute inset-0 flex rotate-[-24deg] scale-150 flex-col justify-around">
-        {Array.from({ length: 7 }).map((_, row) => (
-          <p
-            key={row}
-            className="text-primary/10 text-center text-[2.6rem] font-extrabold tracking-[0.3em] whitespace-nowrap uppercase"
-          >
-            Premium · GeneCV · Premium · GeneCV
-          </p>
-        ))}
-      </div>
-    </div>
-  );
-}

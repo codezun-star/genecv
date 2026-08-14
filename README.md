@@ -89,13 +89,16 @@ estructurado (`Article`, `BreadcrumbList` y `FAQPage`).
 
 ## Monetización (pendiente)
 
-- **Publicidad**: `<AdSlot />` reserva el espacio de cada banner sin cargar
+Todo el sitio es gratuito: las plantillas se descargan sin coste, sin marca de
+agua y sin cuenta. No hay pasarela de pago ni base de datos.
+
+- **Publicidad**: `<AdSlot />` reserva el espacio de once banners sin cargar
   todavía ninguna red de anuncios. Al integrar un proveedor, el script se
-  renderiza dentro del mismo contenedor para evitar saltos de layout.
-- **Plantillas premium**: tres plantillas son gratuitas y diecisiete están
-  marcadas como `isPremium`. Se previsualizan con marca de agua y la descarga
-  sin marca se paga una vez por descarga (Paddle Billing + Supabase). El
-  detalle está en [`docs/PAGOS.md`](docs/PAGOS.md).
+  renderiza dentro del mismo contenedor para evitar saltos de layout. Es la vía
+  prevista, porque monetiza a todas las visitas y no solo a quien compraría.
+- **`isPremium`** sigue en el catálogo de plantillas, pero solo distingue el
+  tipo de maquetación —barras laterales, líneas de tiempo, retículas— de los
+  diseños de una sola columna. No gatea nada.
 
 ## Privacidad
 

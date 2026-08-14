@@ -3,9 +3,9 @@ import type { MetadataRoute } from "next";
 import { ANSWER_ENGINE_CRAWLERS } from "@/lib/crawlers";
 import { siteConfig } from "@/lib/site";
 
-// Los endpoints no son páginas: no responden a ninguna búsqueda y rastrearlos
-// solo gasta presupuesto de rastreo. `/api/generate-pdf` además construye un
-// PDF en cada petición.
+// Ahora mismo no hay ningún endpoint bajo /api, pero la exclusión se queda: si
+// mañana se añade uno, no es una página, no responde a ninguna búsqueda y
+// rastrearlo solo gasta presupuesto de rastreo.
 const DISALLOW = ["/api/"];
 
 export default function robots(): MetadataRoute.Robots {
