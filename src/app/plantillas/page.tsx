@@ -17,8 +17,7 @@ import { breadcrumbJsonLd, buildMetadata, siteConfig } from "@/lib/site";
 
 export const metadata = buildMetadata({
   title: "Plantillas de CV gratuitas y compatibles con ATS",
-  description:
-    "Tres plantillas gratuitas de una sola columna —Clásica ATS, Moderna y Minimal— más diecisiete diseños premium. Pruébalas todas con tu contenido y cambia cuando quieras.",
+  description: `${FREE_TEMPLATES.length} diseños esenciales de una sola columna y ${PREMIUM_TEMPLATES.length} premium con maquetación más trabajada. Todas gratis, sin marca de agua y sin registro.`,
   path: "/plantillas",
   keywords: [
     "plantillas de cv",
@@ -97,10 +96,11 @@ export default function TemplatesPage() {
         <Reveal className="max-w-2xl">
           <h1 className="text-4xl font-bold sm:text-5xl">Plantillas</h1>
           <p className="text-ink-soft mt-4 text-lg leading-relaxed">
-            Tres diseños gratuitos y diecisiete premium. Todos comparten el
-            mismo contenido: elige uno, cámbialo cuando quieras y exporta el
-            mismo PDF nítido. Los marcados como ATS usan una sola columna, que
-            es lo que mejor leen los filtros automáticos.
+            {FREE_TEMPLATES.length + PREMIUM_TEMPLATES.length} diseños, todos
+            gratis y sin marca de agua. Comparten el mismo contenido: elige uno,
+            cámbialo cuando quieras y exporta el mismo PDF nítido. Los marcados
+            como ATS usan una sola columna, que es lo que mejor leen los filtros
+            automáticos.
           </p>
         </Reveal>
 

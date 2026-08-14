@@ -7,7 +7,11 @@ import { Card, CardText, CardTitle } from "@/components/ui/card";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/reveal";
 import { REGION_LIST } from "@/lib/cv/regions";
 import { TemplateThumb } from "@/components/cv/template-thumb";
-import { FREE_TEMPLATES, isAtsSafe } from "@/lib/cv/templates";
+import {
+  FREE_TEMPLATES,
+  PREMIUM_TEMPLATES,
+  isAtsSafe,
+} from "@/lib/cv/templates";
 import { HOME_STEPS, homeFaq } from "@/lib/landing-content";
 
 function SectionHeading({
@@ -186,8 +190,8 @@ export function TemplatesShowcase() {
       <Container>
         <SectionHeading
           eyebrow="Plantillas"
-          title="Tres diseños gratuitos"
-          description="Las tres son de una sola columna, así que pasan bien por los filtros automáticos. Cambia de plantilla cuando quieras: tu contenido se mantiene intacto."
+          title="Diseños esenciales"
+          description={`Los más seguros para los filtros automáticos: una sola columna y sin adornos. Hay ${FREE_TEMPLATES.length + PREMIUM_TEMPLATES.length} plantillas en total y cambiar de una a otra no toca ni una palabra de lo que escribas.`}
         />
 
         <RevealGroup className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

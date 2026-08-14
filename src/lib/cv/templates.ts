@@ -132,6 +132,57 @@ export const TEMPLATES: TemplateMeta[] = [
     },
     tags: ["ATS", "Minimalista", "Aire"],
   },
+  {
+    id: "pauta",
+    name: "Pauta",
+    description:
+      "Titulares enmarcados que separan las secciones de un vistazo, sin adornos ni color de fondo. Una sola columna.",
+    isPremium: false,
+    accent: "#33414D",
+    design: {
+      layout: "single",
+      heading: "boxed",
+      name: "bold",
+      density: "normal",
+      skills: "text",
+      photo: "circle",
+    },
+    tags: ["ATS", "Estructurada", "Sobria"],
+  },
+  {
+    id: "cantera",
+    name: "Cantera",
+    description:
+      "Titulares en barra maciza y datos en filas. Pensada para oficios y perfiles técnicos, donde lo que importa es encontrar el dato rápido.",
+    isPremium: false,
+    accent: "#26404F",
+    design: {
+      layout: "single",
+      heading: "bar",
+      name: "uppercase-wide",
+      density: "normal",
+      skills: "rows",
+      photo: "square",
+    },
+    tags: ["ATS", "Oficios", "Directa"],
+  },
+  {
+    id: "sendero",
+    name: "Sendero",
+    description:
+      "Línea de tiempo sin etiquetas ni gráficos: solo texto colgando de una regla. La más segura de las cronológicas para filtros automáticos.",
+    isPremium: false,
+    accent: "#4F4A5C",
+    design: {
+      layout: "timeline",
+      heading: "caps-rule",
+      name: "uppercase-wide",
+      density: "normal",
+      skills: "text",
+      photo: "rounded",
+    },
+    tags: ["ATS", "Línea de tiempo", "Sobria"],
+  },
 
   /* ---------------------------------------------------------------- Premium */
   {
@@ -431,6 +482,129 @@ export const TEMPLATES: TemplateMeta[] = [
       sidebarSections: ["skills", "languages"],
     },
     tags: ["Dos columnas", "Con foto", "Suave"],
+  },
+  {
+    id: "aurora",
+    name: "Aurora",
+    description:
+      "Cabecera de color a sangre, titulares con barra de acento y competencias en etiquetas. Aire generoso sin perder una sola columna.",
+    isPremium: true,
+    accent: "#2B5F5A",
+    design: {
+      layout: "header-band",
+      heading: "left-accent",
+      name: "bold",
+      density: "airy",
+      skills: "pills",
+      photo: "rounded",
+    },
+    tags: ["ATS", "Con foto", "Etiquetas"],
+  },
+  {
+    id: "lumen",
+    name: "Lumen",
+    description:
+      "Cabecera de color con tipografía ligera y cuerpo denso. Mete mucha información sin que la página se vea recargada.",
+    isPremium: true,
+    accent: "#45566B",
+    design: {
+      layout: "header-band",
+      heading: "underline",
+      name: "large-light",
+      density: "compact",
+      skills: "rows",
+      photo: "rounded",
+    },
+    tags: ["ATS", "Densa", "Con foto"],
+  },
+  {
+    id: "faro",
+    name: "Faro",
+    description:
+      "Línea de tiempo con titulares enmarcados y mucho aire entre etapas. Hace legible una carrera con muchos saltos.",
+    isPremium: true,
+    accent: "#7A5C2E",
+    design: {
+      layout: "timeline",
+      heading: "boxed",
+      name: "large-light",
+      density: "airy",
+      skills: "pills",
+      photo: "square",
+    },
+    tags: ["Línea de tiempo", "Aire", "Etiquetas"],
+  },
+  {
+    id: "delta",
+    name: "Delta",
+    description:
+      "Bloque de nombre amplio sobre un cuerpo a dos columnas muy denso. Para trayectorias largas que deben caber en una página.",
+    isPremium: true,
+    accent: "#3E6B8A",
+    design: {
+      layout: "split-header",
+      heading: "caps-rule",
+      name: "bold",
+      density: "compact",
+      skills: "rows",
+      photo: "circle",
+      sidebarSections: ["skills", "languages"],
+    },
+    tags: ["Dos columnas", "Densa", "Una página"],
+  },
+  {
+    id: "cenit",
+    name: "Cénit",
+    description:
+      "Nombre a gran tamaño y cuerpo a dos columnas con las habilidades en barras. Para candidaturas directas que buscan impacto.",
+    isPremium: true,
+    accent: "#8C3F3F",
+    design: {
+      layout: "split-header",
+      heading: "plain",
+      name: "large-light",
+      density: "normal",
+      skills: "bars",
+      photo: "circle",
+      sidebarSections: ["skills", "languages"],
+    },
+    tags: ["Dos columnas", "Impacto", "Habilidades"],
+  },
+  {
+    id: "istmo",
+    name: "Istmo",
+    description:
+      "Columna lateral derecha con las habilidades en barras y titulares de acento. Para perfiles donde el nivel técnico es el argumento.",
+    isPremium: true,
+    accent: "#5A6E52",
+    design: {
+      layout: "sidebar-right",
+      heading: "left-accent",
+      name: "bold",
+      density: "airy",
+      skills: "bars",
+      photo: "circle",
+      sidebarSections: ["skills", "languages"],
+    },
+    tags: ["Dos columnas", "Habilidades", "Con foto"],
+  },
+  {
+    id: "ribera",
+    name: "Ribera",
+    description:
+      "Barra lateral de color y titulares macizos, con densidad alta. Formal, con carácter y sin desperdiciar espacio.",
+    isPremium: true,
+    accent: "#874C62",
+    design: {
+      layout: "sidebar-left",
+      heading: "bar",
+      name: "uppercase-wide",
+      density: "compact",
+      skills: "text",
+      photo: "square",
+      sidebarSections: ["skills", "languages"],
+    },
+    tags: ["Dos columnas", "Densa", "Contraste"],
   },
 ];
 

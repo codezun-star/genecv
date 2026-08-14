@@ -33,8 +33,8 @@ export function TemplateStep() {
   return (
     <div className="space-y-10">
       <FieldGroup
-        title="Elige tu plantilla"
-        description="Puedes cambiarla en cualquier momento sin perder lo que escribas: el contenido es independiente del diseño."
+        title="Diseños esenciales"
+        description="Una sola columna y sin adornos: lo que mejor leen los filtros ATS. Puedes cambiar de plantilla cuando quieras sin perder lo que escribas."
       >
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {FREE_TEMPLATES.map((option) => (
