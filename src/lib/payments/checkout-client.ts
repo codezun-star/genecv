@@ -6,16 +6,16 @@ import {
   type Paddle,
 } from "@paddle/paddle-js";
 
-import { paddleEnvironment, passPriceId } from "@/lib/payments/pricing";
+import { paddleEnvironment, priceIdForTemplate } from "@/lib/payments/catalog";
 import type { CvData } from "@/lib/cv/types";
 
 /**
- * Todo lo que el navegador hace con Paddle.
+ * Checkout en el navegador.
  *
- * Aquí solo pasan dos cosas: abrir el overlay y quedarse con el
+ * Aquí solo pasan dos cosas: abrir el overlay de Paddle y quedarse con el
  * `transaction_id` que devuelve. Ese id NO es una prueba de pago —el callback
  * del navegador es manipulable—, es solo un identificador que el servidor
- * resolverá contra la API de Paddle antes de desbloquear o generar nada.
+ * resolverá contra la API de Paddle antes de generar nada.
  */
 
 let paddlePromise: Promise<Paddle | undefined> | null = null;
@@ -25,7 +25,9 @@ function getPaddle(): Promise<Paddle | undefined> {
 
   const token = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
   if (!token) {
-    return Promise.reject(new Error("Falta NEXT_PUBLIC_PADDLE_CLIENT_TOKEN"));
+    return Promise.reject(
+      new Error("Falta NEXT_PUBLIC_PADDLE_CLIENT_TOKEN"),
+    );
   }
 
   paddlePromise = initializePaddle({
@@ -39,52 +41,19 @@ function getPaddle(): Promise<Paddle | undefined> {
 export class CheckoutError extends Error {}
 
 /**
- * Precio del pase, ya formateado y en la moneda del visitante.
- *
- * Se pregunta a Paddle en lugar de escribirlo en el repositorio. Un importe a
- * mano se queda desfasado en cuanto alguien toca el precio en el dashboard, y
- * anunciar 4,99 € para cobrar 5,99 € en el overlay es la clase de detalle que
- * se convierte en una devolución. Además Paddle localiza la moneda, que a mano
- * no se puede.
- *
- * Devuelve null si no se puede consultar: la interfaz enseña el botón sin
- * importe en lugar de no enseñar nada.
- */
-export async function fetchPassPrice(): Promise<string | null> {
-  const priceId = passPriceId();
-  if (!priceId) return null;
-
-  try {
-    const paddle = await getPaddle();
-    if (!paddle) return null;
-
-    const preview = await paddle.PricePreview({
-      items: [{ priceId, quantity: 1 }],
-    });
-
-    return preview.data.details.lineItems[0]?.formattedTotals.total ?? null;
-  } catch {
-    // Un fallo aquí es cosmético; no debe impedir comprar.
-    return null;
-  }
-}
-
-/**
  * Abre el overlay y resuelve con el transaction_id cuando el pago se completa.
  * Resuelve `null` si la persona cierra el overlay sin pagar.
- *
- * No se le pasa correo. El overlay de Paddle lo pide él mismo —lo necesita para
- * la factura y para el recibo—, así que pedirlo antes en nuestro formulario era
- * hacer teclear dos veces lo mismo para acabar usando el de Paddle igualmente.
- * El servidor lo recupera de la transacción cuando hace falta.
  */
-export function openPassCheckout(): Promise<string | null> {
-  const priceId = passPriceId();
+export function openCheckout(options: {
+  templateId: string;
+  email: string;
+}): Promise<string | null> {
+  const priceId = priceIdForTemplate(options.templateId);
 
   if (!priceId) {
     return Promise.reject(
       new CheckoutError(
-        "El pase premium todavía no tiene precio configurado en Paddle.",
+        "Esta plantilla todavía no tiene precio configurado en Paddle.",
       ),
     );
   }
@@ -139,6 +108,10 @@ export function openPassCheckout(): Promise<string | null> {
 
         paddle.Checkout.open({
           items: [{ priceId, quantity: 1 }],
+          customer: { email: options.email },
+          // Pista para el webhook y para soporte. El servidor NO se fía de esto
+          // para decidir qué plantilla se pagó: usa el price_id real.
+          customData: { template_id: options.templateId },
           settings: {
             displayMode: "overlay",
             theme: "light",
@@ -160,8 +133,8 @@ export class DownloadError extends Error {
 }
 
 /**
- * Pide el PDF al servidor con el transaction_id del pase. El servidor verifica
- * el pago contra Paddle, consume el pase y solo entonces renderiza.
+ * Pide el PDF al servidor con el transaction_id. El servidor verifica el pago
+ * contra Paddle y solo entonces renderiza.
  */
 export async function downloadPaidPdf(options: {
   transactionId: string;
@@ -193,7 +166,8 @@ export async function downloadPaidPdf(options: {
 
   const blob = await response.blob();
   const disposition = response.headers.get("content-disposition") ?? "";
-  const fileName = /filename="([^"]+)"/.exec(disposition)?.[1] ?? "CV.pdf";
+  const fileName =
+    /filename="([^"]+)"/.exec(disposition)?.[1] ?? "CV.pdf";
 
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");

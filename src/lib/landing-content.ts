@@ -13,6 +13,7 @@
  */
 
 import { FREE_TEMPLATES, PREMIUM_TEMPLATES } from "@/lib/cv/templates";
+import { isFreeLaunch } from "@/lib/payments/mode";
 
 export const HOME_STEPS = [
   {
@@ -53,7 +54,9 @@ export function homeFaq(): FaqItem[] {
   return [
     {
       q: "¿Es realmente gratis?",
-      a: `Las ${gratuitas} plantillas gratuitas, la vista previa y la exportación a PDF no cuestan nada y salen sin marca de agua, sin cuenta y sin tarjeta. Los ${premium} diseños premium se prueban gratis con tu contenido: un pago único los desbloquea todos para que compares, y ese pase se consume al descargar el PDF. No hay suscripción.`,
+      a: isFreeLaunch()
+        ? `Sí. Las ${gratuitas} plantillas gratuitas, la vista previa y la exportación a PDF no cuestan nada y salen sin marca de agua, sin cuenta y sin tarjeta. Los ${premium} diseños premium también se descargan gratis durante el lanzamiento; más adelante tendrán coste.`
+        : `Las ${gratuitas} plantillas gratuitas, la vista previa y la exportación a PDF no cuestan nada y salen sin marca de agua, sin cuenta y sin tarjeta. Los ${premium} diseños premium se prueban gratis con tu contenido y se paga una sola vez por esa descarga, sin suscripción.`,
     },
     {
       q: "¿Dónde se guardan mis datos?",

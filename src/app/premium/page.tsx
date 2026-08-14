@@ -7,36 +7,57 @@ import { buttonStyles } from "@/components/ui/button";
 import { Card, CardText, CardTitle } from "@/components/ui/card";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/reveal";
 import { PREMIUM_TEMPLATES } from "@/lib/cv/templates";
-import { PASS_COPY, PASS_PRICE } from "@/lib/payments/copy";
+import { FREE_LAUNCH_COPY, isFreeLaunch } from "@/lib/payments/mode";
 import { buildMetadata } from "@/lib/site";
 
 export const metadata = buildMetadata({
-  title: `Plantillas premium — las diecisiete por ${PASS_PRICE.label}`,
-  description: `Diecisiete diseños premium de CV: barras laterales, líneas de tiempo y retículas editoriales. Un pago de ${PASS_PRICE.label} las desbloquea todas para que compares; el pase se consume al descargar el PDF.`,
+  title: isFreeLaunch()
+    ? "Plantillas premium — gratis durante el lanzamiento"
+    : "Plantillas premium — pruébalas gratis, paga solo la descarga",
+  description: isFreeLaunch()
+    ? "Diecisiete diseños premium de CV: barras laterales, líneas de tiempo y retículas editoriales. Durante el lanzamiento se descargan gratis y sin marca de agua."
+    : "Diecisiete diseños premium de CV: barras laterales, líneas de tiempo y retículas editoriales. Pruébalos gratis con tu contenido y paga solo cuando descargues el PDF sin marca de agua.",
   path: "/premium",
 });
 
-const STEPS = [
+const PAID_STEPS = [
   {
-    title: "Las pruebas gratis",
-    text: "Elige cualquiera en el editor y mira tu CV real con ese diseño, con marca de agua.",
+    title: "La pruebas gratis",
+    text: "Selecciónala en el editor y mira tu CV real con ese diseño, con marca de agua.",
   },
   {
-    title: "Desbloqueas las diecisiete",
-    text: `Un pago único de ${PASS_PRICE.label} a través de Paddle, sin suscripción ni cuenta. Las diecisiete quedan disponibles para que compares con calma.`,
+    title: "Pagas esa descarga",
+    text: "Un pago único con tarjeta a través de Paddle. Sin suscripción y sin crear ninguna cuenta.",
   },
   {
-    title: "Descargas la que elijas",
-    text: "El PDF sin marca de agua se genera al momento. Ahí se consume el pase: descargar otra vez requiere pagar de nuevo.",
+    title: "Descargas al instante",
+    text: "El PDF sin marca de agua se genera y descarga en la misma sesión, sin esperas.",
   },
 ];
+
+const FREE_LAUNCH_STEPS = [
+  {
+    title: "Montas tu CV",
+    text: "El editor es el mismo para todas las plantillas, gratuitas y premium.",
+  },
+  {
+    title: "Eliges un diseño premium",
+    text: "Lo ves aplicado a tu contenido real en la vista previa, sin marca de agua.",
+  },
+  {
+    title: "Descargas gratis",
+    text: "Durante el lanzamiento no hay pago ni registro. Más adelante estas plantillas pasarán a ser de pago.",
+  },
+];
+
+const STEPS = isFreeLaunch() ? FREE_LAUNCH_STEPS : PAID_STEPS;
 
 export default function PremiumPage() {
   return (
     <Container className="py-16">
       <Reveal className="max-w-2xl">
-        <Badge tone="premium">
-          {PASS_COPY.name} · {PASS_PRICE.label}
+        <Badge tone={isFreeLaunch() ? "success" : "premium"}>
+          {isFreeLaunch() ? FREE_LAUNCH_COPY.badge : "Próximamente"}
         </Badge>
         <h1 className="mt-4 text-4xl font-bold sm:text-5xl">
           Plantillas premium
@@ -44,19 +65,26 @@ export default function PremiumPage() {
         <p className="text-ink-soft mt-4 text-lg leading-relaxed">
           Diecisiete diseños con maquetación más trabajada para perfiles que
           necesitan destacar.{" "}
-          Puedes probarlos ahora mismo en el editor y ver tu CV con cualquiera
-          de ellos. No se compra un diseño suelto:{" "}
-          <strong className="text-ink font-semibold">
-            un solo pago de {PASS_PRICE.label} los desbloquea los diecisiete
-          </strong>{" "}
-          para que compares sin prisa. Ese pase se consume al descargar el PDF,
-          así que un segundo PDF requiere pagar de nuevo.
+          {isFreeLaunch() ? (
+            <strong className="text-ink font-semibold">
+              {FREE_LAUNCH_COPY.landingLead}
+            </strong>
+          ) : (
+            <>
+              Puedes probarlos ahora mismo en el editor y ver tu CV con
+              cualquiera de ellos. Lo que se paga es{" "}
+              <strong className="text-ink font-semibold">
+                una descarga concreta
+              </strong>
+              , no un acceso permanente: si más adelante quieres otro PDF, se
+              paga de nuevo.
+            </>
+          )}
         </p>
         <p className="text-ink-soft mt-3 leading-relaxed">
-          No hay cuentas, ni contraseñas, ni formulario: pulsas y pagas. El
-          correo te lo pide Paddle en la propia ventana de pago, solo para
-          emitir la factura. Las tres plantillas gratuitas seguirán siendo
-          gratuitas y sin marca de agua.
+          {isFreeLaunch()
+            ? "No hay cuentas, ni contraseñas, ni pasarela de pago activa: montas tu CV y lo descargas. Las tres plantillas gratuitas seguirán siendo gratuitas siempre."
+            : "No hay cuentas ni contraseñas: el correo se pide solo porque la pasarela lo necesita para emitir la factura. Las tres plantillas gratuitas seguirán siendo gratuitas y sin marca de agua."}
         </p>
       </Reveal>
 
@@ -65,11 +93,14 @@ export default function PremiumPage() {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="font-display text-primary font-semibold">
-                {PASS_COPY.name} — {PASS_PRICE.label}
+                {isFreeLaunch()
+                  ? "Ahora mismo son gratis"
+                  : "El pago ocurre dentro del editor"}
               </p>
               <p className="text-ink-soft mt-1 text-sm">
-                Monta tu CV y paga en el último paso: se desbloquean las
-                diecisiete y descargas la que prefieras en esa misma sesión.
+                {isFreeLaunch()
+                  ? "Monta tu CV, elige un diseño premium y descárgalo sin coste ni marca de agua."
+                  : "Monta tu CV, elige un diseño premium y paga en el último paso. El PDF se descarga en esa misma sesión."}
               </p>
             </div>
             <Link href="/crear" className={buttonStyles()}>
@@ -104,7 +135,7 @@ export default function PremiumPage() {
           <RevealItem key={template.id}>
             <Card className="h-full">
               <div className="bg-surface border-line mb-4 aspect-[3/4] overflow-hidden rounded-lg border">
-                <div className="blur-[1.5px]">
+                <div className={isFreeLaunch() ? undefined : "blur-[1.5px]"}>
                   <TemplateThumb template={template} />
                 </div>
               </div>

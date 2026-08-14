@@ -3,23 +3,31 @@
 import { motion } from "motion/react";
 
 import { AtsPanel } from "@/components/editor/ats-panel";
-import { PremiumUnlock } from "@/components/editor/premium-unlock";
+import { FreeLaunchNotice } from "@/components/editor/free-launch-notice";
+import { PremiumCheckout } from "@/components/editor/premium-checkout";
 import { useCv } from "@/components/editor/use-cv";
 import { FieldGroup } from "@/components/editor/fields";
 import { SortableList, SortableRow } from "@/components/editor/sortable-list";
 import type { SectionId } from "@/lib/cv/types";
+import { isFreeLaunch } from "@/lib/payments/mode";
 
 export function ReviewStep() {
-  const { cv, region, template, isPremiumTemplate, update } = useCv();
+  const { cv, region, template, locked, isPremiumTemplate, update } = useCv();
 
   // dnd-kit needs objects with an id; the model stores plain section ids.
   const sectionItems = cv.sectionOrder.map((id) => ({ id }));
 
   return (
     <div className="space-y-10">
-      {/* El bloque del pase se encarga de las dos caras: venderlo cuando no lo
-          hay y explicar el estado desbloqueado cuando sí. */}
-      {isPremiumTemplate && <PremiumUnlock template={template} />}
+      {/* Durante el lanzamiento gratuito la premium se descarga por el botón
+          normal, así que aquí solo se informa. Con los cobros activos aparece
+          el bloque de compra. */}
+      {isPremiumTemplate &&
+        (isFreeLaunch() ? (
+          <FreeLaunchNotice template={template} />
+        ) : (
+          locked && <PremiumCheckout template={template} cv={cv} />
+        ))}
 
       <FieldGroup
         title="Orden de las secciones"

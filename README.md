@@ -93,10 +93,9 @@ estructurado (`Article`, `BreadcrumbList` y `FAQPage`).
   todavía ninguna red de anuncios. Al integrar un proveedor, el script se
   renderiza dentro del mismo contenedor para evitar saltos de layout.
 - **Plantillas premium**: tres plantillas son gratuitas y diecisiete están
-  marcadas como `isPremium`. Se previsualizan con marca de agua y se venden con
-  un **pase**: un pago único desbloquea las diecisiete y se consume al descargar
-  el PDF (Paddle Billing + Supabase). El detalle está en
-  [`docs/PAGOS.md`](docs/PAGOS.md).
+  marcadas como `isPremium`. Se previsualizan con marca de agua y la descarga
+  sin marca se paga una vez por descarga (Paddle Billing + Supabase). El
+  detalle está en [`docs/PAGOS.md`](docs/PAGOS.md).
 
 ## Privacidad
 

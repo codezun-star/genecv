@@ -2,7 +2,7 @@ import "server-only";
 
 import { Environment, Paddle } from "@paddle/paddle-node-sdk";
 
-import { isPassPrice, paddleEnvironment, passPriceId } from "@/lib/payments/pricing";
+import { paddleEnvironment, templateIdForPrice } from "@/lib/payments/catalog";
 
 /**
  * Cliente de Paddle del lado servidor.
@@ -42,60 +42,23 @@ export function paddle(): Paddle {
  *
  * Se aceptan los dos a propósito. Justo después de que el overlay se cierra la
  * transacción suele estar en `paid` y pasa a `completed` poco después, cuando
- * Paddle termina de procesarla. Exigir solo `completed` haría fallar el
- * desbloqueo en la misma sesión, que es justo lo que el flujo necesita.
+ * Paddle termina de procesarla. Exigir solo `completed` haría fallar la
+ * descarga en la misma sesión, que es justo lo que el flujo necesita.
  */
 const PAID_STATUSES = new Set(["paid", "completed"]);
-
-/**
- * El correo del comprador, cueste lo que cueste.
- *
- * Paddle lo entrega en dos formas distintas según por dónde se pregunte, y
- * ninguna es fiable por sí sola:
- *
- * - `transactions.get(id, { include: ["customer"] })` debería traerlo incrustado,
- *   pero el objeto `customer` puede llegar vacío justo después del checkout,
- *   que es exactamente cuando lo pedimos.
- * - El evento `transaction.completed` del webhook **nunca** lo trae: el payload
- *   lleva `customer_id` y punto.
- *
- * Con `transaction.customer?.email` a secas las dos vías fallaban a la vez y la
- * fila acababa con el correo de relleno, que es lo que se veía en la tabla. Así
- * que cuando no viene incrustado se pide por su id, que sí está siempre.
- *
- * Devuelve null solo si Paddle no da ninguna de las dos cosas.
- */
-export async function resolvePurchaseEmail(input: {
-  embedded?: string | null;
-  customerId?: string | null;
-}): Promise<string | null> {
-  if (input.embedded) return input.embedded;
-  if (!input.customerId) return null;
-
-  try {
-    const customer = await paddle().customers.get(input.customerId);
-    return customer.email ?? null;
-  } catch (error) {
-    // No es motivo para tumbar una descarga ya pagada: el correo es para el
-    // recibo y para soporte, no para autorizar nada.
-    console.warn("[paddle] no se pudo leer el correo del cliente", {
-      customerId: input.customerId,
-      error: error instanceof Error ? error.message : String(error),
-    });
-    return null;
-  }
-}
 
 export type VerificationFailure =
   | "not_configured"
   | "not_found"
   | "not_paid"
-  | "price_mismatch";
+  | "template_mismatch"
+  | "price_unknown";
 
 export type VerificationResult =
   | {
       ok: true;
       transactionId: string;
+      templateId: string;
       email: string | null;
       status: string;
     }
@@ -103,20 +66,19 @@ export type VerificationResult =
 
 /**
  * Verifica contra la API de Paddle que una transacción existe, está pagada y
- * corresponde al pase premium.
+ * corresponde a la plantilla solicitada.
  *
- * Esta es la única fuente de autorización. Nada de lo que envíe el navegador
- * —ni el callback de Paddle.js, ni el pase guardado en localStorage— se toma
+ * Esta es la única fuente de autorización de la descarga. Nada de lo que envíe
+ * el navegador (ni el callback de Paddle.js, ni el propio template_id) se toma
  * como prueba de pago: el transaction_id es solo un puntero que se resuelve
  * aquí contra Paddle.
- *
- * Ya no hay que comprobar *qué plantilla* se pagó, porque no se paga una
- * plantilla. Lo que sí hay que comprobar es que se pagó el pase y no otro
- * producto de la misma cuenta de Paddle.
  */
-export async function verifyPassTransaction(
+export async function verifyTransactionForTemplate(
   transactionId: string,
+  requestedTemplateId: string,
 ): Promise<VerificationResult> {
+  let transaction;
+
   // Una API key ausente es un fallo de configuración, no un pago inválido. Si
   // se dejara caer en el catch de abajo se reportaría como "transacción no
   // encontrada" y estaríamos depurando el pago del usuario en lugar del
@@ -129,22 +91,6 @@ export async function verifyPassTransaction(
       detail: "La verificación de pagos no está configurada en el servidor.",
     };
   }
-
-  // Sin price_id del pase no hay nada contra lo que contrastar, y aceptar
-  // cualquier transacción pagada convertiría en pase la compra de cualquier
-  // otro producto de la cuenta. Se rechaza en lugar de adivinar.
-  if (!passPriceId()) {
-    console.error(
-      "[paddle] falta NEXT_PUBLIC_PADDLE_PRICE_ID_PASS: no se puede validar el pase",
-    );
-    return {
-      ok: false,
-      reason: "not_configured",
-      detail: "El pase premium no está configurado en el servidor.",
-    };
-  }
-
-  let transaction;
 
   try {
     // `customer` solo viene si se pide explícitamente; lo usamos para guardar
@@ -183,30 +129,48 @@ export async function verifyPassTransaction(
     };
   }
 
-  // (b) ¿Lo que se cobró es el pase?
+  // (b) ¿Lo que se cobró corresponde a la plantilla pedida?
   //
-  // Se mira el price_id realmente facturado, no el custom_data: custom_data lo
-  // fija el cliente al abrir el checkout y por tanto es manipulable; el
-  // price_id es lo que Paddle cobró de verdad.
-  const paidForPass = (transaction.items ?? []).some((item) =>
-    isPassPrice(item.price?.id),
-  );
+  // Se resuelve a partir del price_id realmente facturado, no del custom_data:
+  // custom_data lo fija el cliente al abrir el checkout y por tanto es
+  // manipulable; el price_id es lo que Paddle cobró de verdad.
+  const priceIds = (transaction.items ?? [])
+    .map((item) => item.price?.id)
+    .filter((id): id is string => Boolean(id));
 
-  if (!paidForPass) {
+  if (priceIds.length === 0) {
     return {
       ok: false,
-      reason: "price_mismatch",
-      detail: "La transacción no corresponde al pase de descarga premium.",
+      reason: "price_unknown",
+      detail: "La transacción no tiene líneas con precio.",
+    };
+  }
+
+  const paidTemplateIds = priceIds
+    .map(templateIdForPrice)
+    .filter((id): id is string => Boolean(id));
+
+  if (paidTemplateIds.length === 0) {
+    return {
+      ok: false,
+      reason: "price_unknown",
+      detail: "El precio cobrado no corresponde a ninguna plantilla conocida.",
+    };
+  }
+
+  if (!paidTemplateIds.includes(requestedTemplateId)) {
+    return {
+      ok: false,
+      reason: "template_mismatch",
+      detail: `Se pagó «${paidTemplateIds.join(", ")}» pero se pidió «${requestedTemplateId}».`,
     };
   }
 
   return {
     ok: true,
     transactionId: transaction.id,
-    email: await resolvePurchaseEmail({
-      embedded: transaction.customer?.email,
-      customerId: transaction.customerId,
-    }),
+    templateId: requestedTemplateId,
+    email: transaction.customer?.email ?? null,
     status: transaction.status,
   };
 }

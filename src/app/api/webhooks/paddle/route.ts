@@ -1,18 +1,19 @@
 import { EventName } from "@paddle/paddle-node-sdk";
 import { NextResponse } from "next/server";
 
-import { paddle, resolvePurchaseEmail } from "@/lib/payments/paddle-server";
+import { paddle } from "@/lib/payments/paddle-server";
 import { markRefunded, recordPurchase } from "@/lib/payments/purchases";
-import { isPassPrice } from "@/lib/payments/pricing";
+import { templateIdForPrice } from "@/lib/payments/catalog";
 
 /**
  * Webhook de Paddle.
  *
  * Sirve para auditoría y respaldo, NO para autorizar descargas. Si el usuario
- * cierra la pestaña después de pagar, el pase queda registrado igualmente y
- * soporte puede localizarlo. La autorización real vive en /api/generate-pdf,
- * que consulta Paddle en el momento de la descarga en lugar de esperar a que
- * llegue este evento (que puede tardar y rompería el flujo de una sola sesión).
+ * cierra la pestaña antes de llamar a /api/generate-pdf, el pago queda
+ * registrado igualmente y soporte puede localizarlo. La autorización real vive
+ * en /api/generate-pdf, que consulta Paddle en el momento de la descarga en
+ * lugar de esperar a que llegue este evento (que puede tardar y rompería el
+ * flujo de una sola sesión).
  */
 
 export const runtime = "nodejs";
@@ -58,12 +59,12 @@ export async function POST(request: Request) {
         break;
       }
 
-      // Un reembolso invalida el pase: si aún no se descargó, ya no podrá.
+      // Un reembolso invalida la compra: si aún no se descargó, ya no podrá.
       case EventName.AdjustmentCreated: {
         const adjustment = event.data as { transactionId?: string; action?: string };
         if (adjustment.action === "refund" && adjustment.transactionId) {
           await markRefunded(adjustment.transactionId);
-          console.info("[paddle-webhook] pase marcado como reembolsado", {
+          console.info("[paddle-webhook] compra marcada como reembolsada", {
             transactionId: adjustment.transactionId,
           });
         }
@@ -92,51 +93,50 @@ interface TransactionEventData {
   id: string;
   customData?: Record<string, unknown> | null;
   items?: { price?: { id?: string | null } | null }[];
-  // El evento trae el id del cliente, no el cliente. Ver `resolvePurchaseEmail`.
-  customerId?: string | null;
   customer?: { email?: string | null } | null;
+  details?: { totals?: unknown } | null;
 }
 
 async function handleTransactionCompleted(data: unknown) {
   const transaction = data as TransactionEventData;
 
-  // La misma cuenta de Paddle sirve a más de un producto, así que no toda
-  // transacción completada es un pase. Se filtra por el price_id realmente
-  // cobrado: sin esto, la compra de cualquier otro producto crearía una fila
-  // aquí y contaría como pase pagado.
-  const isPass = (transaction.items ?? []).some((item) =>
-    isPassPrice(item.price?.id),
-  );
+  // La plantilla se deduce del price_id realmente cobrado. `custom_data` lo
+  // fija el cliente al abrir el checkout, así que sirve como pista pero no
+  // como fuente de verdad.
+  const priceIds = (transaction.items ?? [])
+    .map((item) => item.price?.id)
+    .filter((id): id is string => Boolean(id));
 
-  if (!isPass) {
-    console.info("[paddle-webhook] transacción ajena al pase, ignorada", {
+  const templateId =
+    priceIds.map(templateIdForPrice).find((id): id is string => Boolean(id)) ??
+    (typeof transaction.customData?.template_id === "string"
+      ? transaction.customData.template_id
+      : null);
+
+  if (!templateId) {
+    console.warn("[paddle-webhook] transacción sin plantilla identificable", {
       transactionId: transaction.id,
+      priceIds,
     });
-    // 200: no es un fallo, simplemente no es nuestra.
+    // 200: no es un fallo recuperable, reintentar no cambiaría nada.
     return;
   }
 
-  const email = await resolvePurchaseEmail({
-    embedded: transaction.customer?.email,
-    customerId: transaction.customerId,
-  });
-
-  if (!email) {
-    // La fila se crea igual —es lo que permite auditar el cobro— pero sin
-    // correo no hay a quién escribir, así que se registra como error y no como
-    // aviso: significa que Paddle no dio ni el objeto ni el id del cliente.
-    console.error("[paddle-webhook] compra sin correo resoluble", {
-      transactionId: transaction.id,
-      customerId: transaction.customerId,
-    });
-  }
+  const email =
+    transaction.customer?.email ??
+    (typeof transaction.customData?.email === "string"
+      ? transaction.customData.email
+      : null) ??
+    "desconocido@genecv.local";
 
   await recordPurchase({
-    email: email ?? "desconocido@genecv.local",
+    email,
+    templateId,
     transactionId: transaction.id,
   });
 
-  console.info("[paddle-webhook] pase registrado", {
+  console.info("[paddle-webhook] compra registrada", {
     transactionId: transaction.id,
+    templateId,
   });
 }

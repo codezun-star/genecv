@@ -34,12 +34,7 @@ export function Hero() {
               className="border-primary-100 bg-canvas text-primary inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold"
             >
               <span className="bg-success size-1.5 rounded-full" />
-              {/* Acota la promesa a las gratuitas a propósito. Suelto, «gratis
-                  y sin marcas de agua» se lee como «todo el catálogo», y quien
-                  llegue por esa frase y se encuentre una premium con marca de
-                  agua tendrá razón al sentirse engañado. Así es cierto tanto
-                  ahora como cuando las premium se cobren. */}
-              Tres plantillas gratis, sin registro ni marca de agua
+              Gratis, sin registro y sin marcas de agua
             </motion.p>
 
             <motion.h1

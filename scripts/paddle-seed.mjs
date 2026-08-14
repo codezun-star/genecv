@@ -1,16 +1,12 @@
 #!/usr/bin/env node
 /**
- * Crea en Paddle el producto y el precio del pase de descarga premium, y
- * escupe la línea lista para pegar en `.env.local` o en Vercel.
+ * Crea en Paddle un producto y un precio por cada plantilla premium, y escupe
+ * el bloque listo para pegar en `src/lib/payments/catalog.ts`.
  *
- * Es un solo producto y un solo precio porque el modelo es un solo pase: un
- * pago desbloquea las diecisiete plantillas y se consume al descargar. (La
- * versión anterior de este script creaba diecisiete productos, uno por
- * plantilla; si los creaste, ya no se usan y puedes archivarlos en el
- * dashboard.)
- *
- * Es idempotente: marca el producto con `custom_data.genecv = "premium_pass"`,
- * así que volver a ejecutarlo reutiliza lo que exista en lugar de duplicarlo.
+ * Hacerlo a mano son 34 formularios y 17 ids que copiar sin equivocarse; esto
+ * lo deja en un comando. Es idempotente: marca cada producto con
+ * `custom_data.template_id`, así que volver a ejecutarlo no duplica nada —
+ * reutiliza lo que ya exista y solo crea lo que falte.
  *
  * Uso:
  *   PADDLE_API_KEY=pdl_sdbx_... node scripts/paddle-seed.mjs --amount=499
@@ -21,7 +17,7 @@
  *   --currency=USD      Moneda. Por defecto USD.
  *   --tax=standard      Categoría fiscal de Paddle. Por defecto "standard".
  *   --env=sandbox       sandbox | production. Por defecto sandbox.
- *   --check             No crea nada: solo dice si el pase ya existe.
+ *   --check             No crea nada: solo lista qué existe y qué falta.
  *   --dry-run           Muestra lo que crearía, sin llamar a la API de escritura.
  */
 
@@ -29,25 +25,8 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-
-/**
- * El precio declarado en `src/lib/payments/copy.ts`.
- *
- * Se lee del repositorio en lugar de repetirlo aquí para que `--check` pueda
- * comparar lo que la web anuncia con lo que Paddle cobra de verdad. Una web que
- * dice 9,99 mientras el overlay cobra 12,99 es una devolución seguida de una
- * reseña mala, y es un fallo que nadie nota hasta que lo nota un cliente.
- */
-function declaredPrice() {
-  const source = readFileSync(join(ROOT, "src/lib/payments/copy.ts"), "utf8");
-  const amount = /amountMinorUnits:\s*(\d+)/.exec(source)?.[1];
-  const currency = /currency:\s*"([A-Z]+)"/.exec(source)?.[1];
-  const label = /label:\s*"([^"]+)"/.exec(source)?.[1];
-  return { amount, currency, label };
-}
-
-const DECLARED = declaredPrice();
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(__dirname, "..");
 
 // ---------------------------------------------------------------- argumentos
 
@@ -58,8 +37,8 @@ const args = Object.fromEntries(
   }),
 );
 
-const AMOUNT = String(args.amount ?? DECLARED.amount ?? "999");
-const CURRENCY = String(args.currency ?? DECLARED.currency ?? "USD").toUpperCase();
+const AMOUNT = String(args.amount ?? "499");
+const CURRENCY = String(args.currency ?? "USD").toUpperCase();
 const TAX_CATEGORY = String(args.tax ?? "standard");
 const ENV = String(args.env ?? process.env.NEXT_PUBLIC_PADDLE_ENV ?? "sandbox");
 const CHECK_ONLY = Boolean(args.check);
@@ -69,9 +48,6 @@ const API =
   ENV === "production"
     ? "https://api.paddle.com"
     : "https://sandbox-api.paddle.com";
-
-/** Etiqueta que vincula el producto con este script entre ejecuciones. */
-const MARKER = "premium_pass";
 
 const API_KEY = process.env.PADDLE_API_KEY;
 if (!API_KEY) {
@@ -87,6 +63,25 @@ if (!/^\d+$/.test(AMOUNT)) {
     `--amount debe ser un entero en unidades menores (499 = 4,99). Recibido: ${AMOUNT}`,
   );
   process.exit(1);
+}
+
+// ------------------------------------------------- plantillas premium del repo
+
+/**
+ * Se leen del propio catálogo en lugar de duplicar la lista aquí: si mañana se
+ * añade una plantilla premium, este script la recoge sin tocarlo.
+ */
+function readPremiumTemplates() {
+  const source = readFileSync(join(ROOT, "src/lib/cv/templates.ts"), "utf8");
+  const pattern =
+    /id:\s*"([a-z-]+)",\s*\n\s*name:\s*"([^"]+)",[\s\S]*?isPremium:\s*(true|false),/g;
+
+  const out = [];
+  let match;
+  while ((match = pattern.exec(source)) !== null) {
+    if (match[3] === "true") out.push({ id: match[1], name: match[2] });
+  }
+  return out;
 }
 
 // ------------------------------------------------------------------ API HTTP
@@ -124,7 +119,7 @@ async function listAll(path) {
     items.push(...(page.data ?? []));
 
     after = page.meta?.pagination?.has_more
-      ? (page.data.at(-1)?.id ?? null)
+      ? page.data.at(-1)?.id ?? null
       : null;
   } while (after);
 
@@ -134,114 +129,123 @@ async function listAll(path) {
 // ---------------------------------------------------------------------- main
 
 async function main() {
+  const templates = readPremiumTemplates();
   console.log(`Entorno: ${ENV} (${API})`);
-  console.log(`Precio anunciado en la web: ${DECLARED.label} (${DECLARED.amount} ${DECLARED.currency})\n`);
+  console.log(`Plantillas premium en el repo: ${templates.length}\n`);
 
-  const products = await listAll("/products");
+  const existingProducts = await listAll("/products");
+  const existingPrices = await listAll("/prices");
 
-  // El vínculo estable es custom_data, no el nombre: renombrar el producto en
-  // el dashboard no debe hacer que el script cree uno nuevo al lado.
-  let product = products.find((item) => item.custom_data?.genecv === MARKER);
-
-  if (!product) {
-    if (CHECK_ONLY || DRY_RUN) {
-      console.log("  producto  —  faltaría crear");
-      console.log(
-        "\nEl pase todavía no existe. Ejecuta sin --check para crearlo.",
-      );
-      process.exit(1);
-    }
-
-    product = await paddle("/products", {
-      method: "POST",
-      body: JSON.stringify({
-        name: "GeneCV — Pase de descarga premium",
-        description:
-          "Desbloquea las diecisiete plantillas premium de GeneCV y da derecho " +
-          "a una descarga en PDF sin marca de agua. El pase se consume al " +
-          "descargar.",
-        tax_category: TAX_CATEGORY,
-        custom_data: { genecv: MARKER },
-      }),
-    }).then((r) => r.data);
-
-    console.log(`  producto  ${product.id}  creado`);
-  } else {
-    console.log(`  producto  ${product.id}  ya existía`);
+  // El vínculo estable es custom_data.template_id, no el nombre: renombrar un
+  // producto en el dashboard no debe romper el emparejamiento.
+  const productByTemplate = new Map();
+  for (const product of existingProducts) {
+    const templateId = product.custom_data?.template_id;
+    if (templateId) productByTemplate.set(templateId, product);
   }
 
-  const prices = await listAll("/prices");
-  let price = prices.find((item) => item.product_id === product.id);
+  const priceByProduct = new Map();
+  for (const price of existingPrices) {
+    if (!priceByProduct.has(price.product_id)) {
+      priceByProduct.set(price.product_id, price);
+    }
+  }
 
-  if (!price) {
-    if (CHECK_ONLY || DRY_RUN) {
-      console.log("  precio    —  faltaría crear");
-      console.log("\nFalta el precio. Ejecuta sin --check para crearlo.");
-      process.exit(1);
+  const results = [];
+
+  for (const template of templates) {
+    let product = productByTemplate.get(template.id);
+    let created = false;
+
+    if (!product) {
+      if (CHECK_ONLY || DRY_RUN) {
+        results.push({ ...template, priceId: null, action: "faltaría crear" });
+        continue;
+      }
+
+      product = await paddle("/products", {
+        method: "POST",
+        body: JSON.stringify({
+          name: `GeneCV — Plantilla ${template.name}`,
+          description:
+            `Descarga en PDF de tu currículum con la plantilla ${template.name}, ` +
+            `sin marca de agua. Da derecho a una descarga.`,
+          tax_category: TAX_CATEGORY,
+          custom_data: { template_id: template.id },
+        }),
+      }).then((r) => r.data);
+
+      created = true;
     }
 
-    price = await paddle("/prices", {
-      method: "POST",
-      body: JSON.stringify({
-        product_id: product.id,
-        description: "Pase de descarga premium",
-        // billing_cycle ausente = pago único. Con un ciclo sería suscripción,
-        // que no es el modelo: el pase se gasta, no se renueva.
-        unit_price: { amount: AMOUNT, currency_code: CURRENCY },
-        quantity: { minimum: 1, maximum: 1 },
-      }),
-    }).then((r) => r.data);
+    let price = priceByProduct.get(product.id);
 
-    console.log(`  precio    ${price.id}  creado`);
-  } else {
-    console.log(`  precio    ${price.id}  ya existía`);
+    if (!price) {
+      if (CHECK_ONLY || DRY_RUN) {
+        results.push({
+          ...template,
+          priceId: null,
+          action: created ? "producto creado, falta precio" : "falta precio",
+        });
+        continue;
+      }
+
+      price = await paddle("/prices", {
+        method: "POST",
+        body: JSON.stringify({
+          product_id: product.id,
+          description: `Descarga PDF — ${template.name}`,
+          // billing_cycle ausente = pago único. Con un ciclo sería suscripción,
+          // que no es el modelo: se cobra una descarga concreta.
+          unit_price: { amount: AMOUNT, currency_code: CURRENCY },
+          quantity: { minimum: 1, maximum: 1 },
+        }),
+      }).then((r) => r.data);
+    }
+
+    results.push({
+      ...template,
+      priceId: price.id,
+      action: created ? "creado" : "ya existía",
+    });
   }
 
   // ------------------------------------------------------------------- informe
 
-  const configured = process.env.NEXT_PUBLIC_PADDLE_PRICE_ID_PASS?.trim();
+  const width = Math.max(...templates.map((t) => t.id.length));
+  for (const row of results) {
+    const id = row.id.padEnd(width);
+    console.log(`  ${id}  ${row.priceId ?? "—".padEnd(30)}  ${row.action}`);
+  }
 
+  const missing = results.filter((r) => !r.priceId);
   console.log();
 
-  // Lo que Paddle cobra de verdad, frente a lo que la web anuncia.
-  const realAmount = price.unit_price?.amount;
-  const realCurrency = price.unit_price?.currency_code;
-  const priceMatches =
-    realAmount === DECLARED.amount && realCurrency === DECLARED.currency;
-
-  if (!priceMatches) {
-    console.error(
-      `AVISO: Paddle cobra ${realAmount} ${realCurrency} pero la web anuncia ` +
-        `${DECLARED.label} (${DECLARED.amount} ${DECLARED.currency}).\n` +
-        "  Ajusta PASS_PRICE en src/lib/payments/copy.ts o el precio en Paddle.\n",
-    );
-  }
-
   if (CHECK_ONLY || DRY_RUN) {
-    if (!priceMatches) process.exit(1);
-
-    if (configured && configured !== price.id) {
-      console.error(
-        `NEXT_PUBLIC_PADDLE_PRICE_ID_PASS apunta a ${configured}, pero en ${ENV} ` +
-          `el pase es ${price.id}.`,
-      );
-      process.exit(1);
-    }
-
     console.log(
-      configured
-        ? "Todo listo: el pase existe y la variable de entorno coincide."
-        : `El pase existe. Falta configurar NEXT_PUBLIC_PADDLE_PRICE_ID_PASS=${price.id}`,
+      missing.length === 0
+        ? "Todo listo: cada plantilla premium tiene producto y precio."
+        : `Faltan ${missing.length} de ${templates.length}. Ejecuta sin --check para crearlas.`,
     );
-    process.exit(configured ? 0 : 1);
+    process.exit(missing.length === 0 ? 0 : 1);
   }
 
-  console.log("Añade esto a .env.local y a las variables de Vercel:\n");
-  console.log(`NEXT_PUBLIC_PADDLE_PRICE_ID_PASS=${price.id}`);
-  console.log(`NEXT_PUBLIC_PADDLE_ENV=${ENV}`);
+  if (missing.length > 0) {
+    console.error(`No se pudo completar ${missing.length} plantilla(s).`);
+    process.exit(1);
+  }
+
+  const constName =
+    ENV === "production" ? "PRODUCTION_PRICE_IDS" : "SANDBOX_PRICE_IDS";
+
   console.log(
-    "\nRecuerda: son NEXT_PUBLIC_, se incrustan al compilar. Hay que redesplegar.",
+    `Pega esto en src/lib/payments/catalog.ts, sustituyendo ${constName}:\n`,
   );
+  console.log(`const ${constName}: Record<string, string> = {`);
+  for (const row of results) {
+    console.log(`  ${row.id}: "${row.priceId}",`);
+  }
+  console.log("};");
 }
 
 // Un fallo de la API es lo habitual cuando la clave o el entorno están mal:

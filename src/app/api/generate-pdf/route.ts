@@ -8,7 +8,7 @@ import {
   ensurePurchase,
   releasePurchase,
 } from "@/lib/payments/purchases";
-import { verifyPassTransaction } from "@/lib/payments/paddle-server";
+import { verifyTransactionForTemplate } from "@/lib/payments/paddle-server";
 
 /**
  * Descarga de un PDF premium.
@@ -16,17 +16,13 @@ import { verifyPassTransaction } from "@/lib/payments/paddle-server";
  * Es el único punto que autoriza un PDF sin marca de agua, y no se fía de nada
  * que venga del navegador. El `transaction_id` que manda el cliente es solo un
  * puntero: la prueba de pago se obtiene consultando la API de Paddle desde
- * aquí. Ni el callback `checkout.completed` de Paddle.js ni el pase guardado en
- * localStorage autorizan nada.
+ * aquí. El callback `checkout.completed` de Paddle.js no autoriza nada.
  *
  * Orden de las comprobaciones:
- *   1. La transacción existe en Paddle, está pagada y es del pase premium.
- *   2. Ese pase no se ha usado ya (UPDATE condicional en Postgres).
- * Solo si las dos pasan se renderiza el PDF.
- *
- * La plantilla ya no se verifica contra lo pagado: el pase vale para las
- * diecisiete. Lo que sí se comprueba es que sea premium de verdad, porque una
- * gratuita no tiene por qué gastar un pase —se genera en el navegador.
+ *   1. La transacción existe en Paddle y está pagada.
+ *   2. El precio realmente cobrado corresponde a la plantilla pedida.
+ *   3. Esa transacción no se ha usado ya (UPDATE condicional en Postgres).
+ * Solo si las tres pasan se renderiza el PDF.
  */
 
 // @react-pdf/renderer necesita Node, no el runtime Edge.
@@ -65,17 +61,20 @@ export async function POST(request: Request) {
   const { transactionId, templateId, cv } = parsed.data;
 
   // La plantilla pedida tiene que existir y ser premium. Una gratuita no pasa
-  // por aquí: se genera en el navegador y no gasta el pase.
+  // por aquí: se genera en el navegador y no necesita pago.
   const template = getTemplate(templateId);
   if (template.id !== templateId || !template.isPremium) {
-    return deny(400, "not_premium", "Esa plantilla no requiere pase.");
+    return deny(400, "not_premium", "Esa plantilla no requiere pago.");
   }
 
-  // El diseño que se renderiza es el que se pidió, no el que traiga el CV.
+  // El diseño que se renderiza es el que se pagó, no el que traiga el CV.
   const cvData = toCvData({ ...cv, templateId });
 
-  // --- 1. Verificación contra Paddle ----------------------------------------
-  const verification = await verifyPassTransaction(transactionId);
+  // --- 1 y 2. Verificación contra Paddle ------------------------------------
+  const verification = await verifyTransactionForTemplate(
+    transactionId,
+    templateId,
+  );
 
   if (!verification.ok) {
     console.warn("[generate-pdf] verificación rechazada", {
@@ -97,8 +96,8 @@ export async function POST(request: Request) {
     const message =
       verification.reason === "not_paid"
         ? "El pago todavía no está confirmado. Espera unos segundos e inténtalo de nuevo."
-        : verification.reason === "price_mismatch"
-          ? "Ese pago no corresponde al pase de descarga premium."
+        : verification.reason === "template_mismatch"
+          ? "El pago no corresponde a esta plantilla."
           : "No hemos podido verificar el pago.";
 
     return deny(403, verification.reason, message);
@@ -110,6 +109,7 @@ export async function POST(request: Request) {
   try {
     await ensurePurchase({
       email: verification.email ?? "desconocido@genecv.local",
+      templateId,
       transactionId,
     });
   } catch (error) {
@@ -120,28 +120,28 @@ export async function POST(request: Request) {
     return deny(500, "storage_error", "Error registrando la compra.");
   }
 
-  // --- 2. Consumo atómico ---------------------------------------------------
+  // --- 3. Consumo atómico ---------------------------------------------------
   let consumed;
   try {
     consumed = await consumePurchase(transactionId, templateId);
   } catch (error) {
-    console.error("[generate-pdf] fallo al consumir el pase", {
+    console.error("[generate-pdf] fallo al reclamar la compra", {
       transactionId,
       error: error instanceof Error ? error.message : String(error),
     });
-    return deny(500, "storage_error", "Error verificando el pase.");
+    return deny(500, "storage_error", "Error verificando la compra.");
   }
 
   if (!consumed.ok) {
-    console.warn("[generate-pdf] pase ya consumido", { transactionId });
+    console.warn("[generate-pdf] compra ya consumida", { transactionId });
     return deny(
       403,
       "already_used",
-      "Este pase ya se usó para descargar un PDF. Cada pago da derecho a una descarga.",
+      "Este pago ya se usó para descargar un PDF. Cada compra da derecho a una descarga.",
     );
   }
 
-  // --- 3. Generación --------------------------------------------------------
+  // --- 4. Generación --------------------------------------------------------
   try {
     const { buffer, fileName } = await renderCvPdf(cvData);
 
@@ -161,7 +161,7 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    // El usuario pagó y no recibió nada: se devuelve el pase para que pueda
+    // El usuario pagó y no recibió nada: se devuelve la compra para que pueda
     // reintentar sin volver a pagar.
     await releasePurchase(transactionId);
 
@@ -174,7 +174,7 @@ export async function POST(request: Request) {
     return deny(
       500,
       "render_failed",
-      "No se pudo generar el PDF. Tu pase sigue disponible: vuelve a intentarlo.",
+      "No se pudo generar el PDF. Tu compra sigue disponible: vuelve a intentarlo.",
     );
   }
 }

@@ -268,12 +268,8 @@ export function FinalCta() {
               Tu próximo CV está a diez minutos
             </h2>
             <p className="text-primary-100 mx-auto mt-4 max-w-xl text-lg">
-              {/* «Sin tarjeta» a secas deja de ser cierto en cuanto las premium
-                  se cobran, y es la última frase que alguien lee antes de
-                  entrar al editor. Atada a las gratuitas se sostiene siempre. */}
-              Sin registro y sin cuenta: las tres plantillas gratuitas se
-              descargan sin marca de agua ni tarjeta. Empieza ahora y descarga
-              el PDF cuando lo tengas listo.
+              Sin registro, sin tarjeta y sin marcas de agua. Empieza ahora y
+              descarga el PDF cuando lo tengas listo.
             </p>
             <Link
               href="/crear"
