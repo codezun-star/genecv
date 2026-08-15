@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { AdSlot } from "@/components/layout/ad-slot";
 import { Container } from "@/components/layout/container";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardText, CardTitle } from "@/components/ui/card";
@@ -57,7 +56,7 @@ export default function ArticlesPage() {
           </p>
         </Reveal>
 
-        {groups.map((bucket, groupIndex) => (
+        {groups.map((bucket) => (
           <section key={bucket.group} className="mt-14">
             <Reveal>
               <h2 className="text-2xl font-bold">{bucket.group}</h2>
@@ -86,18 +85,8 @@ export default function ArticlesPage() {
                 </RevealItem>
               ))}
             </RevealGroup>
-
-            {groupIndex === 0 && (
-              <div className="mt-12">
-                <AdSlot slotId="articles-mid" format="leaderboard" />
-              </div>
-            )}
           </section>
         ))}
-
-        <div className="mt-16">
-          <AdSlot slotId="articles-bottom" format="leaderboard" />
-        </div>
       </Container>
     </>
   );

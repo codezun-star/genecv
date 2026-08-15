@@ -60,7 +60,7 @@ src/
     premium/            Página comercial de las plantillas premium
     articulos/[slug]/   Guías por país (renderizadas desde Markdown)
   components/
-    layout/             Navbar, footer, contenedor, ad slots
+    layout/             Navbar, footer, contenedor, logo
     landing/            Secciones de la portada
     editor/             Formularios, pasos y reordenamiento
     cv/                 Plantillas de CV (vista previa)
@@ -92,13 +92,15 @@ estructurado (`Article`, `BreadcrumbList` y `FAQPage`).
 Todo el sitio es gratuito: las plantillas se descargan sin coste, sin marca de
 agua y sin cuenta. No hay pasarela de pago ni base de datos.
 
-- **Publicidad**: `<AdSlot />` reserva el espacio de once banners sin cargar
-  todavía ninguna red de anuncios. Al integrar un proveedor, el script se
-  renderiza dentro del mismo contenedor para evitar saltos de layout. Es la vía
-  prevista, porque monetiza a todas las visitas y no solo a quien compraría.
-- **`isPremium`** sigue en el catálogo de plantillas, pero solo distingue el
-  tipo de maquetación —barras laterales, líneas de tiempo, retículas— de los
-  diseños de una sola columna. No gatea nada.
+No hay publicidad ni huecos reservados para ella. Hubo un `<AdSlot />` que
+reservaba el espacio de once banners sin cargar ninguna red; se quitó al
+descartar los anuncios, porque un hueco vacío ocupa sitio, empuja el contenido
+hacia abajo y no gana nada. Si algún día se integra un proveedor, el componente
+está en el historial de git.
+
+`isPremium` sigue en el catálogo de plantillas, pero solo distingue el tipo de
+maquetación —barras laterales, líneas de tiempo, retículas— de los diseños de
+una sola columna. No gatea nada.
 
 ## Privacidad
 

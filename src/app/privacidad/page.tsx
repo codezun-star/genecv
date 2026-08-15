@@ -48,9 +48,10 @@ export default function PrivacyPage() {
             Publicidad y analítica
           </h2>
           <p className="mt-2">
-            El sitio reserva espacios para publicidad. Cuando se integre una red
-            de anuncios, esta sección detallará qué proveedor se utiliza y qué
-            cookies instala. A día de hoy no hay anuncios ni analítica activos.
+            No hay publicidad, ni analítica, ni cookies de terceros: ninguna red
+            de anuncios recibe nada de lo que haces aquí. Si algún día se
+            integrara alguna, esta sección detallaría qué proveedor es y qué
+            cookies instala, y se anunciaría antes de activarla.
           </p>
         </section>
       </div>

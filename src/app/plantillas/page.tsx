@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { TemplateThumb } from "@/components/cv/template-thumb";
-import { AdSlot } from "@/components/layout/ad-slot";
 import { Container } from "@/components/layout/container";
 import { Badge } from "@/components/ui/badge";
 import { buttonStyles } from "@/components/ui/button";
@@ -73,7 +72,7 @@ const jsonLd = [
           position: i + 1,
           name: template.name,
           url: `${siteConfig.url}/crear?plantilla=${template.id}`,
-          description: `${template.isPremium ? "Plantilla premium" : "Plantilla gratuita"}. ${
+          description: `${template.isPremium ? "Diseño premium" : "Diseño esencial"}, gratis. ${
             isAtsSafe(template) ? "Compatible con ATS." : "No recomendada para filtros ATS."
           }`,
         }),
@@ -135,10 +134,6 @@ export default function TemplatesPage() {
             </RevealItem>
           ))}
         </RevealGroup>
-      </Container>
-
-      <Container className="pb-8">
-        <AdSlot slotId="templates-mid" format="leaderboard" />
       </Container>
 
       <section className="bg-canvas border-line border-t py-16">

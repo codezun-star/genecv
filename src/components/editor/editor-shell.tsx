@@ -12,7 +12,6 @@ import { PersonalStep } from "@/components/editor/steps/personal-step";
 import { SkillsStep } from "@/components/editor/steps/skills-step";
 import { TemplateStep } from "@/components/editor/steps/template-step";
 import { CvPreview } from "@/components/cv/cv-preview";
-import { AdSlot } from "@/components/layout/ad-slot";
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { buildFileName, downloadCvPdf } from "@/lib/cv/pdf/export";
@@ -157,10 +156,6 @@ export function EditorShell() {
             <p className="text-danger mt-3 text-sm">{exportError}</p>
           )}
 
-          <div className="mt-8">
-            <AdSlot slotId="editor-bottom" format="leaderboard" />
-          </div>
-
           <div className="border-line mt-8 flex flex-wrap items-center justify-between gap-3 border-t pt-6">
             <p className="text-ink-muted text-xs leading-relaxed">
               Tu progreso se guarda solo en este navegador. Puedes cerrar la
@@ -204,10 +199,6 @@ export function EditorShell() {
               )}
             >
               <CvPreview view={view} templateId={cv.templateId} />
-            </div>
-
-            <div className="mt-4 hidden lg:block">
-              <AdSlot slotId="editor-sidebar" format="rectangle" />
             </div>
           </div>
         </aside>

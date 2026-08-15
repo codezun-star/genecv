@@ -7,8 +7,6 @@ import {
   HowItWorks,
   TemplatesShowcase,
 } from "@/components/landing/sections";
-import { AdSlot } from "@/components/layout/ad-slot";
-import { Container } from "@/components/layout/container";
 import { HOME_STEPS, homeFaq } from "@/lib/landing-content";
 import {
   absoluteUrl,
@@ -85,16 +83,10 @@ export default function HomePage() {
         }}
       />
       <Hero />
-      <Container className="pb-4">
-        <AdSlot slotId="home-top" format="leaderboard" />
-      </Container>
       <Features />
       <Formats />
       <HowItWorks />
       <TemplatesShowcase />
-      <Container className="py-12">
-        <AdSlot slotId="home-mid" format="leaderboard" />
-      </Container>
       <Faq />
       <FinalCta />
     </>

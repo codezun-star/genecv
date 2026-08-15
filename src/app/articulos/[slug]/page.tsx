@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { AdSlot } from "@/components/layout/ad-slot";
 import { Container } from "@/components/layout/container";
 import { Badge } from "@/components/ui/badge";
 import { buttonStyles } from "@/components/ui/button";
@@ -170,10 +169,6 @@ export default async function ArticlePage({ params }: Params) {
           </p>
         </header>
 
-        <div className="my-8">
-          <AdSlot slotId={`article-top-${article.slug}`} format="leaderboard" />
-        </div>
-
         {article.headings.length > 2 && (
           <nav
             aria-label="Contenido del artículo"
@@ -278,13 +273,6 @@ export default async function ArticlePage({ params }: Params) {
             </div>
           </section>
         )}
-
-        <div className="mt-14">
-          <AdSlot
-            slotId={`article-bottom-${article.slug}`}
-            format="leaderboard"
-          />
-        </div>
       </Container>
     </>
   );
