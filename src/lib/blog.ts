@@ -166,6 +166,20 @@ export const getArticle = cache(async (slug: string): Promise<Article | null> =>
   };
 });
 
+/**
+ * Parte el cuerpo del artículo por sus `<h2>`, para poder intercalar bloques
+ * —hoy, publicidad— entre secciones en vez de solo antes y después del texto.
+ *
+ * El corte es seguro porque `remark-rehype` emite los `<h2>` al nivel superior
+ * del documento: nunca aparecen dentro de una lista, una cita o una tabla, así
+ * que ningún trozo queda con etiquetas a medio cerrar. El primero es la
+ * entradilla, anterior al primer encabezado; si el artículo no tiene ninguno,
+ * vuelve el cuerpo entero en un solo trozo.
+ */
+export function splitBodyIntoSections(html: string): string[] {
+  return html.split(/(?=<h2 id=")/).filter(Boolean);
+}
+
 export function getRelated(article: ArticleMeta, limit = 3): ArticleMeta[] {
   const all = getAllArticles();
   const bySlug = new Map(all.map((a) => [a.slug, a]));

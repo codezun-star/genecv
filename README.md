@@ -60,6 +60,7 @@ src/
     premium/            Página comercial de las plantillas premium
     articulos/[slug]/   Guías por país (renderizadas desde Markdown)
   components/
+    ads/                Huecos publicitarios (banner, nativo)
     layout/             Navbar, footer, contenedor, logo
     landing/            Secciones de la portada
     editor/             Formularios, pasos y reordenamiento
@@ -70,6 +71,7 @@ src/
                         verificador ATS, almacenamiento y exportación a PDF
     site.ts             Configuración del sitio y helper de metadata
     blog.ts             Lectura y renderizado de los artículos Markdown
+    ads.ts              Inventario publicitario: claves, tamaños y huecos
   data/                 Banco de frases por profesión
 content/
   articulos/            25 guías por país en Markdown con frontmatter
@@ -87,16 +89,42 @@ A partir de ahí, cada artículo obtiene automáticamente su URL, su entrada en
 el sitemap, su índice de contenidos, sus enlaces relacionados y el marcado
 estructurado (`Article`, `BreadcrumbList` y `FAQPage`).
 
-## Monetización (pendiente)
+## Monetización
 
 Todo el sitio es gratuito: las plantillas se descargan sin coste, sin marca de
-agua y sin cuenta. No hay pasarela de pago ni base de datos.
+agua y sin cuenta. No hay pasarela de pago ni base de datos. Lo que lo paga es
+**la publicidad**, y por eso el inventario es denso: entre tres y seis huecos
+por página.
 
-No hay publicidad ni huecos reservados para ella. Hubo un `<AdSlot />` que
-reservaba el espacio de once banners sin cargar ninguna red; se quitó al
-descartar los anuncios, porque un hueco vacío ocupa sitio, empuja el contenido
-hacia abajo y no gana nada. Si algún día se integra un proveedor, el componente
-está en el historial de git.
+Las claves, los tamaños y en qué anchura se usa cada uno están en
+`src/lib/ads.ts`, que es el único sitio donde aparecen. Hay tres piezas:
+
+- **`<AdBanner placement="…" />`** — los seis formatos IAB de la red. Mide su
+  propia caja con un `ResizeObserver` y pinta **una** unidad: la más ancha que
+  cabe en la columna (`banner` da 728x90, 468x60 o 320x50; `block` siempre
+  300x250; `sidebar` y `tower`, los formatos de barra lateral). La columna, no
+  la ventana: confundirlas es lo que mete un 728x90 en la columna de 512 px
+  del editor. Una caja escondida mide 0 y no pide nada, así que el CSS nunca
+  esconde un anuncio ya pagado.
+- **`<NativeAd />`** — el banner nativo, que imita tarjetas de contenido.
+  **Uno por página**: su script escribe dentro de un `id` fijo.
+- **La barra social**, el formato flotante, cargada una vez en el layout raíz
+  con `strategy="lazyOnload"`. Como ya ocupa el borde inferior de la pantalla,
+  no hay además un banner fijo propio: se solaparían.
+
+Cada banner se monta **dentro de su propio iframe** (`srcDoc`). No es una
+precaución: el `invoke.js` de la red se pinta con `document.write` —que tras la
+hidratación borraría el documento entero— y lee sus opciones de una global
+`atOptions` que es única por documento, de modo que dos banners en la misma
+página se pisarían. Un iframe por unidad da a cada una su documento y su
+global. Va sin `sandbox` a propósito: un `srcDoc` sin ese atributo hereda el
+origen de la página, que es justo lo que tendría el script pegado en el HTML, y
+restringirlo rompería el clic hacia el anunciante.
+
+Todos los huecos reservan su altura antes de cargar (`AD_RESERVE`), van
+rotulados como «Publicidad» y ninguno se pega al botón de descarga del editor:
+un anuncio junto al botón que la gente viene a pulsar se lleva clics que no
+eran para él.
 
 `isPremium` sigue en el catálogo de plantillas, pero solo distingue el tipo de
 maquetación —barras laterales, líneas de tiempo, retículas— de los diseños de
@@ -106,3 +134,9 @@ una sola columna. No gatea nada.
 
 No hay backend de usuarios. El CV, incluida la fotografía, se guarda solo en el
 navegador y el PDF se genera en el dispositivo del usuario.
+
+La red de anuncios sí es un tercero: sus scripts corren en el navegador del
+visitante y ven lo que ve cualquier servidor al que se le pide algo —IP,
+`User-Agent`, página de origen—, y pueden instalar sus propias cookies. No ven
+el CV, que nunca sale del dispositivo. `src/app/privacidad/page.tsx` lo cuenta
+así y hay que mantenerlo al día: si cambia la red, cambia esa página.

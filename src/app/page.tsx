@@ -1,3 +1,5 @@
+import { AdBanner } from "@/components/ads/ad-banner";
+import { NativeAd } from "@/components/ads/native-ad";
 import { Hero } from "@/components/landing/hero";
 import {
   Faq,
@@ -7,6 +9,7 @@ import {
   HowItWorks,
   TemplatesShowcase,
 } from "@/components/landing/sections";
+import { Container } from "@/components/layout/container";
 import { HOME_STEPS, homeFaq } from "@/lib/landing-content";
 import {
   absoluteUrl,
@@ -83,11 +86,27 @@ export default function HomePage() {
         }}
       />
       <Hero />
+      {/* Justo bajo el pliegue: es el hueco que más se ve de la portada. */}
+      <Container className="pb-6">
+        <AdBanner placement="banner" />
+      </Container>
       <Features />
       <Formats />
+      <Container className="py-12">
+        <AdBanner placement="banner" />
+      </Container>
       <HowItWorks />
       <TemplatesShowcase />
+      {/* El nativo va aquí, con la vista puesta en las plantillas: es donde el
+          visitante está eligiendo y donde una fila de piezas parecidas a
+          tarjetas se lee como una recomendación más. */}
+      <Container className="py-14">
+        <NativeAd />
+      </Container>
       <Faq />
+      <Container className="pb-12">
+        <AdBanner placement="banner" />
+      </Container>
       <FinalCta />
     </>
   );

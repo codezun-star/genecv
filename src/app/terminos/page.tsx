@@ -1,3 +1,4 @@
+import { AdBanner } from "@/components/ads/ad-banner";
 import { Container } from "@/components/layout/container";
 import { buildMetadata, siteConfig } from "@/lib/site";
 
@@ -54,6 +55,8 @@ export default function TermsPage() {
           </p>
         </section>
       </div>
+
+      <AdBanner placement="banner" className="mt-14" />
     </Container>
   );
 }

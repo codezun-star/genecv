@@ -11,6 +11,8 @@ import { FormatStep } from "@/components/editor/steps/format-step";
 import { PersonalStep } from "@/components/editor/steps/personal-step";
 import { SkillsStep } from "@/components/editor/steps/skills-step";
 import { TemplateStep } from "@/components/editor/steps/template-step";
+import { AdBanner } from "@/components/ads/ad-banner";
+import { NativeAd } from "@/components/ads/native-ad";
 import { CvPreview } from "@/components/cv/cv-preview";
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
@@ -165,6 +167,11 @@ export function EditorShell() {
               Borrar borrador
             </Button>
           </div>
+
+          {/* Debajo de todo, y no pegado al botón de descarga: en un editor,
+              un anuncio junto al botón que la gente viene a pulsar se lleva
+              clics que no eran para él. */}
+          <AdBanner placement="banner" className="mt-10" />
         </div>
 
         {/* ------------------------------------------------------ Preview */}
@@ -200,9 +207,18 @@ export function EditorShell() {
             >
               <CvPreview view={view} templateId={cv.templateId} />
             </div>
+
+            {/* Pegado junto a la vista previa: el editor es donde más rato
+                se está, así que este hueco acompaña toda la sesión en lugar de
+                verse una vez. `sidebar` ya se esconde solo por debajo de
+                1024 px, donde esta columna es la vista previa plegada y no hay
+                sitio para nada más. */}
+            <AdBanner placement="sidebar" className="mt-4" />
           </div>
         </aside>
       </div>
+
+      <NativeAd className="mt-12" />
     </Container>
   );
 }

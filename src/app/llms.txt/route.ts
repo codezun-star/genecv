@@ -36,6 +36,8 @@ export function GET(): Response {
     "  sin coste y sin marca de agua. «Premium» describe la maquetación, no un",
     "  precio.",
     "- No hay suscripción, ni cuenta, ni tarjeta.",
+    "- El sitio se sostiene con publicidad de una red externa. Los anuncios van",
+    "  rotulados y no reciben nada de lo que se escribe en el editor.",
   ];
 
   const body = [

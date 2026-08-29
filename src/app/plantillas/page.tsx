@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { Fragment } from "react";
 
+import { AdBanner } from "@/components/ads/ad-banner";
+import { NativeAd } from "@/components/ads/native-ad";
 import { TemplateThumb } from "@/components/cv/template-thumb";
 import { Container } from "@/components/layout/container";
 import { Badge } from "@/components/ui/badge";
@@ -103,37 +106,53 @@ export default function TemplatesPage() {
           </p>
         </Reveal>
 
+        <AdBanner placement="banner" className="mt-10" />
+
         <RevealGroup className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {FREE_TEMPLATES.map((template) => (
-            <RevealItem key={template.id}>
-              <Link
-                href={`/crear?plantilla=${template.id}`}
-                className="group block h-full"
-              >
-                <Card className="group-hover:shadow-lift group-hover:border-secondary-200 h-full transition-[box-shadow,border-color,transform] duration-200 group-hover:-translate-y-1">
-                  <div className="bg-surface border-line mb-4 aspect-[3/4] overflow-hidden rounded-lg border">
-                    <TemplateThumb template={template} />
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <CardTitle className="text-base">{template.name}</CardTitle>
-                    {isAtsSafe(template) && <Badge tone="success">ATS</Badge>}
-                  </div>
-                  <CardText>{template.description}</CardText>
-                  <ul className="mt-4 flex flex-wrap gap-1.5">
-                    {template.tags.map((tag) => (
-                      <li
-                        key={tag}
-                        className="bg-surface text-ink-muted rounded-full px-2 py-0.5 text-xs"
-                      >
-                        {tag}
-                      </li>
-                    ))}
-                  </ul>
-                </Card>
-              </Link>
-            </RevealItem>
+          {FREE_TEMPLATES.map((template, index) => (
+            <Fragment key={template.id}>
+              {/* Un rectángulo como una tarjeta más, al empezar la segunda
+                  fila: la rejilla es de tres columnas y el hueco de 300x250
+                  entra sin deformar ninguna. */}
+              {index === 3 && (
+                <RevealItem className="flex items-center justify-center sm:col-span-2 lg:col-span-1">
+                  <AdBanner placement="block" />
+                </RevealItem>
+              )}
+              <RevealItem>
+                <Link
+                  href={`/crear?plantilla=${template.id}`}
+                  className="group block h-full"
+                >
+                  <Card className="group-hover:shadow-lift group-hover:border-secondary-200 h-full transition-[box-shadow,border-color,transform] duration-200 group-hover:-translate-y-1">
+                    <div className="bg-surface border-line mb-4 aspect-[3/4] overflow-hidden rounded-lg border">
+                      <TemplateThumb template={template} />
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <CardTitle className="text-base">{template.name}</CardTitle>
+                      {isAtsSafe(template) && <Badge tone="success">ATS</Badge>}
+                    </div>
+                    <CardText>{template.description}</CardText>
+                    <ul className="mt-4 flex flex-wrap gap-1.5">
+                      {template.tags.map((tag) => (
+                        <li
+                          key={tag}
+                          className="bg-surface text-ink-muted rounded-full px-2 py-0.5 text-xs"
+                        >
+                          {tag}
+                        </li>
+                      ))}
+                    </ul>
+                  </Card>
+                </Link>
+              </RevealItem>
+            </Fragment>
           ))}
         </RevealGroup>
+
+        {/* Entre los diseños gratuitos y los premium: el visitante está
+            comparando, que es cuando más mira. */}
+        <NativeAd className="mt-14" />
       </Container>
 
       <section className="bg-canvas border-line border-t py-16">
@@ -161,6 +180,8 @@ export default function TemplatesPage() {
               Saber más sobre premium
             </Link>
           </Reveal>
+
+          <AdBanner placement="banner" className="mt-14" />
         </Container>
       </section>
     </>

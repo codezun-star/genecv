@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import Script from "next/script";
 
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
+import { SOCIAL_BAR_SRC } from "@/lib/ads";
 import { siteConfig } from "@/lib/site";
 
 import "./globals.css";
@@ -93,6 +95,18 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+
+        {/*
+          Barra social: el formato flotante de la red, en todas las rutas y una
+          sola vez. Va con `lazyOnload` —se pide cuando el navegador está
+          ocioso— porque es publicidad: no puede competir por el hilo principal
+          con el editor ni con la generación del PDF.
+        */}
+        <Script
+          id="social-bar"
+          src={SOCIAL_BAR_SRC}
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );

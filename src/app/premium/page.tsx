@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { AdBanner } from "@/components/ads/ad-banner";
+import { NativeAd } from "@/components/ads/native-ad";
 import { TemplateThumb } from "@/components/cv/template-thumb";
 import { Container } from "@/components/layout/container";
 import { Badge } from "@/components/ui/badge";
@@ -88,6 +90,8 @@ export default function PremiumPage() {
         </div>
       </Reveal>
 
+      <AdBanner placement="banner" className="mt-10" />
+
       <RevealGroup className="mt-14 grid gap-6 md:grid-cols-3">
         {STEPS.map((step, i) => (
           <RevealItem key={step.title}>
@@ -103,6 +107,10 @@ export default function PremiumPage() {
           </RevealItem>
         ))}
       </RevealGroup>
+
+      {/* Antes de la rejilla de diseños, que es lo que se ha venido a ver:
+          se cruza sí o sí de camino. */}
+      <NativeAd className="mt-14" />
 
       <Reveal className="mt-16">
         <h2 className="text-2xl font-bold">Los diseños</h2>
@@ -139,6 +147,8 @@ export default function PremiumPage() {
           , con los diseños de una sola columna pensados para filtros ATS.
         </p>
       </Reveal>
+
+      <AdBanner placement="banner" className="mt-14" />
     </Container>
   );
 }

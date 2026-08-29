@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { AdBanner } from "@/components/ads/ad-banner";
 import { Container } from "@/components/layout/container";
 import { buttonStyles } from "@/components/ui/button";
 
@@ -20,6 +21,8 @@ export default function NotFound() {
           Ir al editor
         </Link>
       </div>
+
+      <AdBanner placement="banner" className="mt-16" />
     </Container>
   );
 }
