@@ -5,7 +5,7 @@ import Script from "next/script";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { SOCIAL_BAR_SRC } from "@/lib/ads";
-import { siteConfig } from "@/lib/site";
+import { OG_IMAGE, siteConfig } from "@/lib/site";
 
 import "./globals.css";
 
@@ -51,14 +51,21 @@ export const metadata: Metadata = {
     locale: siteConfig.locale,
     title: `${siteConfig.name} — ${siteConfig.tagline}`,
     description: siteConfig.description,
+    images: [OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: `${siteConfig.name} — ${siteConfig.tagline}`,
     description: siteConfig.description,
     creator: siteConfig.twitter,
+    images: [OG_IMAGE],
   },
-  robots: { index: true, follow: true },
+  // Sin `robots` aquí a propósito: indexar es lo que hace un rastreador si
+  // nadie le dice lo contrario, así que la etiqueta no añadía nada, y en la
+  // página de error se juntaba con el `noindex` que pone Next y dejaba dos
+  // `<meta name="robots">` que se contradicen. Cada página real declara el
+  // suyo en `buildMetadata`.
+
   // Instalada en iOS: sin barra del navegador y con el nombre corto.
   appleWebApp: {
     capable: true,

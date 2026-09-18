@@ -5,8 +5,13 @@ export const siteConfig = {
   domain: "genecv.codezun.com",
   url: "https://genecv.codezun.com",
   tagline: "Crea un CV profesional en minutos, gratis",
+  /**
+   * El resumen del sitio, y también su `<meta name="description">`, así que
+   * se queda por debajo de los 160 caracteres que muestra un buscador: la
+   * versión anterior medía 193 y llegaba cortada a media frase.
+   */
   description:
-    "Generador de currículums gratuito y universal. Plantillas compatibles con ATS, formatos adaptados a Europa, Latinoamérica y el mundo anglosajón, vista previa en tiempo real y exportación a PDF.",
+    "Generador de currículums gratuito y universal: plantillas compatibles con ATS, formatos para Europa, Latinoamérica y el mundo anglosajón, y descarga en PDF.",
   locale: "es_ES",
   lang: "es",
   twitter: "@codezun",
@@ -27,6 +32,26 @@ export const siteConfig = {
 export function absoluteUrl(path: string): string {
   return `${siteConfig.url}${path}`;
 }
+
+/**
+ * La imagen de las tarjetas sociales, declarada a mano y no dejada al fichero
+ * `opengraph-image.png`.
+ *
+ * El fichero existe y funciona, pero solo por sí solo: Next fusiona los
+ * metadatos **superficialmente**, así que en cuanto una página declara su
+ * propio `openGraph` —y `buildMetadata` lo declara en todas— ese objeto
+ * sustituye entero al del layout raíz, imagen incluida. El resultado era que
+ * la portada tenía tarjeta y las otras treinta y una rutas, las veinticinco
+ * guías entre ellas, se compartían en WhatsApp o LinkedIn como un enlace
+ * desnudo. Al ir aquí, la imagen viaja dentro del mismo objeto que sobrescribe
+ * y ya no puede perderse.
+ */
+export const OG_IMAGE = {
+  url: absoluteUrl("/opengraph-image.png"),
+  width: 1200,
+  height: 630,
+  alt: `${siteConfig.name} — ${siteConfig.tagline}`,
+} as const;
 
 /** Organización emisora, reutilizada por los datos estructurados. */
 export const publisherJsonLd = {
@@ -194,12 +219,14 @@ export function buildMetadata({
       locale: siteConfig.locale,
       title,
       description,
+      images: [OG_IMAGE],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
       creator: siteConfig.twitter,
+      images: [OG_IMAGE],
     },
   };
 }

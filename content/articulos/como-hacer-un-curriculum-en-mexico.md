@@ -2,6 +2,7 @@
 title: "Cómo hacer un currículum en México: formato, datos y errores comunes"
 cardTitle: "Cómo hacer un currículum en México"
 description: "Qué esperan los reclutadores mexicanos en 2026: extensión, foto, qué datos personales evitar por la LFPDPPP y cómo redactar la experiencia para pasar los filtros de OCC y LinkedIn."
+metaDescription: "Qué esperan los reclutadores mexicanos: extensión, foto, qué datos evitar por la LFPDPPP y cómo redactar la experiencia para OCC y LinkedIn."
 country: "México"
 countryCode: "MX"
 region: "latam"

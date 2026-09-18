@@ -14,7 +14,13 @@ import {
   splitBodyIntoSections,
 } from "@/lib/blog";
 import { getRegion } from "@/lib/cv/regions";
-import { buildMetadata, publisherJsonLd, siteConfig } from "@/lib/site";
+import {
+  OG_IMAGE,
+  breadcrumbJsonLd,
+  buildMetadata,
+  publisherJsonLd,
+  siteConfig,
+} from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -36,9 +42,11 @@ export async function generateMetadata({ params }: Params) {
     });
   }
 
+  // `metaDescription` es la versión que cabe en un resultado de búsqueda; la
+  // larga se queda para la entradilla que se ve en la página.
   const base = buildMetadata({
     title: article.title,
-    description: article.description,
+    description: article.metaDescription,
     path: `/articulos/${article.slug}`,
     keywords: article.keywords,
   });
@@ -103,35 +111,37 @@ export default async function ArticlePage({ params }: Params) {
       "@type": "Article",
       headline: article.title,
       description: article.description,
-      inLanguage: "es",
+      inLanguage: siteConfig.lang,
       url,
       mainEntityOfPage: { "@type": "WebPage", "@id": url },
+      // Google pide `image` en los datos de un artículo, y sin ella la guía
+      // queda fuera de los resultados que llevan miniatura. No hay una imagen
+      // por guía, así que va la del sitio: es la misma que ya viaja en la
+      // tarjeta social de esta página, no una que no exista.
+      image: [OG_IMAGE.url],
       datePublished: article.publishedAt,
       dateModified: article.updatedAt,
       wordCount: article.wordCount,
       keywords: article.keywords.join(", "),
+      articleSection: article.group,
+      isPartOf: { "@id": `${siteConfig.url}/#website` },
       author: { "@type": "Organization", name: siteConfig.name, url: siteConfig.url },
       publisher: publisherJsonLd,
     },
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Inicio", item: siteConfig.url },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "Artículos",
-          item: `${siteConfig.url}/articulos`,
-        },
-        { "@type": "ListItem", position: 3, name: article.cardTitle, item: url },
-      ],
-    },
+    // Las mismas migas que pinta la navegación de abajo, con el helper
+    // compartido en lugar de una copia a mano que ya se había desviado: la
+    // suya apuntaba a `siteConfig.url` sin barra final para «Inicio», y la de
+    // las demás páginas del sitio la lleva.
+    breadcrumbJsonLd([
+      { name: "Artículos", path: "/articulos" },
+      { name: article.cardTitle, path: `/articulos/${article.slug}` },
+    ]),
     ...(article.faq.length > 0
       ? [
           {
             "@context": "https://schema.org",
             "@type": "FAQPage",
+            inLanguage: siteConfig.lang,
             mainEntity: article.faq.map((entry) => ({
               "@type": "Question",
               name: entry.q,
@@ -146,7 +156,9 @@ export default async function ArticlePage({ params }: Params) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
       />
 
       {/*

@@ -2,6 +2,7 @@
 title: "Cómo hacer un CV en Portugal: formato, idioma y equivalencia de títulos"
 cardTitle: "Cómo hacer un CV en Portugal"
 description: "Portugal contrata cada vez más talento español y latinoamericano. Cómo estructurar el currículum portugués, si escribirlo en portugués o inglés, qué es el NIF y qué esperan los reclutadores de Lisboa y Oporto."
+metaDescription: "Cómo estructurar el currículum portugués: si escribirlo en portugués o inglés, qué es el NIF y qué esperan los reclutadores de Lisboa y Oporto."
 country: "Portugal"
 countryCode: "PT"
 region: "europa"

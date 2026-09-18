@@ -2,6 +2,7 @@
 title: "Cómo hacer un CV para Irlanda: formato, PPS y trabajo en tecnología"
 cardTitle: "CV para Irlanda"
 description: "Irlanda concentra las sedes europeas de las grandes tecnológicas y contrata mucho talento hispanohablante. Cómo estructurar el CV irlandés, qué decir del derecho a trabajar y qué esperan los reclutadores."
+metaDescription: "Cómo estructurar el CV irlandés: qué decir sobre tu derecho a trabajar, qué esperan los reclutadores y cómo entrar en las tecnológicas de Dublín."
 country: "Irlanda"
 countryCode: "IE"
 region: "anglo"

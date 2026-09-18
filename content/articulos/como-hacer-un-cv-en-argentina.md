@@ -2,6 +2,7 @@
 title: "Cómo hacer un CV en Argentina: extensión, foto y qué datos no poner"
 cardTitle: "Cómo hacer un CV en Argentina"
 description: "Guía del currículum argentino: estructura, si conviene poner foto, qué hacer con los estudios en curso, cómo presentar trabajos freelance y errores que descartan en Bumeran y LinkedIn."
+metaDescription: "Guía del currículum argentino: estructura, si conviene poner foto, cómo presentar estudios en curso y trabajos freelance, y qué descarta en Bumeran."
 country: "Argentina"
 countryCode: "AR"
 region: "latam"

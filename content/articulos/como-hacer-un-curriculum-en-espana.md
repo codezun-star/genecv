@@ -2,6 +2,7 @@
 title: "Cómo hacer un currículum en España: formato, foto y errores que descartan"
 cardTitle: "Cómo hacer un currículum en España"
 description: "Guía completa del CV español: qué formato usar, si poner foto, cuántas páginas, qué datos personales incluir y los errores que hacen que te descarten antes de la entrevista."
+metaDescription: "Guía del CV español: qué formato usar, si poner foto, cuántas páginas, qué datos personales incluir y los errores que hacen que te descarten."
 country: "España"
 countryCode: "ES"
 region: "europa"

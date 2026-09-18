@@ -2,6 +2,7 @@
 title: "Cómo hacer un resume para Estados Unidos desde España o Latinoamérica"
 cardTitle: "Resume para Estados Unidos"
 description: "El resume estadounidense no es un CV traducido: sin foto, sin datos personales, una página y logros cuantificados. Cómo convertir tu currículum y superar los filtros ATS de las empresas de EE. UU."
+metaDescription: "El resume estadounidense no es un CV traducido: una página, sin foto y con logros cuantificados. Cómo convertirlo y pasar los filtros ATS."
 country: "Estados Unidos"
 countryCode: "US"
 region: "anglo"

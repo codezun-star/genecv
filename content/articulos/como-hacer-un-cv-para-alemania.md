@@ -2,6 +2,7 @@
 title: "Cómo hacer un CV para Alemania: el Lebenslauf paso a paso"
 cardTitle: "CV para Alemania (Lebenslauf)"
 description: "El currículum alemán tiene reglas propias: tabla cronológica, foto profesional, firma y una carpeta de certificados. Qué es el Lebenslauf, cómo se estructura y qué documentos te van a pedir."
+metaDescription: "Qué es el Lebenslauf y cómo se estructura: tabla cronológica, foto profesional, firma y la carpeta de certificados que te van a pedir."
 country: "Alemania"
 countryCode: "DE"
 region: "europa"

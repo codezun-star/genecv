@@ -2,6 +2,7 @@
 title: "Cómo hacer un CV en Francia: formato, lettre de motivation y foto"
 cardTitle: "Cómo hacer un CV en Francia"
 description: "El CV francés cabe en una página, se acompaña siempre de lettre de motivation y usa una terminología propia. Estructura, equivalencia de títulos, nivel de francés exigido y errores que descartan."
+metaDescription: "El CV francés cabe en una página y va con lettre de motivation. Estructura, equivalencia de títulos, nivel de francés exigido y errores que descartan."
 country: "Francia"
 countryCode: "FR"
 region: "europa"

@@ -2,6 +2,7 @@
 title: "Cómo hacer un CV en Italia: formato, autorización de datos y Europass"
 cardTitle: "Cómo hacer un CV en Italia"
 description: "El currículum italiano tiene una particularidad legal: sin la autorizzazione al trattamento dei dati, muchas empresas no pueden ni archivarlo. Estructura, foto, Europass y equivalencia de títulos."
+metaDescription: "El currículum italiano exige la autorizzazione al trattamento dei dati para poder archivarse. Estructura, foto, Europass y equivalencia de títulos."
 country: "Italia"
 countryCode: "IT"
 region: "europa"

@@ -81,13 +81,26 @@ content/
 
 Los artículos son ficheros Markdown en `content/articulos`, parseados en
 tiempo de compilación. No hay base de datos ni CMS: **publicar es añadir un
-`.md`** a esa carpeta. Cada fichero lleva frontmatter con el título SEO, la
-meta descripción, el país, la región de CV asociada, las palabras clave, las
-fechas y el bloque de preguntas frecuentes.
+`.md`** a esa carpeta. Cada fichero lleva frontmatter con el título SEO, el
+país, la región de CV asociada, las palabras clave, las fechas y el bloque de
+preguntas frecuentes.
+
+Las descripciones son **dos**, y conviene no fundirlas:
+
+| Campo             | Dónde sale                                  | Presupuesto      |
+| ----------------- | ------------------------------------------- | ---------------- |
+| `description`     | La entradilla bajo el `<h1>` y las tarjetas | ~200 caracteres  |
+| `metaDescription` | `<meta name="description">` y las tarjetas sociales | ≤160 caracteres |
+
+Google corta la descripción alrededor de los 160 caracteres, y una entradilla
+que se lee bien en la página pasa de largo esa marca. Con un solo campo había
+que elegir entre una página pobre y un resultado de búsqueda cortado a media
+frase; con dos, cada texto se escribe para su sitio. Si `metaDescription`
+falta, se usa `description`.
 
 A partir de ahí, cada artículo obtiene automáticamente su URL, su entrada en
-el sitemap, su índice de contenidos, sus enlaces relacionados y el marcado
-estructurado (`Article`, `BreadcrumbList` y `FAQPage`).
+el sitemap, su índice de contenidos, sus enlaces relacionados, su tarjeta
+social y el marcado estructurado (`Article`, `BreadcrumbList` y `FAQPage`).
 
 ## Monetización
 

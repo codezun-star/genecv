@@ -2,6 +2,7 @@
 title: "Cómo hacer un CV para Nueva Zelanda: formato kiwi, referees y visado"
 cardTitle: "CV para Nueva Zelanda"
 description: "El CV neozelandés no es el resume estadounidense: admite dos o tres páginas, exige referees con contacto y da por hecho que dirás tu situación de visado. Formato, homologación NZQA y errores que descartan."
+metaDescription: "El CV neozelandés admite dos o tres páginas y exige referees con contacto. Formato, homologación NZQA, visado y errores que descartan."
 country: "Nueva Zelanda"
 countryCode: "NZ"
 region: "anglo"

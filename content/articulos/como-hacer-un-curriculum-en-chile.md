@@ -2,6 +2,7 @@
 title: "Cómo hacer un currículum en Chile: formato, extensión y errores frecuentes"
 cardTitle: "Cómo hacer un currículum en Chile"
 description: "Qué espera el mercado chileno en 2026: estructura del CV, si conviene poner foto, qué datos omitir, cómo presentar la experiencia y cómo adaptarlo a Trabajando.com y LinkedIn."
+metaDescription: "Qué espera el mercado chileno: estructura del CV, si conviene poner foto, qué datos omitir y cómo adaptarlo a Trabajando.com y LinkedIn."
 country: "Chile"
 countryCode: "CL"
 region: "latam"

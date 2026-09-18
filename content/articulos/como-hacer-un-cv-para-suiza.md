@@ -2,6 +2,7 @@
 title: "Cómo hacer un CV para Suiza: idiomas, certificados y expectativas locales"
 cardTitle: "CV para Suiza"
 description: "Suiza tiene cuatro regiones lingüísticas y un proceso de candidatura muy formal. En qué idioma escribir el CV, qué son los Arbeitszeugnisse, si poner foto y cómo presentar títulos extranjeros."
+metaDescription: "En qué idioma escribir el CV suizo, qué son los Arbeitszeugnisse, si poner foto y cómo presentar títulos extranjeros en un proceso muy formal."
 country: "Suiza"
 countryCode: "CH"
 region: "europa"

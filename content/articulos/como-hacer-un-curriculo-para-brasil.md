@@ -2,6 +2,7 @@
 title: "Cómo hacer un currículo para Brasil: formato, idioma y diferencias clave"
 cardTitle: "Currículo para Brasil"
 description: "Trabajar en Brasil desde España o Latinoamérica: cómo se estructura el currículo brasileño, si hace falta portugués, qué datos se incluyen, el papel del CPF y cómo adaptarlo a Catho y LinkedIn."
+metaDescription: "Cómo se estructura el currículo brasileño: qué datos se incluyen, si hace falta portugués, el papel del CPF y cómo adaptarlo a Catho y LinkedIn."
 country: "Brasil"
 countryCode: "BR"
 region: "latam"

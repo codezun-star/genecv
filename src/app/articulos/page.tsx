@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardText, CardTitle } from "@/components/ui/card";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/reveal";
 import { getAllArticles, getArticlesByGroup } from "@/lib/blog";
-import { buildMetadata, siteConfig } from "@/lib/site";
+import { breadcrumbJsonLd, buildMetadata, siteConfig } from "@/lib/site";
 
 export const metadata = buildMetadata({
   title: "Guías para hacer tu CV por país",
@@ -27,25 +27,34 @@ export default function ArticlesPage() {
   const groups = getArticlesByGroup();
   const all = getAllArticles();
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    name: "Guías para hacer tu CV por país",
-    url: `${siteConfig.url}/articulos`,
-    inLanguage: "es",
-    hasPart: all.map((article) => ({
-      "@type": "Article",
-      headline: article.title,
-      url: `${siteConfig.url}/articulos/${article.slug}`,
-      datePublished: article.publishedAt,
-    })),
-  };
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: "Guías para hacer tu CV por país",
+      url: `${siteConfig.url}/articulos`,
+      description:
+        "Qué espera cada mercado en un currículum: formato, foto, extensión y errores que descartan, país por país.",
+      inLanguage: siteConfig.lang,
+      isPartOf: { "@id": `${siteConfig.url}/#website` },
+      hasPart: all.map((article) => ({
+        "@type": "Article",
+        headline: article.title,
+        url: `${siteConfig.url}/articulos/${article.slug}`,
+        datePublished: article.publishedAt,
+        dateModified: article.updatedAt,
+      })),
+    },
+    breadcrumbJsonLd([{ name: "Artículos", path: "/articulos" }]),
+  ];
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
       />
 
       <Container className="py-16">

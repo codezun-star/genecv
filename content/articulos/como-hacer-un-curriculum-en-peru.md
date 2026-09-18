@@ -2,6 +2,7 @@
 title: "Cómo hacer un currículum en Perú: formato, CV documentado y errores"
 cardTitle: "Cómo hacer un currículum en Perú"
 description: "Guía del CV peruano: estructura para el sector privado, qué es el currículum documentado y cuándo se pide, si poner foto, qué datos omitir y cómo adaptarlo a Bumeran y Computrabajo."
+metaDescription: "Guía del CV peruano: estructura, qué es el currículum documentado y cuándo se pide, si poner foto y cómo adaptarlo a Bumeran y Computrabajo."
 country: "Perú"
 countryCode: "PE"
 region: "latam"

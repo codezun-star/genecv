@@ -2,6 +2,7 @@
 title: "Cómo hacer un CV para Australia: extensión, selection criteria y visados"
 cardTitle: "CV para Australia"
 description: "El CV australiano admite más páginas que el resume estadounidense y muchas ofertas exigen responder a selection criteria. Estructura, referencias, equivalencia de títulos y qué decir sobre tu visado."
+metaDescription: "El CV australiano admite más páginas que el resume y muchas ofertas piden selection criteria. Estructura, referencias, títulos y visado."
 country: "Australia"
 countryCode: "AU"
 region: "anglo"

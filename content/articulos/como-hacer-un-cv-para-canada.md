@@ -2,6 +2,7 @@
 title: "Cómo hacer un CV para Canadá: formato, equivalencias y trampas comunes"
 cardTitle: "CV para Canadá"
 description: "El resume canadiense se parece al estadounidense pero tiene reglas propias: sin foto, sin datos personales, equivalencia de títulos con ECA y adaptación a Quebec. Guía completa para postular desde fuera."
+metaDescription: "El resume canadiense tiene reglas propias: sin foto, sin datos personales, títulos con ECA y adaptación a Quebec. Guía para postular desde fuera."
 country: "Canadá"
 countryCode: "CA"
 region: "anglo"

@@ -2,6 +2,7 @@
 title: "Cómo hacer un currículum en Guatemala: formato, datos personales y el CV bilingüe"
 cardTitle: "Currículum en Guatemala"
 description: "Qué formato de currículum funciona hoy en Guatemala, qué datos personales conviene quitar del modelo de siempre, cómo declarar el nivel de inglés para las vacantes bilingües y qué papeles se piden después."
+metaDescription: "Qué formato de currículum funciona hoy en Guatemala: qué datos quitar del modelo de siempre, cómo declarar tu inglés y qué papeles piden después."
 country: "Guatemala"
 countryCode: "GT"
 region: "latam"

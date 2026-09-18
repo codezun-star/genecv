@@ -2,6 +2,7 @@
 title: "Cómo hacer un CV para trabajar en Dubái: formato, visado y estafas que evitar"
 cardTitle: "CV para Dubái y Emiratos"
 description: "El CV para Emiratos no es el americano: admite foto, espera datos personales y exige decir tu situación de visado. Formato, legalización de títulos, paquete salarial y cómo detectar ofertas falsas."
+metaDescription: "El CV para Emiratos admite foto, espera datos personales y exige tu situación de visado. Formato, legalización de títulos y ofertas falsas."
 country: "Emiratos Árabes Unidos"
 countryCode: "AE"
 region: "anglo"

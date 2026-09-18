@@ -2,6 +2,7 @@
 title: "Síntesis curricular en Venezuela: qué es, cómo se hace y en qué se diferencia del CV"
 cardTitle: "Síntesis curricular (Venezuela)"
 description: "En Venezuela se pide síntesis curricular: una o dos páginas, sin anexos y al grano. Qué lleva, qué datos personales sobran, cómo preparar las constancias de trabajo y qué cambia si postulas fuera del país."
+metaDescription: "La síntesis curricular venezolana va al grano: una o dos páginas sin anexos. Qué lleva, qué datos sobran y cómo preparar las constancias."
 country: "Venezuela"
 countryCode: "VE"
 region: "latam"

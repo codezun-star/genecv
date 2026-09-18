@@ -2,6 +2,7 @@
 title: "Cómo hacer un currículum sin experiencia laboral (y que te llamen)"
 cardTitle: "CV sin experiencia laboral"
 description: "Si nunca has trabajado, tu CV no está vacío: está mal ordenado. Qué poner en lugar de la experiencia, cómo redactar el perfil y qué secciones añadir para conseguir la primera entrevista."
+metaDescription: "Tu CV sin experiencia no está vacío, está mal ordenado. Qué poner en lugar del empleo, cómo redactar el perfil y qué secciones añadir."
 country: "España"
 countryCode: "ES"
 region: "europa"

@@ -2,6 +2,7 @@
 title: "Cómo hacer un CV para los Países Bajos: formato, motivatiebrief y BSN"
 cardTitle: "CV para los Países Bajos"
 description: "El mercado neerlandés es directo y valora la concisión. Cómo estructurar el CV holandés, si escribirlo en inglés o neerlandés, qué es la motivatiebrief y cómo funciona la regla del 30 % para extranjeros."
+metaDescription: "Cómo estructurar el CV holandés: si escribirlo en inglés o neerlandés, qué es la motivatiebrief y cómo funciona la regla del 30 % para extranjeros."
 country: "Países Bajos"
 countryCode: "NL"
 region: "europa"

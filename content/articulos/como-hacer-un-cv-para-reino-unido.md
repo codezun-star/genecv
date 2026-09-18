@@ -2,6 +2,7 @@
 title: "Cómo hacer un CV para Reino Unido: personal statement y referencias"
 cardTitle: "CV para Reino Unido"
 description: "El CV británico no es el resume estadounidense ni el currículum español. Qué es el personal statement, cuántas páginas se aceptan, cómo se manejan las referencias y qué omitir siempre."
+metaDescription: "El CV británico no es el resume ni el currículum español: qué es el personal statement, cuántas páginas se aceptan y cómo se dan las referencias."
 country: "Reino Unido"
 countryCode: "GB"
 region: "anglo"

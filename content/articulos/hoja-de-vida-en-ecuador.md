@@ -2,6 +2,7 @@
 title: "Hoja de vida en Ecuador: formato actualizado, qué incluir y qué sobra"
 cardTitle: "Hoja de vida en Ecuador"
 description: "En Ecuador se pide hoja de vida. Qué estructura funciona en el sector privado, por qué el título registrado en SENESCYT pesa tanto, qué datos personales conviene omitir y cómo sobrevivir a Multitrabajos."
+metaDescription: "Qué estructura de hoja de vida funciona en Ecuador, por qué pesa tanto el título registrado en SENESCYT y qué datos personales conviene omitir."
 country: "Ecuador"
 countryCode: "EC"
 region: "latam"

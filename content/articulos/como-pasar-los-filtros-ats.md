@@ -2,6 +2,7 @@
 title: "Cómo pasar los filtros ATS: guía práctica para que tu CV llegue a una persona"
 cardTitle: "Cómo pasar los filtros ATS"
 description: "Los sistemas de seguimiento de candidaturas descartan currículums antes de que nadie los lea. Qué es un ATS, cómo procesa tu PDF, qué formatos rompe y cómo adaptar tu CV sin volverlo feo."
+metaDescription: "Qué es un ATS, cómo procesa tu PDF, qué formatos rompe y cómo adaptar tu currículum para pasar el filtro sin que quede feo."
 country: "Universal"
 countryCode: "XX"
 region: "europa"

@@ -30,8 +30,22 @@ export interface FaqEntry {
 export interface ArticleMeta {
   slug: string;
   title: string;
-  /** Meta description — keep it around 150-160 characters. */
+  /**
+   * La entradilla: se pinta bajo el `<h1>` y resume la guía en las tarjetas
+   * del índice. Ahí un párrafo de doscientos caracteres se lee bien.
+   */
   description: string;
+  /**
+   * Lo mismo, recortado a lo que cabe en un resultado de búsqueda.
+   *
+   * Los dos textos existen porque el presupuesto no es el mismo: Google corta
+   * la descripción alrededor de los 160 caracteres y las veinticinco guías
+   * pasaban de 179, así que todas se cortaban a media frase justo donde se
+   * decide el clic. Estirar la entradilla hasta caber ahí habría empobrecido
+   * la página para arreglar el buscador; con dos campos, cada uno se escribe
+   * para su sitio. Si falta, se usa `description` tal cual.
+   */
+  metaDescription: string;
   /** Shorter headline used in listings when the SEO title is long. */
   cardTitle: string;
   country: string;
@@ -74,6 +88,7 @@ function readFrontmatter(fileName: string): { meta: ArticleMeta; body: string } 
       slug,
       title: String(data.title ?? slug),
       description: String(data.description ?? ""),
+      metaDescription: String(data.metaDescription ?? data.description ?? ""),
       cardTitle: String(data.cardTitle ?? data.title ?? slug),
       country: String(data.country ?? ""),
       countryCode: String(data.countryCode ?? ""),

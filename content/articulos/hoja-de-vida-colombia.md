@@ -2,6 +2,7 @@
 title: "Hoja de vida en Colombia: qué es, cómo se hace y en qué se diferencia del CV"
 cardTitle: "Hoja de vida en Colombia"
 description: "En Colombia se pide hoja de vida, no currículum. Qué significa esa diferencia, qué formato usar según el sector, cuándo hace falta el formato de la Función Pública y qué datos evitar."
+metaDescription: "En Colombia se pide hoja de vida, no currículum. Qué formato usar según el sector, cuándo hace falta el de la Función Pública y qué datos evitar."
 country: "Colombia"
 countryCode: "CO"
 region: "latam"
