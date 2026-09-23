@@ -153,3 +153,19 @@ export const NATIVE_AD = {
  */
 export const SOCIAL_BAR_SRC =
   "https://pl31073480.profitableratecpmnetwork.com/9c/70/70/9c7070b82b87c522a73a696e4d9a930e.js";
+
+/**
+ * Unidad suelta: un `<script>` sin contenedor ni tamaño, de la misma familia
+ * que la barra social —la red decide ella dónde y cuándo se pinta—. Por eso no
+ * está en `AD_UNITS`: aquí no hay caja que medir ni alto que reservar.
+ *
+ * `skipRoutes` la deja fuera del editor, y es a propósito: es el único punto
+ * del sitio donde alguien está trabajando —escribiendo su CV y generando el
+ * PDF en su propio navegador— y un formato que se pinta por encima de la
+ * página ahí estorba de verdad. Son prefijos de ruta; los compara
+ * `in-page-ad.tsx` contra `usePathname()`.
+ */
+export const IN_PAGE_AD = {
+  src: "https://pl31475927.profitableratecpmnetwork.com/f5/56/f6/f556f6116702d68dc3a9fbbecdea07c1.js",
+  skipRoutes: ["/crear"],
+} as const;

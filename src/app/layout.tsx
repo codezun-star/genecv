@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import Script from "next/script";
 
+import { InPageAd } from "@/components/ads/in-page-ad";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { SOCIAL_BAR_SRC } from "@/lib/ads";
@@ -114,6 +115,13 @@ export default function RootLayout({
           src={SOCIAL_BAR_SRC}
           strategy="lazyOnload"
         />
+
+        {/*
+          Segunda unidad de la red, del mismo tipo que la barra social. Se monta
+          desde su propio componente porque se salta el editor, y para eso hace
+          falta saber la ruta: ver `in-page-ad.tsx`.
+        */}
+        <InPageAd />
       </body>
     </html>
   );
