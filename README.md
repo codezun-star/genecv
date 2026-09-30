@@ -61,7 +61,8 @@ src/
     articulos/[slug]/   Guías por país (renderizadas desde Markdown)
   components/
     ads/                Huecos publicitarios (banner, nativo)
-    layout/             Navbar, footer, contenedor, logo
+    layout/             Navbar, footer, barra de pestañas, menú «Más»,
+                        transición entre pantallas, contenedor, logo
     landing/            Secciones de la portada
     editor/             Formularios, pasos y reordenamiento
     cv/                 Plantillas de CV (vista previa)
@@ -76,6 +77,31 @@ src/
 content/
   articulos/            25 guías por país en Markdown con frontmatter
 ```
+
+## Móvil: como una app
+
+Por debajo de 768 px la web se comporta como una aplicación nativa, y
+instalada desde el navegador (`manifest.ts`) se abre a pantalla completa:
+
+- **Barra de pestañas** abajo (`layout/tab-bar.tsx`): Inicio, Plantillas,
+  Crear, Guías y «Más». Sustituye a la hamburguesa; los enlaces de escritorio
+  siguen en la cabecera por encima de 768 px.
+- **Menú «Más»** (`layout/more-sheet.tsx`): una hoja inferior que se arrastra
+  para cerrarla, con los mismos grupos que el pie —que en el móvil se queda en
+  la línea legal— y el botón de instalar la app (`lib/pwa.ts`).
+- **Cabecera de app**: marca centrada, flecha «atrás» en las pantallas que
+  cuelgan de otra (`lib/navigation.ts` declara la jerarquía) y la hoja de
+  compartir del sistema.
+- **Editor**: pasos en una tira deslizable, barra de acciones fija abajo
+  (anterior, ver CV, siguiente o descargar) que se retira al escribir, y vista
+  previa a pantalla completa en una hoja.
+- **Detalles de sistema**: áreas seguras (`viewport-fit=cover` y
+  `env(safe-area-inset-*)`), campos de 16 px para que iOS no amplíe al
+  enfocarlos, sin recuadro gris al tocar, sin la espera del doble toque y una
+  transición corta al cambiar de pantalla (`layout/route-transition.tsx`).
+
+Las barras y hojas fijas van en un portal al `<body>`: el `<main>` se anima con
+`transform` al navegar, y eso ataría a él cualquier `position: fixed` interior.
 
 ## Blog
 

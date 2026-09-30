@@ -1,8 +1,9 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
+import { MobileEditorBar } from "@/components/editor/mobile-editor-bar";
 import { useCv } from "@/components/editor/use-cv";
 import { ReviewStep } from "@/components/editor/steps/review-step";
 import { EducationStep } from "@/components/editor/steps/education-step";
@@ -16,6 +17,7 @@ import { NativeAd } from "@/components/ads/native-ad";
 import { CvPreview } from "@/components/cv/cv-preview";
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
+import { BottomSheet } from "@/components/ui/sheet";
 import { buildFileName, downloadCvPdf } from "@/lib/cv/pdf/export";
 import { buildCvView } from "@/lib/cv/view";
 import { cn } from "@/lib/utils";
@@ -36,10 +38,11 @@ export function EditorShell() {
   const { cv, hydrated, resumed, saveState, reset } = useCv();
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [showPreviewMobile, setShowPreviewMobile] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
   const [dismissedResume, setDismissedResume] = useState(false);
+  const form = useRef<HTMLDivElement>(null);
 
   const view = useMemo(() => buildCvView(cv), [cv]);
   const Current = STEPS[step].Component;
@@ -49,7 +52,14 @@ export function EditorShell() {
     if (next < 0 || next >= STEPS.length) return;
     setDirection(next > step ? 1 : -1);
     setStep(next);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    // Sube hasta los pasos, no hasta arriba del todo: en el móvil la
+    // presentación de la página ocupa media pantalla, y volver a pasar por
+    // ella en cada paso es tiempo perdido. Solo si ya se había bajado de ahí.
+    const node = form.current;
+    if (node && node.getBoundingClientRect().top < 80) {
+      node.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }
 
   async function handleExport() {
@@ -77,9 +87,16 @@ export function EditorShell() {
   }
 
   // Avoid flashing an empty form before the saved draft is read.
+  //
+  // La espera ocupa casi lo mismo que el editor, a propósito. Si fuese una
+  // franja baja, al llegar a /crear desde una página desplazada el documento
+  // saldría tan corto que el navegador recortaría el desplazamiento a unos
+  // pocos píxeles, Next daría por visto el principio de la página y no subiría
+  // arriba: el titular quedaba escondido bajo la cabecera. Y el formulario ya
+  // no empuja el pie al aparecer.
   if (!hydrated) {
     return (
-      <Container className="py-24">
+      <Container className="min-h-[70vh] py-24">
         <div className="text-ink-muted flex items-center justify-center gap-3">
           <span className="border-secondary-200 border-t-primary size-5 animate-spin rounded-full border-2" />
           Cargando tu borrador…
@@ -89,7 +106,7 @@ export function EditorShell() {
   }
 
   return (
-    <Container size="wide" className="py-8">
+    <Container size="wide" className="py-6 lg:py-8">
       {resumed && !dismissedResume && (
         <motion.div
           initial={{ opacity: 0, y: -8 }}
@@ -115,7 +132,17 @@ export function EditorShell() {
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] xl:grid-cols-[minmax(0,1fr)_minmax(0,30rem)]">
         {/* --------------------------------------------------------- Form */}
-        <div className="min-w-0">
+        <div
+          ref={form}
+          className="min-w-0 scroll-mt-[calc(5rem+env(safe-area-inset-top))]"
+        >
+          <div className="mb-1 flex min-h-5 items-center justify-between gap-3 lg:hidden">
+            <p className="text-ink-muted text-xs font-semibold">
+              Paso {step + 1} de {STEPS.length}
+            </p>
+            <SaveIndicator state={saveState} />
+          </div>
+
           <StepNav step={step} onSelect={goTo} />
 
           <div className="mt-6 overflow-hidden">
@@ -133,7 +160,8 @@ export function EditorShell() {
             </AnimatePresence>
           </div>
 
-          <div className="border-line mt-10 flex flex-wrap items-center justify-between gap-3 border-t pt-6">
+          {/* En el móvil estos botones viven en la barra fija de abajo. */}
+          <div className="border-line mt-10 hidden flex-wrap items-center justify-between gap-3 border-t pt-6 lg:flex">
             <Button
               variant="outline"
               onClick={() => goTo(step - 1)}
@@ -155,7 +183,7 @@ export function EditorShell() {
           </div>
 
           {exportError && (
-            <p className="text-danger mt-3 text-sm">{exportError}</p>
+            <p className="text-danger mt-3 hidden text-sm lg:block">{exportError}</p>
           )}
 
           <div className="border-line mt-8 flex flex-wrap items-center justify-between gap-3 border-t pt-6">
@@ -174,8 +202,10 @@ export function EditorShell() {
           <AdBanner placement="banner" className="mt-10" />
         </div>
 
-        {/* ------------------------------------------------------ Preview */}
-        <aside className="min-w-0">
+        {/* ------------------------------------------------------ Preview
+            En el móvil la vista previa no ocupa sitio en la página: se abre
+            a pantalla completa desde la barra de abajo. */}
+        <aside className="hidden min-w-0 lg:block">
           <div className="lg:sticky lg:top-24">
             <div className="mb-3 flex items-center justify-between gap-3">
               <h2 className="font-display text-ink text-sm font-semibold">
@@ -186,43 +216,63 @@ export function EditorShell() {
               </span>
             </div>
 
-            {/* On small screens the preview is collapsed by default so the
-                form stays the focus. */}
-            <div className="lg:hidden">
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full"
-                onClick={() => setShowPreviewMobile((v) => !v)}
-              >
-                {showPreviewMobile ? "Ocultar vista previa" : "Ver mi CV"}
-              </Button>
-            </div>
-
-            <div
-              className={cn(
-                "mt-3",
-                showPreviewMobile ? "block" : "hidden lg:block",
-              )}
-            >
+            <div className="mt-3">
               <CvPreview view={view} templateId={cv.templateId} />
             </div>
 
             {/* Pegado junto a la vista previa: el editor es donde más rato
                 se está, así que este hueco acompaña toda la sesión en lugar de
-                verse una vez. `sidebar` ya se esconde solo por debajo de
-                1024 px, donde esta columna es la vista previa plegada y no hay
-                sitio para nada más. */}
+                verse una vez. Por debajo de 1024 px toda esta columna se
+                esconde —la vista previa pasa a una hoja— y el hueco con ella. */}
             <AdBanner placement="sidebar" className="mt-4" />
           </div>
         </aside>
       </div>
 
       <NativeAd className="mt-12" />
+
+      <MobileEditorBar
+        isFirst={step === 0}
+        isLast={isLast}
+        exporting={exporting}
+        exportError={exportError}
+        onPrevious={() => goTo(step - 1)}
+        onNext={() => goTo(step + 1)}
+        onExport={handleExport}
+        onPreview={() => setPreviewOpen(true)}
+      />
+
+      <BottomSheet
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        title="Vista previa"
+        description={buildFileName(cv)}
+        size="full"
+        footer={
+          isLast ? (
+            <Button onClick={handleExport} disabled={exporting} className="w-full">
+              {exporting ? "Generando PDF…" : "Descargar PDF"}
+            </Button>
+          ) : (
+            <Button variant="outline" onClick={() => setPreviewOpen(false)} className="w-full">
+              Seguir editando
+            </Button>
+          )
+        }
+      >
+        <div className="bg-surface min-h-full px-4 py-4">
+          <CvPreview view={view} templateId={cv.templateId} />
+        </div>
+      </BottomSheet>
     </Container>
   );
 }
 
+/**
+ * Los pasos. En el móvil son una tira que se desliza con el dedo, como las
+ * pestañas de una app, y el paso activo se centra solo al cambiar; en
+ * pantallas anchas caben todos y se reparten en líneas.
+ */
 function StepNav({
   step,
   onSelect,
@@ -230,21 +280,39 @@ function StepNav({
   step: number;
   onSelect: (index: number) => void;
 }) {
+  const list = useRef<HTMLOListElement>(null);
+
+  useEffect(() => {
+    const strip = list.current;
+    const item = strip?.children[step] as HTMLElement | undefined;
+    if (!strip || !item || strip.scrollWidth <= strip.clientWidth) return;
+
+    // A mano y no con `scrollIntoView`: ese también movería la página en
+    // vertical y se pelearía con el desplazamiento de `goTo`.
+    strip.scrollTo({
+      left: item.offsetLeft - (strip.clientWidth - item.offsetWidth) / 2,
+      behavior: "smooth",
+    });
+  }, [step]);
+
   return (
     <nav aria-label="Pasos del editor">
-      <ol className="flex flex-wrap gap-1.5">
+      <ol
+        ref={list}
+        className="no-scrollbar relative -mx-4 flex gap-1.5 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0"
+      >
         {STEPS.map((item, index) => {
           const active = index === step;
           const done = index < step;
 
           return (
-            <li key={item.id}>
+            <li key={item.id} className="shrink-0">
               <button
                 type="button"
                 onClick={() => onSelect(index)}
                 aria-current={active ? "step" : undefined}
                 className={cn(
-                  "rounded-field relative px-3 py-2 text-sm font-medium transition-colors duration-150",
+                  "rounded-field relative px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-150",
                   active
                     ? "text-primary"
                     : done

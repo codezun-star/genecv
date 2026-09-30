@@ -66,16 +66,18 @@ export default function CreatePage() {
         }}
       />
 
-      <Container size="wide" className="pt-10 pb-2">
+      <Container size="wide" className="pt-6 pb-0 sm:pt-10 sm:pb-2">
         <div className="max-w-2xl">
-          <h1 className="text-3xl font-bold sm:text-4xl">Crear mi CV</h1>
-          <p className="text-ink-soft mt-3 leading-relaxed">
+          <h1 className="text-2xl font-bold sm:text-4xl">Crear mi CV</h1>
+          <p className="text-ink-soft mt-2 text-[0.9375rem] leading-relaxed sm:mt-3 sm:text-base">
             Rellena el formulario paso a paso y ve tu currículum tomando forma
             al lado, en tiempo real. Elige entre {TOTAL_TEMPLATES} plantillas,
             comprueba que pasará los filtros ATS y descarga el PDF sin marca de
             agua, sin registrarte y sin pagar nada.
           </p>
-          <p className="text-ink-muted mt-3 text-sm leading-relaxed">
+          {/* En el móvil se esconde para que el formulario asome sin tener
+              que desplazarse; sigue en el HTML para quien lo lee sin CSS. */}
+          <p className="text-ink-muted mt-3 hidden text-sm leading-relaxed sm:block">
             Formatos disponibles:{" "}
             {REGION_LIST.map((region) => region.label).join(", ")}. Todo se
             guarda solo en este navegador: ni tus datos ni tu foto salen del

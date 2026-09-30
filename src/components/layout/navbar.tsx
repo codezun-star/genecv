@@ -1,31 +1,45 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { motion } from "motion/react";
 
 import { Container } from "@/components/layout/container";
 import { Logo } from "@/components/layout/logo";
 import { buttonStyles } from "@/components/ui/button";
+import { ChevronLeftIcon, ShareIcon } from "@/components/ui/icons";
+import { useCanShare } from "@/lib/client";
+import { canGoBackInApp, parentRoute, type ParentRoute } from "@/lib/navigation";
 import { mainNav } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
+/**
+ * Cabecera.
+ *
+ * En escritorio es la de siempre: marca, enlaces y el botón de crear. En el
+ * móvil se comporta como la barra superior de una app: la marca centrada, la
+ * flecha «atrás» a la izquierda en las pantallas que cuelgan de otra y el
+ * botón de compartir del sistema a la derecha. Los enlaces se van a la barra
+ * de pestañas de abajo, donde llega el pulgar.
+ *
+ * El relleno superior es el área segura: instalada como app en un iPhone con
+ * isla, la página se pinta también por detrás de la barra de estado.
+ */
 export function Navbar() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-
-  // Every link in the sheet calls this so navigating closes it. Doing it on
-  // click rather than in an effect keeps the state change out of render.
-  const closeMenu = () => setOpen(false);
+  const parent = parentRoute(pathname);
 
   return (
-    <header className="border-line bg-canvas/85 sticky top-0 z-40 border-b backdrop-blur-md">
+    <header className="border-line bg-canvas/85 sticky top-0 z-40 border-b pt-[env(safe-area-inset-top)] backdrop-blur-lg select-none md:select-auto">
       <Container>
         <nav
           aria-label="Principal"
-          className="flex h-16 items-center justify-between gap-4"
+          className="grid h-14 grid-cols-[1fr_auto_1fr] items-center gap-2 md:flex md:h-16 md:justify-between md:gap-4"
         >
+          <div className="flex min-w-0 items-center md:hidden">
+            {parent && <BackLink parent={parent} />}
+          </div>
+
           <Logo priority />
 
           <ul className="hidden items-center gap-1 md:flex">
@@ -57,73 +71,71 @@ export function Navbar() {
             })}
           </ul>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end gap-2">
             <Link
               href="/crear"
-              className={buttonStyles({ size: "sm", className: "hidden sm:inline-flex" })}
+              className={buttonStyles({ size: "sm", className: "hidden md:inline-flex" })}
             >
               Crear mi CV
             </Link>
-
-            <button
-              type="button"
-              onClick={() => setOpen((v) => !v)}
-              aria-expanded={open}
-              aria-controls="menu-movil"
-              aria-label={open ? "Cerrar menú" : "Abrir menú"}
-              className="text-ink-soft hover:bg-secondary-soft hover:text-primary grid size-10 place-items-center rounded-field transition-colors duration-150 md:hidden"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                strokeLinecap="round"
-                className="size-5"
-              >
-                {open ? (
-                  <path d="M6 6l12 12M18 6L6 18" />
-                ) : (
-                  <path d="M4 7h16M4 12h16M4 17h16" />
-                )}
-              </svg>
-            </button>
+            <ShareButton />
           </div>
         </nav>
       </Container>
-
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            id="menu-movil"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="border-line bg-canvas overflow-hidden border-t md:hidden"
-          >
-            <Container className="flex flex-col gap-1 py-4">
-              {mainNav.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={closeMenu}
-                  className="text-ink-soft hover:bg-secondary-soft hover:text-primary rounded-field px-3 py-2.5 font-medium transition-colors duration-150"
-                >
-                  {item.label}
-                </Link>
-              ))}
-              <Link
-                href="/crear"
-                onClick={closeMenu}
-                className={buttonStyles({ className: "mt-2 w-full" })}
-              >
-                Crear mi CV
-              </Link>
-            </Container>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </header>
+  );
+}
+
+/**
+ * «Atrás» como en una app: vuelve a la pantalla anterior si se llegó desde el
+ * propio sitio y, si no —se entró por un enlace de fuera—, sube a la pantalla
+ * padre. Es un enlace de verdad a esa pantalla padre, así que sin JavaScript,
+ * o con un clic central, hace lo esperable.
+ */
+function BackLink({ parent }: { parent: ParentRoute }) {
+  const router = useRouter();
+
+  return (
+    <Link
+      href={parent.href}
+      onClick={(event) => {
+        if (event.metaKey || event.ctrlKey || event.shiftKey) return;
+        if (canGoBackInApp()) {
+          event.preventDefault();
+          router.back();
+        }
+      }}
+      className="text-primary -ml-2 inline-flex h-10 min-w-0 items-center rounded-field pr-2 text-[0.9375rem] font-semibold transition-opacity duration-150 active:opacity-50"
+    >
+      <ChevronLeftIcon className="size-6" strokeWidth={2.25} />
+      {/* En los móviles más estrechos no cabe junto a la marca centrada:
+          queda la flecha, y el nombre sigue ahí para los lectores de pantalla. */}
+      <span className="truncate max-[359px]:sr-only">{parent.label}</span>
+    </Link>
+  );
+}
+
+/** La hoja de compartir del sistema, donde existe. En escritorio no se pinta. */
+function ShareButton() {
+  const canShare = useCanShare();
+  if (!canShare) return null;
+
+  async function share() {
+    try {
+      await navigator.share({ title: document.title, url: window.location.href });
+    } catch {
+      // Cerrar la hoja sin elegir nada también llega aquí: no es un error.
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={share}
+      aria-label="Compartir"
+      className="text-primary -mr-2 grid size-10 place-items-center rounded-field transition-opacity duration-150 active:opacity-50 md:hidden"
+    >
+      <ShareIcon className="size-[1.375rem]" />
+    </button>
   );
 }

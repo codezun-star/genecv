@@ -29,7 +29,9 @@ export default function manifest(): MetadataRoute.Manifest {
     orientation: "any",
     categories: ["productivity", "business", "utilities"],
     background_color: "#F7F7F7",
-    theme_color: "#234D68",
+    // El blanco de la cabecera: instalada, la barra de estado y la de la app
+    // se leen como una sola pieza. Va a juego con `viewport.themeColor`.
+    theme_color: "#FFFFFF",
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
       { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
@@ -91,6 +93,13 @@ export default function manifest(): MetadataRoute.Manifest {
         short_name: "Plantillas",
         description: "Los diseños disponibles, todos compatibles con ATS",
         url: "/plantillas",
+        icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }],
+      },
+      {
+        name: "Guías por país",
+        short_name: "Guías",
+        description: "Cómo se hace un CV en cada país",
+        url: "/articulos",
         icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }],
       },
     ],

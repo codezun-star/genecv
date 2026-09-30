@@ -5,6 +5,8 @@ import Script from "next/script";
 import { InPageAd } from "@/components/ads/in-page-ad";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
+import { RouteTransition } from "@/components/layout/route-transition";
+import { TabBar } from "@/components/layout/tab-bar";
 import { SOCIAL_BAR_SRC } from "@/lib/ads";
 import { OG_IMAGE, siteConfig } from "@/lib/site";
 
@@ -76,9 +78,17 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#234D68",
+  // El color de la barra del navegador y, instalada, de la de estado: el
+  // mismo blanco que la cabecera, para que se lean como una sola pieza, igual
+  // que en una app nativa.
+  themeColor: "#FFFFFF",
   width: "device-width",
   initialScale: 1,
+  // La página ocupa también el hueco de la isla y de la barra de inicio del
+  // iPhone; la cabecera y la barra de pestañas se apartan con
+  // `env(safe-area-inset-*)`. No se bloquea el zoom: los campos miden 16 px en
+  // el móvil, que es lo que evita que iOS amplíe al tocarlos.
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -90,6 +100,12 @@ export default function RootLayout({
     <html
       lang={siteConfig.lang}
       className={`${inter.variable} ${jakarta.variable} h-full antialiased`}
+      // El desplazamiento suave de `globals.css` es para los anclajes dentro
+      // de una página. Sin este atributo, Next 16 lo respeta también al
+      // cambiar de pantalla: la página nueva llega deslizándose desde donde
+      // estaba la anterior y termina con el titular debajo de la cabecera.
+      // Con él, cada pantalla empieza arriba al instante, como en una app.
+      data-scroll-behavior="smooth"
     >
       <body className="bg-surface text-ink flex min-h-full flex-col">
         <a
@@ -99,10 +115,9 @@ export default function RootLayout({
           Saltar al contenido
         </a>
         <Navbar />
-        <main id="contenido" className="flex-1">
-          {children}
-        </main>
+        <RouteTransition>{children}</RouteTransition>
         <Footer />
+        <TabBar />
 
         {/*
           Barra social: el formato flotante de la red, en todas las rutas y una

@@ -4,11 +4,19 @@ import { Container } from "@/components/layout/container";
 import { Logo } from "@/components/layout/logo";
 import { footerNav, siteConfig } from "@/lib/site";
 
+/**
+ * Pie de página.
+ *
+ * En el móvil se queda en la línea legal: una app no tiene pie, y los mismos
+ * enlaces, con los mismos grupos, están en el menú «Más» de la barra de
+ * pestañas. Siguen en el HTML —solo se esconden— porque son también la red de
+ * enlaces internos que recorre un buscador.
+ */
 export function Footer() {
   return (
-    <footer className="border-line bg-canvas mt-20 border-t">
-      <Container className="py-12">
-        <div className="grid gap-10 md:grid-cols-[1.4fr_repeat(3,1fr)]">
+    <footer className="border-line bg-canvas mt-12 border-t md:mt-20">
+      <Container className="py-6 md:py-12">
+        <div className="hidden gap-10 md:grid md:grid-cols-[1.4fr_repeat(3,1fr)]">
           <div className="max-w-xs">
             <Logo />
             <p className="text-ink-soft mt-4 text-sm leading-relaxed">
@@ -35,7 +43,7 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="border-line text-ink-muted mt-10 flex flex-col gap-2 border-t pt-6 text-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="text-ink-muted flex flex-col gap-2 text-center text-xs md:border-line md:mt-10 md:flex-row md:items-center md:justify-between md:border-t md:pt-6 md:text-left md:text-sm">
           <p>
             © {new Date().getFullYear()} {siteConfig.name}. Hecho por Codezun.
           </p>

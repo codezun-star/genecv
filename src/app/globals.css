@@ -86,9 +86,16 @@
   html {
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
+    /* Sin el recuadro gris que pinta el navegador del móvil al tocar un
+       enlace: las pantallas de una app responden con su propio estado
+       pulsado (`active:`), no con un parpadeo del sistema. */
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
+    /* En horizontal, la isla y las esquinas del iPhone quedan a los lados. */
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
     background-color: var(--color-surface);
     color: var(--color-ink);
     font-family: var(--font-sans);
@@ -131,6 +138,19 @@
     color: inherit;
   }
 
+  /* Sin la espera del doble toque: el zoom con dos dedos sigue funcionando,
+     pero un toque se atiende al instante, como en una app. */
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  label,
+  summary,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+
   :focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
@@ -157,6 +177,15 @@
     transition:
       border-color var(--duration-fast) var(--ease-out-brand),
       box-shadow var(--duration-fast) var(--ease-out-brand);
+  }
+
+  /* Safari en iOS amplía la página al enfocar cualquier campo con texto de
+     menos de 16 px, y ya no la devuelve a su sitio. En el móvil los campos
+     miden 16 px justos, que es lo que lo evita sin bloquear el zoom. */
+  @media (width < 48rem) {
+    .field {
+      font-size: 1rem;
+    }
   }
 
   .field::placeholder {
@@ -304,6 +333,16 @@
     border: 0;
     border-top: 1px solid var(--color-line);
     margin-block: 2.5em;
+  }
+}
+
+/* Tiras que se desplazan en horizontal con el dedo (los pasos del editor):
+   el gesto basta, la barra de desplazamiento solo estorba. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 

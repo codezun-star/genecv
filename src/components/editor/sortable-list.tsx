@@ -101,12 +101,16 @@ export function SortableRow({
     isDragging,
   } = useSortable({ id });
 
+  // `touch-none` es lo que deja arrastrar con el dedo: sin él, el navegador
+  // del móvil interpreta el gesto como desplazar la página, cancela el puntero
+  // y la fila no llega a moverse. En el móvil el asa además crece hasta un
+  // tamaño que se acierta con el pulgar.
   const handle = (
     <button
       type="button"
       ref={setActivatorNodeRef}
       aria-label={handleLabel}
-      className="text-ink-muted hover:bg-secondary-soft hover:text-secondary grid size-8 shrink-0 cursor-grab place-items-center rounded-md transition-colors duration-150 active:cursor-grabbing"
+      className="text-ink-muted hover:bg-secondary-soft hover:text-secondary grid size-10 shrink-0 cursor-grab touch-none place-items-center rounded-md transition-colors duration-150 active:cursor-grabbing sm:size-8"
       {...attributes}
       {...listeners}
     >
